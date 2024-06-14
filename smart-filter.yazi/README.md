@@ -2,6 +2,8 @@
 
 A Yazi plugin that makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 
+https://github.com/yazi-rs/plugins/assets/17523360/72aaf117-1378-4f7e-93ba-d425a79deac5
+
 ## Installation
 
 ```sh
