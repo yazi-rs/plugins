@@ -16,7 +16,7 @@ local function prompt()
 		title = "Smart filter:",
 		position = { "center", w = 50 },
 		realtime = true,
-		debounce = 0.2,
+		debounce = 0.1,
 	}
 end
 
