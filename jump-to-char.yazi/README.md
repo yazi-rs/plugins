@@ -1,6 +1,6 @@
 # jump-to-char.yazi
 
-TODO: add description
+Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
 
 ## Installation
 
