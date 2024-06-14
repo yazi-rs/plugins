@@ -2,6 +2,8 @@
 
 Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
 
+https://github.com/yazi-rs/plugins/assets/17523360/aac9341c-b416-4e0c-aaba-889d48389869
+
 ## Installation
 
 ```sh
