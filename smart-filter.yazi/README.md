@@ -1,0 +1,22 @@
+# smart-filter.yazi
+
+A Yazi plugin that makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
+
+## Installation
+
+```sh
+ya pack -a yazi-rs/plugins#smart-filter
+```
+
+## Usage
+
+Add this to your `~/.config/yazi/keymap.toml`:
+
+```toml
+[[manager.prepend_keymap]]
+on = [ "F" ]
+run = "plugin smart-filter"
+desc = "Smart filter"
+```
+
+Make sure the <kbd>F</kbd> key is not used elsewhere.
