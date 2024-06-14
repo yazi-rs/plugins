@@ -19,7 +19,7 @@ return {
 		end
 
 		if changed(cands[idx].on) then
-			ya.manager_emit("find_do", { insensitive = true, "^" .. cands[idx].on })
+			ya.manager_emit("find_do", { "^" .. cands[idx].on })
 		else
 			ya.manager_emit("find_arrow", {})
 		end
