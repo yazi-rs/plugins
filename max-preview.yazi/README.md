@@ -2,6 +2,8 @@
 
 Maximize or restore the preview pane.
 
+https://github.com/yazi-rs/plugins/assets/17523360/8976308e-ebfe-4e9e-babe-153eb1f87d61
+
 ## Installation
 
 ```sh
