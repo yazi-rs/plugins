@@ -16,8 +16,8 @@ Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
 [[manager.prepend_keymap]]
-on = [ "F" ]
-run = "plugin smart-filter"
+on   = [ "F" ]
+run  = "plugin smart-filter"
 desc = "Smart filter"
 ```
 
