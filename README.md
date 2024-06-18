@@ -5,7 +5,16 @@
 
 # Plugins
 
+The following plugins can be installed using the `ya pack` package manager - it's part of the upcoming Yazi v0.3 (currently available on the latest main branch).
+
+For specific installation commands and configuration instructions, check the individual `README.md` of each plugin by clicking the link below:
+
+- [full-border.yazi](full-border.yazi) - Add a full border to Yazi to make it look fancier.
 - [max-preview.yazi](max-preview.yazi) - Maximize or restore the preview pane.
 - [hide-preview.yazi](hide-preview.yazi) - Switch the preview pane between hidden and shown.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
+
+Note that `ya` is a newly introduced standalone CLI binary, not a shell alias for Yazi (See https://github.com/sxyazi/yazi/issues/914 for details)
+
+If you don't have it, you can also copy each directory ending with `.yazi` to your `~/.config/yazi/plugins` and manually keep them up to date.
