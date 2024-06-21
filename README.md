@@ -10,6 +10,7 @@ The following plugins can be installed using the `ya pack` package manager - it'
 For specific installation commands and configuration instructions, check the individual `README.md` of each plugin by clicking the link below:
 
 - [full-border.yazi](full-border.yazi) - Add a full border to Yazi to make it look fancier.
+- [chmod.yazi](chmod.yazi) - Execute `chmod` on the selected files to change their mode.
 - [max-preview.yazi](max-preview.yazi) - Maximize or restore the preview pane.
 - [hide-preview.yazi](hide-preview.yazi) - Switch the preview pane between hidden and shown.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
