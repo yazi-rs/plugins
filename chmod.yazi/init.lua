@@ -1,12 +1,12 @@
 local selected_or_hovered = ya.sync(function()
-	local tab, urls = cx.active, {}
+	local tab, paths = cx.active, {}
 	for _, u in pairs(tab.selected) do
-		urls[#urls + 1] = tostring(u)
+		paths[#paths + 1] = tostring(u)
 	end
-	if #urls == 0 and tab.current.hovered then
-		urls[1] = tostring(tab.current.hovered.url)
+	if #paths == 0 and tab.current.hovered then
+		paths[1] = tostring(tab.current.hovered.url)
 	end
-	return urls
+	return paths
 end)
 
 return {
@@ -15,7 +15,7 @@ return {
 
 		local urls = selected_or_hovered()
 		if #urls == 0 then
-			ya.notify { title = "Chmod", content = "No file selected", level = "warn", timeout = 5 }
+			return ya.notify { title = "Chmod", content = "No file selected", level = "warn", timeout = 5 }
 		end
 
 		local value, event = ya.input {
