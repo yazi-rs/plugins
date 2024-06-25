@@ -4,6 +4,13 @@ local function setup()
 
 		local bar = function(c, x, y)
 			x, y = math.max(0, x), math.max(0, y)
+
+			if x == 0 and y == 1 then
+				c = "╭"
+			elseif x == 0 and y == 50 then
+				c = "╰"
+			end
+
 			return ui.Bar(ui.Rect { x = x, y = y, w = ya.clamp(0, area.w - x, 1), h = math.min(1, area.h) }, ui.Bar.TOP)
 				:symbol(c)
 		end
