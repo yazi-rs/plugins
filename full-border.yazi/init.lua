@@ -13,12 +13,10 @@ local function setup()
 		local bar = function(c, x, y)
 			x, y = math.max(0, x), math.max(0, y)
 
-			if chunks[1].w == 0 and x == 0 then
-				return ui.Bar(ui.Rect { x = x, y = y, w = ya.clamp(0, area.w - x, 1), h = math.min(1, area.h) }, ui.Bar.NONE)
-			end
-
-			return ui.Bar(ui.Rect { x = x, y = y, w = ya.clamp(0, area.w - x, 1), h = math.min(1, area.h) }, ui.Bar.TOP)
-				:symbol(c)
+			return ui.Bar(
+				ui.Rect { x = x, y = y, w = ya.clamp(0, area.w - x, 1), h = math.min(1, area.h) },
+				x == 0 and ui.Bar.NONE or ui.Bar.TOP
+			):symbol(c)
 		end
 
 		local dynamic_padding = function()
