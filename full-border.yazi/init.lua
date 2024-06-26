@@ -15,6 +15,14 @@ local function setup()
 				:symbol(c)
 		end
 
+		local dynamic_padding = function()
+			if chunks[3].w == 0 then
+				return ui.Padding(0, 1, 1, 1)
+			end
+
+			return ui.Padding.y(1)
+		end
+
 		return ya.flat {
 			-- Borders
 			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED),
@@ -29,7 +37,7 @@ local function setup()
 			-- Parent
 			Parent:render(chunks[1]:padding(ui.Padding.xy(1))),
 			-- Current
-			Current:render(chunks[2]:padding(ui.Padding.y(1))),
+			Current:render(chunks[2]:padding(dynamic_padding())),
 			-- Preview
 			Preview:render(chunks[3]:padding(ui.Padding.xy(1))),
 		}
