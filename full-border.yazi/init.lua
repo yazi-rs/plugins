@@ -2,13 +2,19 @@ local function setup()
 	Manager.render = function(self, area)
 		local chunks = self:layout(area)
 
+		local dynamic_first_bar = function()
+			if chunks[2].w == 0 then
+				return
+			end
+
+			return ui.Bar(chunks[1], ui.Bar.RIGHT)
+		end
+
 		local bar = function(c, x, y)
 			x, y = math.max(0, x), math.max(0, y)
 
-			if x == 0 and y == 1 then
-				c = "╭"
-			elseif x == 0 and y == 50 then
-				c = "╰"
+			if chunks[1].w == 0 and x == 0 then
+				return ui.Bar(ui.Rect { x = x, y = y, w = ya.clamp(0, area.w - x, 1), h = math.min(1, area.h) }, ui.Bar.NONE)
 			end
 
 			return ui.Bar(ui.Rect { x = x, y = y, w = ya.clamp(0, area.w - x, 1), h = math.min(1, area.h) }, ui.Bar.TOP)
@@ -16,7 +22,9 @@ local function setup()
 		end
 
 		local dynamic_padding = function()
-			if chunks[3].w == 0 then
+			if chunks[1].w == 0 then
+				return ui.Padding(1, 0, 1, 1)
+			elseif chunks[3].w == 0 then
 				return ui.Padding(0, 1, 1, 1)
 			end
 
@@ -26,7 +34,7 @@ local function setup()
 		return ya.flat {
 			-- Borders
 			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED),
-			ui.Bar(chunks[1], ui.Bar.RIGHT),
+			dynamic_first_bar(),
 			ui.Bar(chunks[3], ui.Bar.LEFT),
 
 			bar("┬", chunks[1].right - 1, chunks[1].y),
