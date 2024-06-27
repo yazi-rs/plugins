@@ -15,6 +15,7 @@ For specific installation commands and configuration instructions, check the ind
 - [hide-preview.yazi](hide-preview.yazi) - Switch the preview pane between hidden and shown.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
+- [diff.yazi](diff.yazi) - Diff the selected file with the hovered file, create a living patch, and copy it to the clipboard.
 
 Note that `ya` is a newly introduced standalone CLI binary, not a shell alias for Yazi (See https://github.com/sxyazi/yazi/issues/914 for details)
 
