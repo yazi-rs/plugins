@@ -18,9 +18,7 @@ function M:peek()
 	local i, lines = 0, {}
 	repeat
 		local next, event = child:read_line()
-		if event == 1 then
-			goto continue
-		elseif event ~= 0 then
+		if event ~= 0 then
 			break
 		end
 
@@ -28,8 +26,6 @@ function M:peek()
 		if i > self.skip then
 			lines[#lines + 1] = ui.Line(next)
 		end
-
-		::continue::
 	until i >= self.skip + limit
 
 	child:start_kill()
