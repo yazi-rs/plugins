@@ -1,6 +1,6 @@
 local function setup()
 	Manager.render = function(self, area)
-		local chunks = self:layout(area)
+		local c = self:layout(area)
 
 		local bar = function(c, x, y)
 			if x <= 0 or x == area.w - 1 then
@@ -16,20 +16,20 @@ local function setup()
 		return ya.flat {
 			-- Borders
 			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED),
-			ui.Bar(chunks[1]:padding(ui.Padding.y(1)), ui.Bar.RIGHT),
-			ui.Bar(chunks[3]:padding(ui.Padding.y(1)), ui.Bar.LEFT),
+			ui.Bar(c[1]:padding(ui.Padding.y(1)), ui.Bar.RIGHT),
+			ui.Bar(c[3]:padding(ui.Padding.y(1)), ui.Bar.LEFT),
 
-			bar("┬", chunks[1].right - 1, chunks[1].y),
-			bar("┴", chunks[1].right - 1, chunks[1].bottom - 1),
-			bar("┬", chunks[2].right, chunks[2].y),
-			bar("┴", chunks[2].right, chunks[2].bottom - 1),
+			bar("┬", c[1].right - 1, c[1].y),
+			bar("┴", c[1].right - 1, c[1].bottom - 1),
+			bar("┬", c[2].right, c[2].y),
+			bar("┴", c[2].right, c[2].bottom - 1),
 
 			-- Parent
-			Parent:render(chunks[1]:padding(ui.Padding.xy(1))),
+			Parent:render(c[1]:padding(ui.Padding.xy(1))),
 			-- Current
-			Current:render(chunks[2]:padding(chunks[1].w > 0 and ui.Padding.y(1) or ui.Padding(1, 0, 1, 1))),
+			Current:render(c[2]:padding(c[1].w > 0 and ui.Padding.y(1) or ui.Padding(1, 0, 1, 1))),
 			-- Preview
-			Preview:render(chunks[3]:padding(ui.Padding.xy(1))),
+			Preview:render(c[3]:padding(ui.Padding.xy(1))),
 		}
 	end
 end
