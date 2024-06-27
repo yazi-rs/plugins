@@ -22,12 +22,12 @@ local function setup()
 			bar("┬", chunks[1].right - 1, chunks[1].y),
 			bar("┴", chunks[1].right - 1, chunks[1].bottom - 1),
 			bar("┬", chunks[2].right, chunks[2].y),
-			bar("┴", chunks[2].right, chunks[1].bottom - 1),
+			bar("┴", chunks[2].right, chunks[2].bottom - 1),
 
 			-- Parent
 			Parent:render(chunks[1]:padding(ui.Padding.xy(1))),
 			-- Current
-			Current:render(chunks[2]:padding(ui.Padding.y(1))),
+			Current:render(chunks[2]:padding(chunks[1].w > 0 and ui.Padding.y(1) or ui.Padding(1, 0, 1, 1))),
 			-- Preview
 			Preview:render(chunks[3]:padding(ui.Padding.xy(1))),
 		}
