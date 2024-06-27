@@ -12,7 +12,7 @@ local function entry(st)
 				:constraints({
 					ui.Constraint.Ratio(MANAGER.ratio.parent, all),
 					ui.Constraint.Ratio(MANAGER.ratio.current, all),
-					ui.Constraint.Length(0),
+					ui.Constraint.Length(1),
 				})
 				:split(area)
 		end
