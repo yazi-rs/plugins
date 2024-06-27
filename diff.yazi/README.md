@@ -2,6 +2,8 @@
 
 Diff the selected file with the hovered file, create a living patch, and copy it to the clipboard.
 
+https://github.com/yazi-rs/plugins/assets/17523360/eff5e949-386a-44ea-82f9-4cb4a2c37aad
+
 ## Installation
 
 ```sh
