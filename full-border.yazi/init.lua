@@ -1,7 +1,6 @@
 local function setup()
 	Manager.render = function(self, area)
 		local c = self:layout(area)
-
 		local bar = function(c, x, y)
 			if x <= 0 or x == area.w - 1 then
 				return {}
@@ -13,13 +12,12 @@ local function setup()
 			):symbol(c)
 		end
 
-		local border_style = ui.Style():fg(THEME.manager.border_style.fg or "")
-
+		local style = THEME.manager.border_style
 		return ya.flat {
 			-- Borders
-			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED):style(border_style),
-			ui.Bar(c[1]:padding(ui.Padding.y(1)), ui.Bar.RIGHT):style(border_style),
-			ui.Bar(c[3]:padding(ui.Padding.y(1)), ui.Bar.LEFT):style(border_style),
+			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED):style(style),
+			ui.Bar(c[1]:padding(ui.Padding.y(1)), ui.Bar.RIGHT):style(style),
+			ui.Bar(c[3]:padding(ui.Padding.y(1)), ui.Bar.LEFT):style(style),
 
 			bar("┬", c[1].right - 1, c[1].y),
 			bar("┴", c[1].right - 1, c[1].bottom - 1),
