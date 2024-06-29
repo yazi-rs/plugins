@@ -13,11 +13,13 @@ local function setup()
 			):symbol(c)
 		end
 
+		local border_style = ui.Style():fg(THEME.manager.border_style.fg or "")
+
 		return ya.flat {
 			-- Borders
-			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED),
-			ui.Bar(c[1]:padding(ui.Padding.y(1)), ui.Bar.RIGHT),
-			ui.Bar(c[3]:padding(ui.Padding.y(1)), ui.Bar.LEFT),
+			ui.Border(area, ui.Border.ALL):type(ui.Border.ROUNDED):style(border_style),
+			ui.Bar(c[1]:padding(ui.Padding.y(1)), ui.Bar.RIGHT):style(border_style),
+			ui.Bar(c[3]:padding(ui.Padding.y(1)), ui.Bar.LEFT):style(border_style),
 
 			bar("┬", c[1].right - 1, c[1].y),
 			bar("┴", c[1].right - 1, c[1].bottom - 1),
