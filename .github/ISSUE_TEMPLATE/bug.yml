@@ -13,29 +13,38 @@ body:
         - macOS
         - Windows
         - Windows WSL
+        - FreeBSD X11
+        - FreeBSD Wayland
     validations:
       required: true
-  - type: checkboxes
+  - type: input
+    id: terminal
     attributes:
-      label: You are using the latest commit of Yazi right?
-      description: The plugin system is still in the early stage, plugins in this repository are only guaranteed to be compatible with the latest nightly builds of Yazi. Before filing an issue, please ensure both your plugin and Yazi are up to date.
-      options:
-        - label: Yes, I built Yazi from the latest code
-          required: true
+      label: What terminal are you running Yazi in?
+      placeholder: "ex: kitty v0.32.2"
+    validations:
+      required: true
   - type: textarea
     id: debug
     attributes:
       label: "`yazi --debug` output"
-      description: Please do a `yazi --debug` and paste the output here.
+      description: Please run `yazi --debug` and paste the debug information here.
       value: |
-        <details>
+        <details>```sh
 
-        <!-- Paste the output between the backticks below: -->
-        ```sh
+        <!-- ↓↓↓ Paste the output here: ↓↓↓ -->
 
-        ```
 
-        </details>
+        ```</details>
+    validations:
+      required: true
+  - type: dropdown
+    id: tried_main
+    attributes:
+      label: Did you try the latest nightly build to see if the problem got fixed?
+      options:
+        - Yes, and I updated the debug information above (`yazi --debug`) to the nightly that I tried
+        - No, and I'll explain why below
     validations:
       required: true
   - type: textarea
