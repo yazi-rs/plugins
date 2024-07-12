@@ -16,7 +16,7 @@ Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
 [[manager.prepend_keymap]]
-on   = [ "f" ]
+on   = "f"
 run  = "plugin jump-to-char"
 desc = "Jump to char"
 ```

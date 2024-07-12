@@ -16,7 +16,7 @@ Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
 [[manager.prepend_keymap]]
-on   = [ "T" ]
+on   = "T"
 run  = "plugin --sync hide-preview"
 desc = "Hide or show preview"
 ```

@@ -16,7 +16,7 @@ Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
 [[manager.prepend_keymap]]
-on   = [ "<C-d>" ]
+on   = "<C-d>"
 run  = "plugin diff"
 desc = "Diff the selected with the hovered file"
 ```
