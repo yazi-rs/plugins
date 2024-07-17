@@ -28,7 +28,6 @@ local function setup(state)
 
 		local style = THEME.manager.border_style
 		self._base = ya.list_merge(self._base or {}, {
-			-- ui.Border(self._area, ui.Border.ALL):type(ui.Border.ROUNDED):style(style),
 			border(state, style),
 			ui.Bar(self._chunks[1], ui.Bar.RIGHT):style(style),
 			ui.Bar(self._chunks[3], ui.Bar.LEFT):style(style),
