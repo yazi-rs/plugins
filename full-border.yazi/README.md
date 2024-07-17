@@ -18,5 +18,13 @@ Add this to your `init.lua` to enable the plugin:
 require("full-border"):setup()
 ```
 
+Set "rounded" variable to use rounded/non-rounded version of borders:
+
+```lua
+require("full-border"):setup {
+    rounded = true -- false for non-rounded version
+}
+```
+
 This plugin overrides the [`Manager.render`](https://github.com/sxyazi/yazi/blob/latest/yazi-plugin/preset/components/manager.lua) method,
 you might need to check if any other plugins that also need to override it are enabled.
