@@ -1,5 +1,7 @@
-local function setup(state)
+local function setup(_, opts)
+	local type = opts and opts.type or ui.Border.ROUNDED
 	local old_build = Tab.build
+
 	Tab.build = function(self, ...)
 		local bar = function(c, x, y)
 			if x <= 0 or x == self._area.w - 1 then
@@ -12,13 +14,6 @@ local function setup(state)
 			):symbol(c)
 		end
 
-		local border = function(state, style)
-			if state.rounded then
-				return ui.Border(self._area, ui.Border.ALL):type(ui.Border.ROUNDED):style(style)
-			end
-			return ui.Border(self._area, ui.Border.ALL):style(style)
-		end
-		
 		local c = self._chunks
 		self._chunks = {
 			c[1]:padding(ui.Padding.y(1)),
@@ -28,7 +23,7 @@ local function setup(state)
 
 		local style = THEME.manager.border_style
 		self._base = ya.list_merge(self._base or {}, {
-			border(state, style),
+			ui.Border(self._area, ui.Border.ALL):type(type):style(style),
 			ui.Bar(self._chunks[1], ui.Bar.RIGHT):style(style),
 			ui.Bar(self._chunks[3], ui.Bar.LEFT):style(style),
 
@@ -42,9 +37,4 @@ local function setup(state)
 	end
 end
 
-return { 
-	setup = function(state, opts)
-		state.rounded = opts.rounded
-		setup(state)
-	end
-}
+return { setup = setup }
