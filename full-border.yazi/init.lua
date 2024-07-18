@@ -1,5 +1,7 @@
-local function setup()
+local function setup(_, opts)
+	local type = opts and opts.type or ui.Border.ROUNDED
 	local old_build = Tab.build
+
 	Tab.build = function(self, ...)
 		local bar = function(c, x, y)
 			if x <= 0 or x == self._area.w - 1 then
@@ -21,7 +23,7 @@ local function setup()
 
 		local style = THEME.manager.border_style
 		self._base = ya.list_merge(self._base or {}, {
-			ui.Border(self._area, ui.Border.ALL):type(ui.Border.ROUNDED):style(style),
+			ui.Border(self._area, ui.Border.ALL):type(type):style(style),
 			ui.Bar(self._chunks[1], ui.Bar.RIGHT):style(style),
 			ui.Bar(self._chunks[3], ui.Bar.LEFT):style(style),
 
