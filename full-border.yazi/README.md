@@ -23,6 +23,6 @@ Or you can customize the border type:
 ```lua
 require("full-border"):setup {
 	-- Available values: ui.Border.PLAIN, ui.Border.ROUNDED
-	type = ui.Border.PLAIN,
+	type = ui.Border.ROUNDED,
 }
 ```
