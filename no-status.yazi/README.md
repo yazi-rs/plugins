@@ -2,6 +2,8 @@
 
 Hide the status bar.
 
+![no-status-bar](https://github.com/user-attachments/assets/336bf813-2427-4338-827f-9ebc83d45d99)
+
 ## Installation
 
 ```sh
