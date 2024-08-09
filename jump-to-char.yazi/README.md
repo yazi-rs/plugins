@@ -7,7 +7,7 @@ https://github.com/yazi-rs/plugins/assets/17523360/aac9341c-b416-4e0c-aaba-889d4
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins#jump-to-char
+ya pack -a 'yazi-rs/plugins#jump-to-char'
 ```
 
 ## Usage
