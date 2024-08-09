@@ -7,7 +7,7 @@ https://github.com/yazi-rs/plugins/assets/17523360/c4f0b5c4-ff9f-4be8-ba73-4d8e7
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins#hide-preview
+ya pack -a 'yazi-rs/plugins#hide-preview'
 ```
 
 ## Usage
