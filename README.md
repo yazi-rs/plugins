@@ -17,6 +17,7 @@ For specific installation commands and configuration instructions, check the ind
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
 - [diff.yazi](diff.yazi) - Diff the selected file with the hovered file, create a living patch, and copy it to the clipboard.
 - [no-status.yazi](no-status.yazi) - Remove the status bar.
+- [mactag.yazi](mactag.yazi) - Bring macOS's awesome tagging feature to Yazi! The plugin is only available for macOS just like the name says.
 
 Note that `ya` is a newly introduced standalone CLI binary, not a shell alias for Yazi (See https://github.com/sxyazi/yazi/issues/914 for details)
 
