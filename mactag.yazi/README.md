@@ -41,12 +41,12 @@ This plugin also provides the functionality to add and remove tags. Add followin
 
 ```toml
 [[manager.prepend_keymap]]
-on   = [ "t", "r" ]
+on   = [ "b", "r" ]
 run  = 'plugin mactag --args="add Red"'
 desc = "Tag selected files with red"
 
 [[manager.prepend_keymap]]
-on   = [ "t", "R" ]
+on   = [ "b", "R" ]
 run  = 'plugin mactag --args="remove Red"'
 desc = "Remove red tag from selected files"
 ```
