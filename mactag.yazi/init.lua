@@ -25,7 +25,7 @@ local function setup(st)
 		local url = tostring(self._file.url)
 		local spans = {}
 		for _, tag in ipairs(st.tags[url] or {}) do
-			spans[#spans + 1] = ui.Span("⬤"):fg(COLORS[tag:lower()] or "reset")
+			spans[#spans + 1] = ui.Span("⬤ "):fg(COLORS[tag:lower()] or "reset")
 		end
 		return ui.Line(spans)
 	end, 500)
