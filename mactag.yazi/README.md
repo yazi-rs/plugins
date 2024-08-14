@@ -4,6 +4,8 @@ Bring macOS's awesome tagging feature to Yazi! The plugin it's only available fo
 
 Authors: [@AnirudhG07](https://github.com/AnirudhG07), and [@sxyazi](https://github.com/sxyazi)
 
+Note that this plugin is still under development.
+
 ## Installation
 
 Install the plugin itself, and [jdberry/tag](https://github.com/jdberry/tag) used to tag files:
@@ -18,7 +20,18 @@ brew update && brew install tag
 Add the following to your `~/.config/yazi/init.lua`:
 
 ```lua
-require("mactag"):setup()
+require("mactag"):setup {
+	-- You can change the colors of the tags here
+	colors = {
+		Red    = "#ee7b70",
+		Orange = "#f5bd5c",
+		Yellow = "#fbe764",
+		Green  = "#91fc87",
+		Blue   = "#5fa3f8",
+		Purple = "#cb88f8",
+		Gray   = "#b5b5b9",
+	},
+}
 ```
 
 And register it as fetchers in your `~/.config/yazi/yazi.toml`:
