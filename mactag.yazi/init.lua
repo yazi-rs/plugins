@@ -1,5 +1,3 @@
-local COLORS = { red = "red", yellow = "yellow", orange = "magenta", green = "green", blue = "blue" }
-
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
 		st.tags[path] = #tag == 0 and nil or tag
@@ -18,14 +16,19 @@ local selected_or_hovered = ya.sync(function()
 	return urls
 end)
 
-local function setup(st)
+local function setup(st, opts)
 	st.tags = {}
+	st.colors = opts.colors
 
 	Linemode:children_add(function(self)
 		local url = tostring(self._file.url)
 		local spans = {}
 		for _, tag in ipairs(st.tags[url] or {}) do
-			spans[#spans + 1] = ui.Span("⬤ "):fg(COLORS[tag:lower()] or "reset")
+			if self._file:is_hovered() then
+				spans[#spans + 1] = ui.Span("⬤ "):bg(st.colors[tag] or "reset")
+			else
+				spans[#spans + 1] = ui.Span("⬤ "):fg(st.colors[tag] or "reset")
+			end
 		end
 		return ui.Line(spans)
 	end, 500)
