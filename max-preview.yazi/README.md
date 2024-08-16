@@ -7,7 +7,7 @@ https://github.com/yazi-rs/plugins/assets/17523360/8976308e-ebfe-4e9e-babe-153eb
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins#max-preview
+ya pack -a yazi-rs/plugins:max-preview
 ```
 
 ## Usage

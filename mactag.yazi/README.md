@@ -11,7 +11,7 @@ Note that this plugin is still under development.
 Install the plugin itself, and [jdberry/tag](https://github.com/jdberry/tag) used to tag files:
 
 ```sh
-ya pack -a yazi-rs/plugins#mactag
+ya pack -a yazi-rs/plugins:mactag
 brew update && brew install tag
 ```
 

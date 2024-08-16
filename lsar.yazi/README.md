@@ -10,7 +10,7 @@ but we strongly discourage using it unless you encounter some issues with `7zip`
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins#lsar
+ya pack -a yazi-rs/plugins:lsar
 ```
 
 ## Usage

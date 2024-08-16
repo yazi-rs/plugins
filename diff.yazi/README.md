@@ -7,7 +7,7 @@ https://github.com/yazi-rs/plugins/assets/17523360/eff5e949-386a-44ea-82f9-4cb4a
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins#diff
+ya pack -a yazi-rs/plugins:diff
 ```
 
 ## Usage
