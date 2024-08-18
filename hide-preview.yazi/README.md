@@ -22,3 +22,16 @@ desc = "Hide or show preview"
 ```
 
 Make sure the <kbd>T</kbd> key is not used elsewhere.
+
+## Advanced
+
+In addition to triggering the plugin with a keypress, you can also trigger it in your `init.lua` file:
+
+```lua
+if os.getenv("NVIM") then
+	require("hide-preview"):entry()
+end
+```
+
+In the example above, when it detects that you're [using Yazi in nvim](https://github.com/mikavilpas/yazi.nvim), the
+preview is hidden by default - you can always press `T` (or any key you've bound) to display it again.
