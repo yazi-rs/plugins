@@ -59,7 +59,7 @@ local function setup(st, opts)
 		else
 			return ui.Line {}
 		end
-	end, 5000)
+	end, opts.order or 5000)
 end
 
 local function fetch(self)
