@@ -32,7 +32,7 @@ Make sure you have `unar` installed, and have `lsar` in your `$PATH`. You can in
 ```sh
 # Arch Linux
 sudo pacman -S unarchiver
-# MacOS
+# macOS
 brew install unar
 # Windows
 scoop install unar
