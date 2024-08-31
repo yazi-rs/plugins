@@ -2,6 +2,8 @@
 
 Show Git file changes as linemode in the file list.
 
+https://github.com/user-attachments/assets/34976be9-a871-4ffe-9d5a-c4cdd0bf4576
+
 ## Installation
 
 ```sh
