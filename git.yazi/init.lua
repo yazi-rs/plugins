@@ -1,25 +1,29 @@
 local PATS = {
-	{ "!$", "." }, -- Ignored
-	{ "?$", "?" }, -- Untracked
-	{ "U", "U" }, -- Updated
-	{ "[AD][AD]", "U" }, -- Updated
 	{ "[MT]", "M" }, -- Modified
 	{ "[AC]", "A" }, -- Added
+	{ "?$", "?" }, -- Untracked
+	{ "D", "D" }, -- Deleted
+	{ "U", "U" }, -- Updated
+	{ "[AD][AD]", "U" }, -- Updated
 }
 
-local PRIOS = {
+local WEIGHTS = {
+	["M"] = 6,
+	["A"] = 5,
+	["?"] = 4,
+	["D"] = 3,
+	["U"] = 2,
 	[""] = 1,
-	["."] = 2,
-	["?"] = 3,
-	["U"] = 4,
-	["M"] = 5,
-	["A"] = 6,
 }
 
-local function match(s)
+local function match(line)
+	local signs = line:sub(1, 2)
 	for _, p in ipairs(PATS) do
-		if s:find(p[1]) then
-			return p[2]
+		if not signs:find(p[1]) then
+		elseif line:sub(4, 4) == '"' then
+			return p[2], line:sub(5, -2)
+		else
+			return p[2], line:sub(4)
 		end
 	end
 end
@@ -45,11 +49,11 @@ end)
 local function setup(st, opts)
 	st.states = {}
 	local styles = {
-		["."] = THEME.git_ignored and ui.Style(THEME.git_ignored) or ui.Style():fg("gray"),
-		["?"] = THEME.git_staged and ui.Style(THEME.git_staged) or ui.Style():fg("yellow"),
-		["U"] = THEME.git_untracked and ui.Style(THEME.git_untracked) or ui.Style():fg("blue"),
-		["M"] = THEME.git_modified and ui.Style(THEME.git_modified) or ui.Style():fg("red"),
-		["A"] = THEME.git_deleted and ui.Style(THEME.git_deleted) or ui.Style():fg("green"),
+		["M"] = THEME.git_modified and ui.Style(THEME.git_modified) or ui.Style():fg("blue"),
+		["A"] = THEME.git_added and ui.Style(THEME.git_added) or ui.Style():fg("green"),
+		["?"] = THEME.git_untracked and ui.Style(THEME.git_untracked) or ui.Style():fg("yellow"),
+		["D"] = THEME.git_deleted and ui.Style(THEME.git_deleted) or ui.Style():fg("red"),
+		["U"] = THEME.git_updated and ui.Style(THEME.git_updated) or ui.Style():fg("blue"),
 	}
 
 	Linemode:children_add(function(self)
@@ -71,7 +75,7 @@ local function fetch(self)
 	local cwd = self.files[1].url:parent()
 	local output, err = Command("git")
 		:cwd(tostring(cwd))
-		:args({ "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
+		:args({ "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames" })
 		:args(paths)
 		:stdout(Command.PIPED)
 		:output()
@@ -87,11 +91,12 @@ local function fetch(self)
 
 	local states = {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
-		local s = match(line:sub(1, 2))
-		if s and line:find("[/\\]$") then
-			states[prefix .. line:sub(4, -2)] = s
+		local sign, path = match(line)
+		if not sign then
+		elseif path:find("[/\\]$") then
+			states[prefix .. path:sub(1, -2)] = sign
 		else
-			states[prefix .. line:sub(4)] = s
+			states[prefix .. path] = sign
 		end
 	end
 
@@ -102,7 +107,7 @@ local function fetch(self)
 			local url = Url(k):parent()
 			while url and url ~= prefix do
 				local s = tostring(url)
-				parents[s] = (PRIOS[parents[s]] or 0) > PRIOS[v] and parents[s] or v
+				parents[s] = (WEIGHTS[parents[s]] or 0) > WEIGHTS[v] and parents[s] or v
 				url = url:parent()
 			end
 		end
