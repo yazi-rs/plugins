@@ -43,6 +43,9 @@ local save = ya.sync(function(st, states)
 end)
 
 local function setup(st, opts)
+	opts = opts or {}
+	opts.order = opts.order or 1500
+
 	st.states = {}
 	local styles = {
 		["."] = THEME.git_ignored and ui.Style(THEME.git_ignored) or ui.Style():fg("gray"),
@@ -55,11 +58,11 @@ local function setup(st, opts)
 	Linemode:children_add(function(self)
 		local state = st.states[tostring(self._file.url)]
 		if state then
-			return ui.Line { ui.Span(" "), ui.Span(state):style(styles[state]), ui.Span(" ") }
+			return ui.Line { ui.Span(" "), ui.Span(state):style(styles[state]) }
 		else
 			return ui.Line {}
 		end
-	end, opts.order or 5000)
+	end, opts.order)
 end
 
 local function fetch(self)
