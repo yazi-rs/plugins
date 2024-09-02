@@ -13,7 +13,7 @@ For specific installation commands and configuration instructions, check the ind
 - [max-preview.yazi](max-preview.yazi) - Maximize or restore the preview pane.
 - [hide-preview.yazi](hide-preview.yazi) - Switch the preview pane between hidden and shown.
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
-- [git.yazi](git.yazi) - Show Git file changes as linemode in the file list.
+- [git.yazi](git.yazi) - Show the status of Git file changes as linemode in the file list.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [chmod.yazi](chmod.yazi) - Execute `chmod` on the selected files to change their mode.
 - [mime-ext.yazi](mime-ext.yazi) - A _common_ file type MIME-type library specifically designed for Yazi.
