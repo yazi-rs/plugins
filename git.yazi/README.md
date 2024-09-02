@@ -15,8 +15,7 @@ ya pack -a yazi-rs/plugins:git
 Add the following to your `~/.config/yazi/init.lua`:
 
 ```lua
-require("git"):setup {
-}
+require("git"):setup()
 ```
 
 And register it as fetchers in your `~/.config/yazi/yazi.toml`:

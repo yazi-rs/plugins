@@ -47,10 +47,10 @@ local save = ya.sync(function(st, states)
 end)
 
 local function setup(st, opts)
-	opts = opts or {}
-	opts.order = opts.order or 1500
-
 	st.states = {}
+	opts = opts or {}
+	opts.order = opts.order or 500
+
 	local styles = {
 		["M"] = THEME.git_modified and ui.Style(THEME.git_modified) or ui.Style():fg("blue"),
 		["A"] = THEME.git_added and ui.Style(THEME.git_added) or ui.Style():fg("green"),
@@ -58,11 +58,18 @@ local function setup(st, opts)
 		["D"] = THEME.git_deleted and ui.Style(THEME.git_deleted) or ui.Style():fg("red"),
 		["U"] = THEME.git_updated and ui.Style(THEME.git_updated) or ui.Style():fg("blue"),
 	}
+	local icons = {
+		["M"] = THEME.git_modified and THEME.git_modified.icon or "M",
+		["A"] = THEME.git_added and THEME.git_added.icon or "A",
+		["?"] = THEME.git_untracked and THEME.git_untracked.icon or "?",
+		["D"] = THEME.git_deleted and THEME.git_deleted.icon or "D",
+		["U"] = THEME.git_updated and THEME.git_updated.icon or "U",
+	}
 
 	Linemode:children_add(function(self)
-		local state = st.states[tostring(self._file.url)]
-		if state then
-			return ui.Line { ui.Span(" "), ui.Span(state):style(styles[state]) }
+		local s = st.states[tostring(self._file.url)]
+		if s and icons[s] ~= "" then
+			return ui.Line { ui.Span(" "), ui.Span(icons[s]):style(styles[s]) }
 		else
 			return ui.Line {}
 		end
