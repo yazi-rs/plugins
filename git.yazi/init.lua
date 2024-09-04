@@ -1,19 +1,11 @@
 local PATS = {
-	{ "[MT]", "M" }, -- Modified
-	{ "[AC]", "A" }, -- Added
-	{ "?$", "?" }, -- Untracked
-	{ "D", "D" }, -- Deleted
-	{ "U", "U" }, -- Updated
-	{ "[AD][AD]", "U" }, -- Updated
-}
-
-local WEIGHTS = {
-	["M"] = 6,
-	["A"] = 5,
-	["?"] = 4,
-	["D"] = 3,
-	["U"] = 2,
-	[""] = 1,
+	{ "[MT]", 6 }, -- Modified
+	{ "[AC]", 5 }, -- Added
+	{ "?$", 4 }, -- Untracked
+	{ "!$", 3 }, -- Ignored
+	{ "D", 2 }, -- Deleted
+	{ "U", 1 }, -- Updated
+	{ "[AD][AD]", 1 }, -- Updated
 }
 
 local function match(line)
@@ -32,60 +24,101 @@ local function root(cwd)
 	repeat
 		local cha = fs.cha(cwd:join(".git"))
 		if cha and cha.is_dir then
-			return string.format("%s%s", cwd, ya.target_family() == "windows" and "\\" or "/")
+			return tostring(cwd)
 		end
 		cwd = cwd:parent()
 	until not cwd
 end
 
-local save = ya.sync(function(st, states)
-	st.states = st.states or {}
-	for k, v in pairs(states) do
-		st.states[k] = v ~= "" and v or nil
+local add = ya.sync(function(st, cwd, repo, changes)
+	st.repos[cwd] = repo
+	st.changes[repo] = st.changes[repo] or {}
+	for k, v in pairs(changes) do
+		st.changes[repo][k] = v ~= 0 and v or nil
 	end
 	ya.render()
 end)
 
+local remove = ya.sync(function(st, cwd)
+	local repo = st.repos[cwd]
+	if not repo then
+		return
+	end
+
+	ya.render()
+	st.repos[cwd] = nil
+	if not st.changes[repo] then
+		return
+	end
+
+	for _, r in pairs(st.repos) do
+		if r == repo then
+			return
+		end
+	end
+	st.changes[repo] = nil
+end)
+
 local function setup(st, opts)
-	st.states = {}
+	st.repos = {}
+	st.changes = {}
+
 	opts = opts or {}
 	opts.order = opts.order or 500
 
+	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
 	local styles = {
-		["M"] = THEME.git_modified and ui.Style(THEME.git_modified) or ui.Style():fg("blue"),
-		["A"] = THEME.git_added and ui.Style(THEME.git_added) or ui.Style():fg("green"),
-		["?"] = THEME.git_untracked and ui.Style(THEME.git_untracked) or ui.Style():fg("yellow"),
-		["D"] = THEME.git_deleted and ui.Style(THEME.git_deleted) or ui.Style():fg("red"),
-		["U"] = THEME.git_updated and ui.Style(THEME.git_updated) or ui.Style():fg("blue"),
+		[6] = THEME.git_modified and ui.Style(THEME.git_modified) or ui.Style():fg("#ffa500"),
+		[5] = THEME.git_added and ui.Style(THEME.git_added) or ui.Style():fg("#32cd32"),
+		[4] = THEME.git_untracked and ui.Style(THEME.git_untracked) or ui.Style():fg("#a9a9a9"),
+		[3] = THEME.git_ignored and ui.Style(THEME.git_ignored) or ui.Style():fg("#696969"),
+		[2] = THEME.git_deleted and ui.Style(THEME.git_deleted) or ui.Style():fg("#ff4500"),
+		[1] = THEME.git_updated and ui.Style(THEME.git_updated) or ui.Style():fg("#1e90ff"),
 	}
+	-- TODO: Use nerd-font icons as default matching Yazi's default behavior
 	local icons = {
-		["M"] = THEME.git_modified and THEME.git_modified.icon or "M",
-		["A"] = THEME.git_added and THEME.git_added.icon or "A",
-		["?"] = THEME.git_untracked and THEME.git_untracked.icon or "?",
-		["D"] = THEME.git_deleted and THEME.git_deleted.icon or "D",
-		["U"] = THEME.git_updated and THEME.git_updated.icon or "U",
+		[6] = THEME.git_modified and THEME.git_modified.icon or "*",
+		[5] = THEME.git_added and THEME.git_added.icon or "+",
+		[4] = THEME.git_untracked and THEME.git_untracked.icon or "?",
+		[3] = THEME.git_ignored and THEME.git_ignored.icon or "",
+		[2] = THEME.git_deleted and THEME.git_deleted.icon or "-",
+		[1] = THEME.git_updated and THEME.git_updated.icon or "U",
 	}
 
 	Linemode:children_add(function(self)
-		local s = st.states[tostring(self._file.url)]
-		if s and icons[s] ~= "" then
-			return ui.Line { ui.Span(" "), ui.Span(icons[s]):style(styles[s]) }
+		local url = self._file.url
+		local repo = st.repos[tostring(url:parent())]
+		if not repo then
+			return ui.Line("")
+		end
+
+		local change = st.changes[repo][tostring(url):sub(#repo + 2)]
+		if not change or icons[change] == "" then
+			return ui.Line("")
+		elseif self._file:is_hovered() then
+			return ui.Line { ui.Span(" "), ui.Span(icons[change]) }
 		else
-			return ui.Line {}
+			return ui.Line { ui.Span(" "), ui.Span(icons[change]):style(styles[change]) }
 		end
 	end, opts.order)
 end
 
 local function fetch(self)
-	local paths = {}
-	for _, file in ipairs(self.files) do
-		paths[#paths + 1] = tostring(file.url)
+	local cwd = self.files[1].url:parent()
+	local repo = root(cwd)
+	if not repo then
+		remove(tostring(cwd))
+		return 1
 	end
 
-	local cwd = self.files[1].url:parent()
+	local paths = {}
+	for _, f in ipairs(self.files) do
+		paths[#paths + 1] = tostring(f.url)
+	end
+
 	local output, err = Command("git")
 		:cwd(tostring(cwd))
-		:args({ "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames" })
+		:args({ "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
 		:args(paths)
 		:stdout(Command.PIPED)
 		:output()
@@ -94,42 +127,37 @@ local function fetch(self)
 		return 0
 	end
 
-	local prefix = root(cwd)
-	if not prefix then
-		return 1
-	end
-
-	local states = {}
+	local changes = {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local sign, path = match(line)
 		if not sign then
 		elseif path:find("[/\\]$") then
-			states[prefix .. path:sub(1, -2)] = sign
+			changes[path:sub(1, -2)] = sign
 		else
-			states[prefix .. path] = sign
+			changes[path] = sign
 		end
 	end
 
-	prefix = Url(prefix)
 	if self.files[1].cha.is_dir then
-		local parents = {}
-		for k, v in pairs(states) do
+		local parents, empty_url = {}, Url("")
+		for k, v in pairs(changes) do
 			local url = Url(k):parent()
-			while url and url ~= prefix do
+			while url and url ~= empty_url do
 				local s = tostring(url)
-				parents[s] = (WEIGHTS[parents[s]] or 0) > WEIGHTS[v] and parents[s] or v
+				parents[s] = (parents[s] or 0) > v and parents[s] or v
 				url = url:parent()
 			end
 		end
 		for k, v in pairs(parents) do
-			states[k] = v
+			changes[k] = v
 		end
 	end
 
-	for _, p in ipairs(paths) do
-		states[p] = states[p] or ""
+	for _, f in ipairs(self.files) do
+		local name = f.url:name()
+		changes[name] = changes[name] or 0
 	end
-	save(states)
+	add(tostring(cwd), repo, changes)
 
 	return 3
 end
