@@ -153,9 +153,9 @@ local function fetch(self)
 		end
 	end
 
-	for _, f in ipairs(self.files) do
-		local name = f.url:name()
-		changes[name] = changes[name] or 0
+	for _, p in ipairs(paths) do
+		local s = p:sub(#repo + 2)
+		changes[s] = changes[s] or 0
 	end
 	add(tostring(cwd), repo, changes)
 
