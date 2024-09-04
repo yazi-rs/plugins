@@ -11,11 +11,15 @@ local PATS = {
 local function match(line)
 	local signs = line:sub(1, 2)
 	for _, p in ipairs(PATS) do
-		if not signs:find(p[1]) then
-		elseif line:sub(4, 4) == '"' then
-			return p[2], line:sub(5, -2)
+		local path
+		if signs:find(p[1]) then
+			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
+		end
+		if not path then
+		elseif path:find("[/\\]$") then
+			return p[2] == 3 and 30 or p[2], path:sub(1, -2)
 		else
-			return p[2], line:sub(4)
+			return p[2], path
 		end
 	end
 end
@@ -30,38 +34,73 @@ local function root(cwd)
 	until not cwd
 end
 
-local add = ya.sync(function(st, cwd, repo, changes)
-	st.repos[cwd] = repo
-	st.changes[repo] = st.changes[repo] or {}
-	for k, v in pairs(changes) do
-		st.changes[repo][k] = v ~= 0 and v or nil
+local function bubble_up(changed)
+	local new, empty = {}, Url("")
+	for k, v in pairs(changed) do
+		if v ~= 3 and v ~= 30 then
+			local url = Url(k):parent()
+			while url and url ~= empty do
+				local s = tostring(url)
+				new[s] = (new[s] or 0) > v and new[s] or v
+				url = url:parent()
+			end
+		end
+	end
+	return new
+end
+
+local function propagate_down(ignored, cwd, repo)
+	local new, rel = {}, cwd:strip_prefix(repo)
+	for k, v in pairs(ignored) do
+		if v == 30 then
+			if rel:starts_with(k) then
+				new[tostring(repo:join(rel))] = 30
+			elseif cwd == repo:join(k):parent() then
+				new[k] = 3
+			end
+		end
+	end
+	return new
+end
+
+local add = ya.sync(function(st, cwd, repo, changed)
+	st.dirs[cwd] = repo
+	st.repos[repo] = st.repos[repo] or {}
+	for k, v in pairs(changed) do
+		if v == 0 then
+			st.repos[repo][k] = nil
+		elseif v == 30 then
+			st.dirs[k] = ""
+		else
+			st.repos[repo][k] = v
+		end
 	end
 	ya.render()
 end)
 
 local remove = ya.sync(function(st, cwd)
-	local repo = st.repos[cwd]
-	if not repo then
+	local dir = st.dirs[cwd]
+	if not dir then
 		return
 	end
 
 	ya.render()
-	st.repos[cwd] = nil
-	if not st.changes[repo] then
+	st.dirs[cwd] = nil
+	if not st.repos[dir] then
 		return
 	end
 
-	for _, r in pairs(st.repos) do
-		if r == repo then
+	for _, r in pairs(st.dirs) do
+		if r == dir then
 			return
 		end
 	end
-	st.changes[repo] = nil
+	st.repos[dir] = nil
 end)
 
 local function setup(st, opts)
+	st.dirs = {}
 	st.repos = {}
-	st.changes = {}
 
 	opts = opts or {}
 	opts.order = opts.order or 500
@@ -80,19 +119,19 @@ local function setup(st, opts)
 		[6] = THEME.git_modified and THEME.git_modified.icon or "*",
 		[5] = THEME.git_added and THEME.git_added.icon or "+",
 		[4] = THEME.git_untracked and THEME.git_untracked.icon or "?",
-		[3] = THEME.git_ignored and THEME.git_ignored.icon or "",
+		[3] = THEME.git_ignored and THEME.git_ignored.icon or "!",
 		[2] = THEME.git_deleted and THEME.git_deleted.icon or "-",
 		[1] = THEME.git_updated and THEME.git_updated.icon or "U",
 	}
 
 	Linemode:children_add(function(self)
 		local url = self._file.url
-		local repo = st.repos[tostring(url:parent())]
-		if not repo then
-			return ui.Line("")
+		local dir = st.dirs[tostring(url:parent())]
+		local change
+		if dir then
+			change = dir == "" and 3 or st.repos[dir][tostring(url):sub(#dir + 2)]
 		end
 
-		local change = st.changes[repo][tostring(url):sub(#repo + 2)]
 		if not change or icons[change] == "" then
 			return ui.Line("")
 		elseif self._file:is_hovered() then
@@ -127,37 +166,28 @@ local function fetch(self)
 		return 0
 	end
 
-	local changes = {}
+	local changed, ignored = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local sign, path = match(line)
-		if not sign then
-		elseif path:find("[/\\]$") then
-			changes[path:sub(1, -2)] = sign
+		if sign == 30 then
+			ignored[path] = sign
 		else
-			changes[path] = sign
+			changed[path] = sign
 		end
 	end
 
 	if self.files[1].cha.is_dir then
-		local parents, empty_url = {}, Url("")
-		for k, v in pairs(changes) do
-			local url = Url(k):parent()
-			while url and url ~= empty_url do
-				local s = tostring(url)
-				parents[s] = (parents[s] or 0) > v and parents[s] or v
-				url = url:parent()
-			end
-		end
-		for k, v in pairs(parents) do
-			changes[k] = v
-		end
+		ya.dict_merge(changed, bubble_up(changed))
+		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
+	else
+		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
 	end
 
 	for _, p in ipairs(paths) do
 		local s = p:sub(#repo + 2)
-		changes[s] = changes[s] or 0
+		changed[s] = changed[s] or 0
 	end
-	add(tostring(cwd), repo, changes)
+	add(tostring(cwd), repo, changed)
 
 	return 3
 end
