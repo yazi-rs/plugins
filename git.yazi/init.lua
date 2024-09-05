@@ -155,9 +155,10 @@ local function fetch(self)
 		paths[#paths + 1] = tostring(f.url)
 	end
 
+	-- stylua: ignore
 	local output, err = Command("git")
 		:cwd(tostring(cwd))
-		:args({ "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
+		:args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
 		:args(paths)
 		:stdout(Command.PIPED)
 		:output()
