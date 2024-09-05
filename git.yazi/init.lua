@@ -1,3 +1,4 @@
+local WIN = ya.target_family() == "windows"
 local PATS = {
 	{ "[MT]", 6 }, -- Modified
 	{ "[AC]", 5 }, -- Added
@@ -14,6 +15,7 @@ local function match(line)
 		local path
 		if signs:find(p[1]) then
 			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
+			path = WIN and path:gsub("/", "\\") or path
 		end
 		if not path then
 		elseif path:find("[/\\]$") then
