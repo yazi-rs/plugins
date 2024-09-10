@@ -1,8 +1,8 @@
 # mime-ext.yazi
 
-A _common_ file type MIME-type library specifically designed for Yazi. Ensuring strict compliance with IANA-registered media types is not its primary goal.
+A mime-type provider based on a file extension database, replacing the builtin `file(1)` to speed up mime-type retrieval at the expense of accuracy.
 
-It is still in a very early stage and currently requires the [latest nightly build of Yazi](https://github.com/sxyazi/yazi/releases/tag/nightly).
+See https://yazi-rs.github.io/docs/tips#make-yazi-even-faster for more information.
 
 ## Installation
 
