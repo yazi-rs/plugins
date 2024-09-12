@@ -117,13 +117,13 @@ local function setup(st, opts)
 		[1] = THEME.git_updated and ui.Style(THEME.git_updated) or ui.Style():fg("#1e90ff"),
 	}
 	-- TODO: Use nerd-font icons as default matching Yazi's default behavior
-	local icons = {
-		[6] = THEME.git_modified and THEME.git_modified.icon or "*",
-		[5] = THEME.git_added and THEME.git_added.icon or "+",
-		[4] = THEME.git_untracked and THEME.git_untracked.icon or "?",
-		[3] = THEME.git_ignored and THEME.git_ignored.icon or "!",
-		[2] = THEME.git_deleted and THEME.git_deleted.icon or "-",
-		[1] = THEME.git_updated and THEME.git_updated.icon or "U",
+	local signs = {
+		[6] = THEME.git_modified_sign and THEME.git_modified_sign or "*",
+		[5] = THEME.git_added_sign and THEME.git_added_sign or "+",
+		[4] = THEME.git_untracked_sign and THEME.git_untracked_sign or "?",
+		[3] = THEME.git_ignored_sign and THEME.git_ignored_sign or "!",
+		[2] = THEME.git_deleted_sign and THEME.git_deleted_sign or "-",
+		[1] = THEME.git_updated_sign and THEME.git_updated_sign or "U",
 	}
 
 	Linemode:children_add(function(self)
@@ -134,12 +134,12 @@ local function setup(st, opts)
 			change = dir == "" and 3 or st.repos[dir][tostring(url):sub(#dir + 2)]
 		end
 
-		if not change or icons[change] == "" then
+		if not change or signs[change] == "" then
 			return ui.Line("")
 		elseif self._file:is_hovered() then
-			return ui.Line { ui.Span(" "), ui.Span(icons[change]) }
+			return ui.Line { ui.Span(" "), ui.Span(signs[change]) }
 		else
-			return ui.Line { ui.Span(" "), ui.Span(icons[change]):style(styles[change]) }
+			return ui.Line { ui.Span(" "), ui.Span(signs[change]):style(styles[change]) }
 		end
 	end, opts.order)
 end

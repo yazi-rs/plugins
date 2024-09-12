@@ -35,7 +35,7 @@ local function entry()
 		local h = hovered()
 		if h.unique and h.is_dir then
 			ya.manager_emit("escape", { filter = true })
-			ya.manager_emit("enter", { h.url })
+			ya.manager_emit("enter", {})
 			input = prompt()
 		elseif event == 1 then
 			ya.manager_emit("escape", { filter = true })
