@@ -365,6 +365,7 @@ local EXTS = {
 	jpe = "image/jpeg",
 	jpeg = "image/jpeg",
 	jpg = "image/jpeg",
+	jxl = "image/jxl",
 	jpgm = "video/jpm",
 	jpgv = "video/jpeg",
 	jpm = "video/jpm",
