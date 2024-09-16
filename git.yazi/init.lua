@@ -108,22 +108,22 @@ local function setup(st, opts)
 	opts.order = opts.order or 500
 
 	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
+	local t = THEME.git or {}
 	local styles = {
-		[6] = THEME.git_modified and ui.Style(THEME.git_modified) or ui.Style():fg("#ffa500"),
-		[5] = THEME.git_added and ui.Style(THEME.git_added) or ui.Style():fg("#32cd32"),
-		[4] = THEME.git_untracked and ui.Style(THEME.git_untracked) or ui.Style():fg("#a9a9a9"),
-		[3] = THEME.git_ignored and ui.Style(THEME.git_ignored) or ui.Style():fg("#696969"),
-		[2] = THEME.git_deleted and ui.Style(THEME.git_deleted) or ui.Style():fg("#ff4500"),
-		[1] = THEME.git_updated and ui.Style(THEME.git_updated) or ui.Style():fg("#1e90ff"),
+		[6] = t.modified and ui.Style(t.modified) or ui.Style():fg("#ffa500"),
+		[5] = t.added and ui.Style(t.added) or ui.Style():fg("#32cd32"),
+		[4] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("#a9a9a9"),
+		[3] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("#696969"),
+		[2] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("#ff4500"),
+		[1] = t.updated and ui.Style(t.updated) or ui.Style():fg("#1e90ff"),
 	}
-	-- TODO: Use nerd-font icons as default matching Yazi's default behavior
 	local signs = {
-		[6] = THEME.git_modified_sign and THEME.git_modified_sign or "*",
-		[5] = THEME.git_added_sign and THEME.git_added_sign or "+",
-		[4] = THEME.git_untracked_sign and THEME.git_untracked_sign or "?",
-		[3] = THEME.git_ignored_sign and THEME.git_ignored_sign or "!",
-		[2] = THEME.git_deleted_sign and THEME.git_deleted_sign or "-",
-		[1] = THEME.git_updated_sign and THEME.git_updated_sign or "U",
+		[6] = t.modified_sign and t.modified_sign or "",
+		[5] = t.added_sign and t.added_sign or "",
+		[4] = t.untracked_sign and t.untracked_sign or "",
+		[3] = t.ignored_sign and t.ignored_sign or "",
+		[2] = t.deleted_sign and t.deleted_sign or "",
+		[1] = t.updated_sign and t.updated_sign or "U",
 	}
 
 	Linemode:children_add(function(self)

@@ -42,34 +42,36 @@ run  = "git"
 
 You can customize the [Style](https://yazi-rs.github.io/docs/plugins/layout#style) of the status sign with:
 
-- `THEME.git_modified`
-- `THEME.git_added`
-- `THEME.git_untracked`
-- `THEME.git_ignored`
-- `THEME.git_deleted`
-- `THEME.git_updated`
+- `THEME.git.modified`
+- `THEME.git.added`
+- `THEME.git.untracked`
+- `THEME.git.ignored`
+- `THEME.git.deleted`
+- `THEME.git.updated`
 
 For example:
 
 ```lua
 -- ~/.config/yazi/init.lua
-THEME.git_modified = ui.Style():fg("blue")
-THEME.git_deleted = ui.Style():fg("red"):bold()
+THEME.git = THEME.git or {}
+THEME.git.modified = ui.Style():fg("blue")
+THEME.git.deleted = ui.Style():fg("red"):bold()
 ```
 
 You can also customize the text of the status sign with:
 
-- `THEME.git_modified_sign`
-- `THEME.git_added_sign`
-- `THEME.git_untracked_sign`
-- `THEME.git_ignored_sign`
-- `THEME.git_deleted_sign`
-- `THEME.git_updated_sign`
+- `THEME.git.modified_sign`
+- `THEME.git.added_sign`
+- `THEME.git.untracked_sign`
+- `THEME.git.ignored_sign`
+- `THEME.git.deleted_sign`
+- `THEME.git.updated_sign`
 
 For example:
 
 ```lua
 -- ~/.config/yazi/init.lua
-THEME.git_modified_sign = "M"
-THEME.git_deleted_sign = "D"
+THEME.git = THEME.git or {}
+THEME.git.modified_sign = "M"
+THEME.git.deleted_sign = "D"
 ```
