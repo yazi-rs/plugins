@@ -105,7 +105,7 @@ local function setup(st, opts)
 	st.repos = {}
 
 	opts = opts or {}
-	opts.order = opts.order or 500
+	opts.order = opts.order or 1500
 
 	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
 	local t = THEME.git or {}
