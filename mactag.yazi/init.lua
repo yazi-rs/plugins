@@ -1,6 +1,6 @@
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
-		st.tags[path] = #tag == 0 and nil or tag
+		st.tags[path] = #tag > 0 and tag or nil
 	end
 	ya.render()
 end)
@@ -18,6 +18,7 @@ end)
 
 local function setup(st, opts)
 	st.tags = {}
+	st.keys = opts.keys
 	st.colors = opts.colors
 
 	Linemode:children_add(function(self)
@@ -25,9 +26,9 @@ local function setup(st, opts)
 		local spans = {}
 		for _, tag in ipairs(st.tags[url] or {}) do
 			if self._file:is_hovered() then
-				spans[#spans + 1] = ui.Span("●"):bg(st.colors[tag] or "reset")
+				spans[#spans + 1] = ui.Span(" ●"):bg(st.colors[tag] or "reset")
 			else
-				spans[#spans + 1] = ui.Span("●"):fg(st.colors[tag] or "reset")
+				spans[#spans + 1] = ui.Span(" ●"):fg(st.colors[tag] or "reset")
 			end
 		end
 		return ui.Line(spans)
@@ -63,11 +64,25 @@ local function fetch(self)
 	return 1
 end
 
+local cands = ya.sync(function(st)
+	local t = {}
+	for k, v in pairs(st.keys) do
+		t[#t + 1] = { on = k, desc = v }
+	end
+	return t
+end)
+
 local function entry(_, args)
 	assert(args[1] == "add" or args[1] == "remove", "Invalid action")
-	assert(args[2], "No tag specified")
+	ya.manager_emit("escape", { visual = true })
 
-	local t = { args[1] == "remove" and "-r" or "-a", args[2] }
+	local cands = cands()
+	local choice = ya.which { cands = cands }
+	if not choice then
+		return
+	end
+
+	local t = { args[1] == "remove" and "-r" or "-a", cands[choice].desc }
 	local files = {}
 	for _, url in ipairs(selected_or_hovered()) do
 		t[#t + 1] = tostring(url)
