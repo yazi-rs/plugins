@@ -4,6 +4,8 @@ Bring macOS's awesome tagging feature to Yazi! The plugin it's only available fo
 
 Authors: [@AnirudhG07](https://github.com/AnirudhG07), and [@sxyazi](https://github.com/sxyazi)
 
+https://github.com/user-attachments/assets/7f26dc6d-67a5-4a85-a99e-4671ece9ae56
+
 ## Installation
 
 Install the plugin itself, and [jdberry/tag](https://github.com/jdberry/tag) used to tag files:
