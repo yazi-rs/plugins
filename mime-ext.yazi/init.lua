@@ -1026,12 +1026,12 @@ local EXTS = {
 	zsh = "text/shellscript",
 }
 
-local get_state = ya.sync(
-	function(state)
+local options = ya.sync(
+	function(st)
 		return {
-			with_files = state.with_files,
-			with_exts = state.with_exts,
-			fallback_file1 = state.fallback_file1,
+			with_files = st.with_files,
+			with_exts = st.with_exts,
+			fallback_file1 = st.fallback_file1,
 		}
 	end
 )
@@ -1047,9 +1047,9 @@ function M:setup(opts)
 end
 
 function M:fetch()
-	local state = get_state()
-	local merged_files = ya.dict_merge(FILES, state.with_files or {})
-	local merged_exts = ya.dict_merge(EXTS, state.with_exts or {})
+	local opts = options()
+	local merged_files = ya.dict_merge(FILES, opts.with_files or {})
+	local merged_exts = ya.dict_merge(EXTS, opts.with_exts or {})
 
 	local updates, unknown = {}, {}
 	for _, file in ipairs(self.files) do
@@ -1063,7 +1063,7 @@ function M:fetch()
 
 		if mime then
 			updates[tostring(file.url)] = mime
-		else
+		elseif opts.fallback_file1 then
 			unknown[#unknown + 1] = file
 		end
 	end
@@ -1072,7 +1072,7 @@ function M:fetch()
 		ya.manager_emit("update_mimetype", { updates = updates })
 	end
 
-	if state.fallback_file1 and #unknown > 0 then
+	if #unknown > 0 then
 		self.files = unknown
 		return require("mime").fetch(self)
 	end
