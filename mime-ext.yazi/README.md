@@ -12,12 +12,6 @@ ya pack -a yazi-rs/plugins:mime-ext
 
 ## Usage
 
-Add the following to your `~/.config/yazi/init.lua`:
-
-```lua
-require("mime-ext"):setup()
-```
-
 Add this to your `~/.config/yazi/yazi.toml`:
 
 ```toml
@@ -31,27 +25,24 @@ prio = "high"
 
 ## Advanced
 
-Or you can customize some options with:
+Or you can customize it in your `~/.config/yazi/init.lua`:
 
 ```lua
 require("mime-ext"):setup {
-	-- You can extend existing tables with your custom filenames and extensions
-
-	-- Table that maps case-insensitive filenames to mime-types
+	-- Expand the existing filename database (lowercase), for example:
 	with_files = {
 		makefile = "text/x-makefile",
 		-- ...
 	},
 
-	-- Table that maps case-insensitive file extensions to mime-types
+	-- Expand the existing extension database (lowercase), for example:
 	with_exts = {
-		-- match any file with extension, for example `config.mk`
 		mk = "text/x-makefile",
 		-- ...
 	},
 
-	-- If the mime-type is not found by extension or filename,
-	-- then fallback to Yazi's preset `mime` plugin, which uses file(1)
+	-- If the mime-type is not in both filename and extension databases,
+	-- then fallback to Yazi's preset `mime` plugin, which uses `file(1)`
 	fallback_file1 = false,
 }
 ```

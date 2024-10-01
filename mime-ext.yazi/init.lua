@@ -1041,15 +1041,15 @@ local M = {}
 function M:setup(opts)
 	opts = opts or {}
 
-	self.with_files = opts.with_files or {}
-	self.with_exts = opts.with_exts or {}
+	self.with_files = opts.with_files
+	self.with_exts = opts.with_exts
 	self.fallback_file1 = opts.fallback_file1
 end
 
 function M:fetch()
 	local state = get_state()
-	local merged_files = ya.dict_merge(FILES, state.with_files)
-	local merged_exts = ya.dict_merge(EXTS, state.with_exts)
+	local merged_files = ya.dict_merge(FILES, state.with_files or {})
+	local merged_exts = ya.dict_merge(EXTS, state.with_exts or {})
 
 	local updates, unknown = {}, {}
 	for _, file in ipairs(self.files) do
