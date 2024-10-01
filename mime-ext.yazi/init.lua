@@ -1026,25 +1026,32 @@ local EXTS = {
 	zsh = "text/shellscript",
 }
 
-local get_state = ya.sync(function (state)
-	return {
-		with_files = state.with_files,
-		with_exts = state.with_exts,
-		fallback_mime = state.fallback_mime,
-	}
-end)
+local get_state = ya.sync(
+	function(state)
+		return {
+			with_files = state.with_files,
+			with_exts = state.with_exts,
+			fallback_file1 = state.fallback_file1,
+		}
+	end
+)
 
 local M = {}
 
+function M:setup(opts)
+	opts = opts or {}
+
+	self.with_files = opts.with_files or {}
+	self.with_exts = opts.with_exts or {}
+	self.fallback_file1 = opts.fallback_file1
+end
+
 function M:fetch()
 	local state = get_state()
-
-	local updates = {}
-	local unknown = {}
-
 	local merged_files = ya.dict_merge(FILES, state.with_files)
 	local merged_exts = ya.dict_merge(EXTS, state.with_exts)
 
+	local updates, unknown = {}, {}
 	for _, file in ipairs(self.files) do
 		local mime
 		if file.cha.len == 0 then
@@ -1065,20 +1072,12 @@ function M:fetch()
 		ya.manager_emit("update_mimetype", { updates = updates })
 	end
 
-	if state.fallback_mime and #unknown > 0 then
+	if state.fallback_file1 and #unknown > 0 then
 		self.files = unknown
 		return require("mime").fetch(self)
 	end
 
 	return 1
-end
-
-function M:setup(opts)
-	opts = opts or {}
-
-	self.with_files = opts.with_files or {}
-	self.with_exts =  opts.with_exts or {}
-	self.fallback_mime = opts.fallback_mime
 end
 
 return M

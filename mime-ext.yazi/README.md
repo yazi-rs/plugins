@@ -10,33 +10,12 @@ See https://yazi-rs.github.io/docs/tips#make-yazi-even-faster for more informati
 ya pack -a yazi-rs/plugins:mime-ext
 ```
 
-## Setup
+## Usage
 
 Add the following to your `~/.config/yazi/init.lua`:
+
 ```lua
 require("mime-ext"):setup()
-
--- Or you can customize some options
-require("mime-ext"):setup {
-    -- You can extend existing tables with your custom file names and extensions
-
-    -- Table that maps case-insensitive file names to MIME types
-    with_files = {
-        makefile = "text/x-makefile",
-        -- ...
-    },
-
-    -- Table that maps case-insensitive file extensions to MIME types
-    with_exts = {
-        -- match any file with extension, for example `config.mk`
-        mk = "text/x-makefile",
-        -- ...
-    },
-
-    -- If the MIME type is not found by extension or file name,
-    -- then fallback to yazi's default MIME plugin, which uses file(1)
-    fallback_mime = true,
-}
 ```
 
 Add this to your `~/.config/yazi/yazi.toml`:
@@ -48,6 +27,33 @@ if   = "!mime"
 name = "*"
 run  = "mime-ext"
 prio = "high"
+```
+
+## Advanced
+
+Or you can customize some options with:
+
+```lua
+require("mime-ext"):setup {
+	-- You can extend existing tables with your custom filenames and extensions
+
+	-- Table that maps case-insensitive filenames to mime-types
+	with_files = {
+		makefile = "text/x-makefile",
+		-- ...
+	},
+
+	-- Table that maps case-insensitive file extensions to mime-types
+	with_exts = {
+		-- match any file with extension, for example `config.mk`
+		mk = "text/x-makefile",
+		-- ...
+	},
+
+	-- If the mime-type is not found by extension or filename,
+	-- then fallback to Yazi's preset `mime` plugin, which uses file(1)
+	fallback_file1 = false,
+}
 ```
 
 ## TODO
