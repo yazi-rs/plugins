@@ -1,6 +1,6 @@
 # mime-ext.yazi
 
-A mime-type provider based on a file extension database, replacing the builtin `file(1)` to speed up mime-type retrieval at the expense of accuracy.
+A mime-type provider based on a file extension database, replacing the [builtin `file(1)`](https://github.com/sxyazi/yazi/blob/main/yazi-plugin/preset/plugins/mime.lua) to speed up mime-type retrieval at the expense of accuracy.
 
 See https://yazi-rs.github.io/docs/tips#make-yazi-even-faster for more information.
 
@@ -25,7 +25,7 @@ prio = "high"
 
 ## Advanced
 
-Or you can customize it in your `~/.config/yazi/init.lua`:
+You can also customize it in your `~/.config/yazi/init.lua` with:
 
 ```lua
 require("mime-ext"):setup {

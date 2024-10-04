@@ -16,7 +16,7 @@ For specific installation commands and configuration instructions, check the ind
 - [git.yazi](git.yazi) - Show the status of Git file changes as linemode in the file list.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [chmod.yazi](chmod.yazi) - Execute `chmod` on the selected files to change their mode.
-- [mime-ext.yazi](mime-ext.yazi) - A _common_ file type MIME-type library specifically designed for Yazi.
+- [mime-ext.yazi](mime-ext.yazi) - A mime-type provider based on a file extension database, replacing the builtin `file(1)` to speed up mime-type retrieval at the expense of accuracy.
 - [diff.yazi](diff.yazi) - Diff the selected file with the hovered file, create a living patch, and copy it to the clipboard.
 - [no-status.yazi](no-status.yazi) - Remove the status bar.
 - [mactag.yazi](mactag.yazi) - Bring macOS's awesome tagging feature to Yazi! The plugin is only available for macOS just like the name says.
