@@ -1069,7 +1069,8 @@ function M:fetch()
 	end
 
 	if next(updates) then
-		ya.manager_emit("update_mimetype", { updates = updates })
+		ya.manager_emit("update_mimes", { updates = updates })
+		ya.manager_emit("update_mimetype", { updates = updates }) -- TODO: remove this
 	end
 
 	if #unknown > 0 then
