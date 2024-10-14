@@ -24,7 +24,7 @@ function M:peek()
 
 		i = i + 1
 		if i > self.skip then
-			lines[#lines + 1] = ui.Line(next)
+			lines[#lines + 1] = next
 		end
 	until i >= self.skip + limit
 
@@ -32,7 +32,7 @@ function M:peek()
 	if self.skip > 0 and i < self.skip + limit then
 		ya.manager_emit("peek", { math.max(0, i - limit), only_if = self.file.url, upper_bound = true })
 	else
-		ya.preview_widgets(self, { ui.Paragraph(self.area, lines) })
+		ya.preview_widgets(self, { ui.Text(lines):area(self.area) })
 	end
 end
 
