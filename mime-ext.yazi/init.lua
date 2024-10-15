@@ -45,6 +45,7 @@ local EXTS = {
 	asf = "video/x-ms-asf",
 	asm = "text/asm",
 	aso = "application/vnd.accpac.simply.aso",
+	ass = "text/x-ass",
 	asx = "video/x-ms-asf",
 	atc = "application/vnd.acucorp",
 	atom = "application/atom+xml",
