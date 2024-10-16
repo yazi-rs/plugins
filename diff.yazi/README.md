@@ -22,3 +22,7 @@ desc = "Diff the selected with the hovered file"
 ```
 
 Make sure the <kbd>C</kbd> + <kbd>d</kbd> key is not used elsewhere.
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

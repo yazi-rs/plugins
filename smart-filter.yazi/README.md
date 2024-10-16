@@ -22,3 +22,7 @@ desc = "Smart filter"
 ```
 
 Make sure the <kbd>F</kbd> key is not used elsewhere.
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

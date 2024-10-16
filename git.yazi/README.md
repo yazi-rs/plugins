@@ -75,3 +75,7 @@ THEME.git = THEME.git or {}
 THEME.git.modified_sign = "M"
 THEME.git.deleted_sign = "D"
 ```
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

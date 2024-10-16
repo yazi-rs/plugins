@@ -26,3 +26,7 @@ require("full-border"):setup {
 	type = ui.Border.ROUNDED,
 }
 ```
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

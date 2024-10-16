@@ -22,3 +22,7 @@ desc = "Chmod on selected files"
 ```
 
 Make sure the <kbd>c</kbd> => <kbd>m</kbd> key is not used elsewhere.
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

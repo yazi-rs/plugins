@@ -52,3 +52,7 @@ require("mime-ext"):setup {
 - Add more file types (PRs welcome!).
 - Eliminating `x-` as part of Yazi v0.4 as it's discouraged as per [rfc6838#section-3.4](https://datatracker.ietf.org/doc/html/rfc6838#section-3.4)
 - Compress mime-type tables.
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

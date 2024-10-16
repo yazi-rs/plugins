@@ -17,3 +17,7 @@ Add this to your `init.lua` to enable the plugin:
 ```lua
 require("no-status"):setup()
 ```
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

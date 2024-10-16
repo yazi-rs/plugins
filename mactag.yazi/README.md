@@ -73,3 +73,7 @@ on   = [ "b", "r" ]
 run  = 'plugin mactag --args="remove"'
 desc = "Untag selected files"
 ```
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

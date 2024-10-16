@@ -37,3 +37,7 @@ brew install unar
 # Windows
 scoop install unar
 ```
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.
