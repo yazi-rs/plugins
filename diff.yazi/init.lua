@@ -29,6 +29,8 @@ return {
 		local output, err = Command("diff"):arg("-Naur"):arg(tostring(a)):arg(tostring(b)):output()
 		if not output then
 			return info("Failed to run diff, error: " .. err)
+		elseif output.stdout == "" then
+			return info("No differences found")
 		end
 
 		ya.clipboard(output.stdout)
