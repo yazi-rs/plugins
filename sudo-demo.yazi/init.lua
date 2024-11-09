@@ -11,7 +11,7 @@ end
 --- @param args table
 --- @return Output|nil output
 --- @return integer|nil err
----  0: success
+---  nil: no error
 ---  1: sudo failed
 local function run_with_sudo(program, args)
 	local cmd = Command("sudo"):args({ program, table.unpack(args) }):stdout(Command.PIPED):stderr(Command.PIPED)
