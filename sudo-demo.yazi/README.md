@@ -14,8 +14,8 @@ Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
 [[manager.prepend_keymap]]
-on   = "<C-t>"
-run  = "plugin sudo-demo"
+on  = "<C-t>"
+run = "plugin sudo-demo"
 ```
 
 Press <kbd>Ctrl</kbd> + <kbd>t</kbd> to run the plugin, you should [see a message in the log](https://yazi-rs.github.io/docs/plugins/overview#logging).

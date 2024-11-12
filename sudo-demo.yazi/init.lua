@@ -14,7 +14,7 @@ end
 ---  nil: no error
 ---  1: sudo failed
 local function run_with_sudo(program, args)
-	local cmd = Command("sudo"):args({ program, table.unpack(args) }):stdout(Command.PIPED):stderr(Command.PIPED)
+	local cmd = Command("sudo"):args { program, table.unpack(args) }
 	if sudo_already() then
 		return cmd:output()
 	end
@@ -38,7 +38,6 @@ return {
 		end
 
 		ya.err("stdout", output.stdout)
-		ya.err("stderr", output.stderr)
 		ya.err("status.code", output.status.code)
 	end,
 }
