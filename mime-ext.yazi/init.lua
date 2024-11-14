@@ -376,7 +376,6 @@ local EXTS = {
 	jpgv = "video/jpeg",
 	jpm = "video/jpm",
 	js = "text/javascript",
-	js = "text/javascript",
 	json = "application/json",
 	jsonc = "application/json",
 	jsonml = "application/jsonml+json",
