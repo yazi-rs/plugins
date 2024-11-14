@@ -1024,6 +1024,11 @@ local EXTS = {
 	zirz = "application/vnd.zul",
 	zmm = "application/vnd.handheld-entertainment+xml",
 	zsh = "text/shellscript",
+	tfstate = "application/json",
+	tfvars = "text/hcl",
+	tfrc = "text/hcl",
+	hcl = "text/hcl",
+	tf = "text/hcl",
 }
 
 local options = ya.sync(
