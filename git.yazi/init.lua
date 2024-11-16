@@ -154,8 +154,11 @@ local function setup(st, opts)
 	end, opts.order)
 end
 
-local function fetch(self)
-	local cwd = self.files[1].url:parent()
+local function fetch(self, args)
+	-- TODO: remove this once Yazi 0.4 is released
+	args = args or self
+
+	local cwd = args.files[1].url:parent()
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
@@ -163,7 +166,7 @@ local function fetch(self)
 	end
 
 	local paths = {}
-	for _, f in ipairs(self.files) do
+	for _, f in ipairs(args.files) do
 		paths[#paths + 1] = tostring(f.url)
 	end
 
@@ -189,7 +192,7 @@ local function fetch(self)
 		end
 	end
 
-	if self.files[1].cha.is_dir then
+	if args.files[1].cha.is_dir then
 		ya.dict_merge(changed, bubble_up(changed))
 		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
 	else

@@ -35,9 +35,12 @@ local function setup(st, opts)
 	end, 500)
 end
 
-local function fetch(self)
+local function fetch(self, args)
+	-- TODO: remove this once Yazi 0.4 is released
+	args = args or self
+
 	local paths = {}
-	for _, file in ipairs(self.files) do
+	for _, file in ipairs(args.files) do
 		paths[#paths + 1] = tostring(file.url)
 	end
 
