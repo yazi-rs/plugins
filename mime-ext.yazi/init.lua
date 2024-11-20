@@ -1053,6 +1053,7 @@ end
 
 function M:fetch(args)
 	-- TODO: remove this once Yazi 0.4 is released
+	local not_v4 = not args
 	args = args or self
 
 	local opts = options()
@@ -1083,7 +1084,7 @@ function M:fetch(args)
 
 	if #unknown > 0 then
 		args.files = unknown
-		return require("mime").fetch(args)
+		return not_v4 and require("mime").fetch(args) or require("mime"):fetch(args)
 	end
 
 	return 1

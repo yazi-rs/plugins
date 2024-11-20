@@ -75,7 +75,7 @@ local cands = ya.sync(function(st)
 	return t
 end)
 
-local function entry(_, args)
+local function entry(self, args)
 	assert(args[1] == "add" or args[1] == "remove", "Invalid action")
 	ya.manager_emit("escape", { visual = true })
 
@@ -94,7 +94,7 @@ local function entry(_, args)
 
 	local status = Command("tag"):args(t):status()
 	if status.success then
-		fetch { files = files }
+		fetch(self, { files = files })
 	end
 end
 
