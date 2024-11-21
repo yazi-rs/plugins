@@ -1051,17 +1051,17 @@ function M:setup(opts)
 	self.fallback_file1 = opts.fallback_file1
 end
 
-function M:fetch(args)
+function M:fetch(job)
 	-- TODO: remove this once Yazi 0.4 is released
-	local not_v4 = not args
-	args = args or self
+	local not_v4 = not job
+	job = job or self
 
 	local opts = options()
 	local merged_files = ya.dict_merge(FILES, opts.with_files or {})
 	local merged_exts = ya.dict_merge(EXTS, opts.with_exts or {})
 
 	local updates, unknown = {}, {}
-	for _, file in ipairs(args.files) do
+	for _, file in ipairs(job.files) do
 		local mime
 		if file.cha.len == 0 then
 			mime = "inode/x-empty"
@@ -1083,8 +1083,8 @@ function M:fetch(args)
 	end
 
 	if #unknown > 0 then
-		args.files = unknown
-		return not_v4 and require("mime").fetch(args) or require("mime"):fetch(args)
+		job.files = unknown
+		return not_v4 and require("mime").fetch(job) or require("mime"):fetch(job)
 	end
 
 	return 1
