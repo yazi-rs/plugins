@@ -9,6 +9,7 @@ The following plugins can be installed using the `ya pack` package manager intro
 
 For specific installation commands and configuration instructions, check the individual `README.md` of each plugin by clicking the link below:
 
+- [smart-enter.yazi](smart-enter.yazi) - `Open` files or `enter` directories all in one key!
 - [full-border.yazi](full-border.yazi) - Add a full border to Yazi to make it look fancier.
 - [max-preview.yazi](max-preview.yazi) - Maximize or restore the preview pane.
 - [hide-preview.yazi](hide-preview.yazi) - Switch the preview pane between hidden and shown.
