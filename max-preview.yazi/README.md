@@ -18,6 +18,8 @@ Add this to your `~/.config/yazi/keymap.toml`:
 [[manager.prepend_keymap]]
 on   = "T"
 run  = "plugin --sync max-preview"
+# For upcoming Yazi 0.4 (nightly version):
+# run  = "plugin max-preview"
 desc = "Maximize or restore preview"
 ```
 
