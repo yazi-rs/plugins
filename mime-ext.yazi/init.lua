@@ -1074,6 +1074,8 @@ function M:fetch(job)
 			updates[tostring(file.url)] = mime
 		elseif opts.fallback_file1 then
 			unknown[#unknown + 1] = file
+		else
+			updates[tostring(file.url)] = "application/octet-stream"
 		end
 	end
 
