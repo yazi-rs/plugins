@@ -17,7 +17,7 @@ Add this to your `~/.config/yazi/yazi.toml`:
 ```toml
 [[plugin.prepend_fetchers]]
 id   = "mime"
-if   = "!mime"
+if   = "!(mime|dummy)"
 name = "*"
 run  = "mime-ext"
 prio = "high"
