@@ -75,7 +75,10 @@ local cands = ya.sync(function(st)
 	return t
 end)
 
-local function entry(self, args)
+local function entry(self, job)
+	-- TODO: remove this once Yazi 0.4 is released
+	local args = job.args or job
+
 	assert(args[1] == "add" or args[1] == "remove", "Invalid action")
 	ya.manager_emit("escape", { visual = true })
 
