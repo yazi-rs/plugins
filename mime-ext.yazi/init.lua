@@ -1,6 +1,7 @@
 local FILES = {
-	license = "text/plain",
+	[".gitconfig"] = "text/plain",
 	["cargo.lock"] = "application/json",
+	license = "text/plain",
 }
 
 local EXTS = {
