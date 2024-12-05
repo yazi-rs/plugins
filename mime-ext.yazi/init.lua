@@ -1,5 +1,7 @@
 local FILES = {
 	[".gitconfig"] = "text/plain",
+	[".gitignore"] = "text/plain",
+	[".luacheckrc"] = "text/lua",
 	[".zshenv"] = "text/plain",
 	[".zshrc"] = "text/plain",
 	["cargo.lock"] = "application/json",
