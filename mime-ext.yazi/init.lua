@@ -1,5 +1,7 @@
 local FILES = {
 	[".gitconfig"] = "text/plain",
+	[".zshenv"] = "text/plain",
+	[".zshrc"] = "text/plain",
 	["cargo.lock"] = "application/json",
 	license = "text/plain",
 }
@@ -671,7 +673,7 @@ local EXTS = {
 	r = "text/r",
 	ra = "audio/pn-realaudio",
 	ram = "audio/pn-realaudio",
-	rar = "application/rar-compressed",
+	rar = "application/rar",
 	ras = "image/cmu-raster",
 	rb = "text/ruby",
 	rcprofile = "application/ipunplugged.rcprofile",
