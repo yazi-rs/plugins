@@ -1,10 +1,13 @@
 local FILES = {
+	[".envrc"] = "text/plain",
 	[".gitconfig"] = "text/plain",
 	[".gitignore"] = "text/plain",
 	[".luacheckrc"] = "text/lua",
+	[".styluaignore"] = "text/plain",
 	[".zshenv"] = "text/plain",
 	[".zshrc"] = "text/plain",
 	["cargo.lock"] = "application/json",
+	["flake.lock"] = "application/json",
 	license = "text/plain",
 }
 
