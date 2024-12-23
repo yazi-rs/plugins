@@ -35,10 +35,7 @@ local function setup(st, opts)
 	end, 500)
 end
 
-local function fetch(self, job)
-	-- TODO: remove this once Yazi 0.4 is released
-	job = job or self
-
+local function fetch(_, job)
 	local paths = {}
 	for _, file in ipairs(job.files) do
 		paths[#paths + 1] = tostring(file.url)
@@ -76,10 +73,7 @@ local cands = ya.sync(function(st)
 end)
 
 local function entry(self, job)
-	-- TODO: remove this once Yazi 0.4 is released
-	local args = job.args or job
-
-	assert(args[1] == "add" or args[1] == "remove", "Invalid action")
+	assert(job.args[1] == "add" or job.args[1] == "remove", "Invalid action")
 	ya.manager_emit("escape", { visual = true })
 
 	local cands = cands()
@@ -88,7 +82,7 @@ local function entry(self, job)
 		return
 	end
 
-	local t = { args[1] == "remove" and "-r" or "-a", cands[choice].desc }
+	local t = { job.args[1] == "remove" and "-r" or "-a", cands[choice].desc }
 	local files = {}
 	for _, url in ipairs(selected_or_hovered()) do
 		t[#t + 1] = tostring(url)

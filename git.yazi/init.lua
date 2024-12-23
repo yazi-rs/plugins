@@ -154,10 +154,7 @@ local function setup(st, opts)
 	end, opts.order)
 end
 
-local function fetch(self, job)
-	-- TODO: remove this once Yazi 0.4 is released
-	job = job or self
-
+local function fetch(_, job)
 	local cwd = job.files[1].url:parent()
 	local repo = root(cwd)
 	if not repo then

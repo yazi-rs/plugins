@@ -1,9 +1,6 @@
 local M = {}
 
 function M:peek(job)
-	-- TODO: remove this once Yazi 0.4 is released
-	job = job or self
-
 	local child, code = Command("lsar"):arg(tostring(job.file.url)):stdout(Command.PIPED):spawn()
 	if not child then
 		return ya.err("spawn `lsar` command returns " .. tostring(code))
@@ -39,19 +36,6 @@ function M:peek(job)
 	end
 end
 
-function M:seek(job)
-	-- TODO: remove this once Yazi 0.4 is released
-	local units = type(job) == "table" and job.units or job
-	job = type(job) == "table" and job or self
-
-	local h = cx.active.current.hovered
-	if h and h.url == job.file.url then
-		local step = math.floor(units * job.area.h / 10)
-		ya.manager_emit("peek", {
-			math.max(0, cx.active.preview.skip + step),
-			only_if = job.file.url,
-		})
-	end
-end
+function M:seek(job) require("code"):seek(job) end
 
 return M
