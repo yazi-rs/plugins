@@ -43,7 +43,7 @@ local function fetch(_, job)
 
 	local output, err = Command("tag"):args(paths):stdout(Command.PIPED):output()
 	if not output then
-		return ya.err("Cannot spawn tag command, error code " .. tostring(err))
+		return ya.err("Cannot spawn tag command, error: " .. err)
 	end
 
 	local i, tags = 1, {}

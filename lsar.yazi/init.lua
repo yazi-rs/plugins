@@ -1,9 +1,9 @@
 local M = {}
 
 function M:peek(job)
-	local child, code = Command("lsar"):arg(tostring(job.file.url)):stdout(Command.PIPED):spawn()
+	local child, err = Command("lsar"):arg(tostring(job.file.url)):stdout(Command.PIPED):spawn()
 	if not child then
-		return ya.err("spawn `lsar` command returns " .. tostring(code))
+		return ya.err("spawn `lsar` command failed: " .. err)
 	end
 
 	-- Skip the first line which is the archive file itself

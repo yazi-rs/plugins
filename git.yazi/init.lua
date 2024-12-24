@@ -175,7 +175,7 @@ local function fetch(_, job)
 		:stdout(Command.PIPED)
 		:output()
 	if not output then
-		ya.err("Cannot spawn git command, error code " .. tostring(err))
+		ya.err("Cannot spawn git command, error: " .. err)
 		return 0
 	end
 
