@@ -17,9 +17,9 @@ local function setup(_, opts)
 
 		local c = self._chunks
 		self._chunks = {
-			c[1]:padding(ui.Padding.y(1)),
-			c[2]:padding(ui.Padding(c[1].w > 0 and 0 or 1, c[3].w > 0 and 0 or 1, 1, 1)),
-			c[3]:padding(ui.Padding.y(1)),
+			c[1]:pad(ui.Pad.y(1)),
+			c[2]:pad(ui.Pad(1, c[3].w > 0 and 0 or 1, 1, c[1].w > 0 and 0 or 1)),
+			c[3]:pad(ui.Pad.y(1)),
 		}
 
 		local style = THEME.manager.border_style
