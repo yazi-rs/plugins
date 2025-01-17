@@ -30,15 +30,15 @@ run = 'plugin mount'
 
 Available keybindings:
 
-| Key binding  | Alternate key    | Action                |
-| ------------ | ---------------- | --------------------- |
-| <kbd>q</kbd> | -                | Quit the plugin       |
-| <kbd>k</kbd> | <kbd>Up</kbd>    | Move up               |
-| <kbd>j</kbd> | <kbd>Down</kbd>  | Move down             |
-| <kbd>l</kbd> | <kbd>Right</kbd> | Enter the mount point |
-| <kbd>m</kbd> |                  | Mount the partition   |
-| <kbd>M</kbd> | -                | Unmount the partition |
-| <kbd>e</kbd> | -                | Eject the disk        |
+| Key binding  | Alternate key | Action                |
+| ------------ | ------------- | --------------------- |
+| <kbd>q</kbd> | -             | Quit the plugin       |
+| <kbd>k</kbd> | <kbd>↑</kbd>  | Move up               |
+| <kbd>j</kbd> | <kbd>↓</kbd>  | Move down             |
+| <kbd>l</kbd> | <kbd>→</kbd>  | Enter the mount point |
+| <kbd>m</kbd> | -             | Mount the partition   |
+| <kbd>M</kbd> | -             | Unmount the partition |
+| <kbd>e</kbd> | -             | Eject the disk        |
 
 ## TODO
 
