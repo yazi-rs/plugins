@@ -43,7 +43,7 @@ local M = {
 		{ on = "<Right>", run = "right" },
 
 		{ on = "m", run = "mount" },
-		{ on = "M", run = "umount" },
+		{ on = "M", run = "unmount" },
 		{ on = "e", run = "eject" },
 	},
 }
@@ -126,8 +126,8 @@ function M:entry(job)
 				break
 			elseif run == "mount" then
 				self.operate("mount")
-			elseif run == "umount" then
-				self.operate("umount")
+			elseif run == "unmount" then
+				self.operate("unmount")
 			elseif run == "eject" then
 				self.operate("eject")
 			end
@@ -145,7 +145,7 @@ function M:redraw()
 		if p.sub == "" then
 			rows[#rows + 1] = ui.Row { p.main }
 		else
-			rows[#rows + 1] = ui.Row { p.sub, p.label, p.dist or "", p.fstype }
+			rows[#rows + 1] = ui.Row { p.sub, p.label or "", p.dist or "", p.fstype or "" }
 		end
 	end
 
@@ -172,17 +172,19 @@ end
 
 function M.obtain()
 	local tbl = {}
-	local last = { false, nil }
+	local last
 	for _, p in ipairs(fs.partitions()) do
-		local main, sub = p.src:match("^(/dev/disk%d+)(.*)$")
-		if sub == "" then
-			p.main, p.sub, last = main, sub, { true, p }
-		elseif not p.fstype then
+		local main, sub
+		if ya.target_os() == "macos" then
+			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
 		else
-			if last[1] then
-				tbl[#tbl + 1], last[1] = last[2], false
+			main, sub = p.src:match("^(/dev/[a-z]+[a-z])(%d+)$")
+		end
+		if sub then
+			if last ~= main then
+				last, tbl[#tbl + 1] = main, { src = main, main = main, sub = "" }
 			end
-			p.main, p.sub, tbl[#tbl + 1] = last[2].main, "  " .. sub, p
+			p.main, p.sub, tbl[#tbl + 1] = main, "  " .. sub, p
 		end
 	end
 	table.sort(tbl, function(a, b)
@@ -200,7 +202,7 @@ function M.operate(type)
 	if not active then
 		return
 	elseif active.sub == "" then
-		return -- TODO: mount/umount main disk
+		return -- TODO: mount/unmount main disk
 	end
 
 	local output, err
