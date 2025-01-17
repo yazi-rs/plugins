@@ -10,6 +10,8 @@ Supported platforms:
 - Linux with `udisksctl`
 - macOS with `diskutil`
 
+https://github.com/user-attachments/assets/c6f780ab-458b-420f-85cf-2fc45fcfe3a2
+
 ## Installation
 
 ```sh
