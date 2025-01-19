@@ -36,11 +36,11 @@ local M = {
 
 		{ on = "k", run = "up" },
 		{ on = "j", run = "down" },
-		{ on = "l", run = "right" },
+		{ on = "l", run = { "enter", "quit" } },
 
 		{ on = "<Up>", run = "up" },
 		{ on = "<Down>", run = "down" },
-		{ on = "<Right>", run = "right" },
+		{ on = "<Right>", run = { "enter", "quit" } },
 
 		{ on = "m", run = "mount" },
 		{ on = "M", run = "unmount" },
@@ -87,12 +87,12 @@ function M:entry(job)
 	local tx2, rx2 = ya.chan("mpsc")
 	function producer()
 		while true do
-			local cand = self.keys[ya.which { cands = self.keys, silent = true }]
-			if cand then
-				tx1:send(cand.run)
-				if cand.run == "quit" then
+			local cand = self.keys[ya.which { cands = self.keys, silent = true }] or { run = {} }
+			for _, r in ipairs(type(cand.run) == "table" and cand.run or { cand.run }) do
+				tx1:send(r)
+				if r == "quit" then
 					toggle_ui()
-					break
+					return
 				end
 			end
 		end
@@ -108,7 +108,7 @@ function M:entry(job)
 				update_cursor(-1)
 			elseif run == "down" then
 				update_cursor(1)
-			elseif run == "right" then
+			elseif run == "enter" then
 				local active = active_partition()
 				if active and active.dist then
 					ya.manager_emit("cd", { active.dist })
