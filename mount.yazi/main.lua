@@ -178,7 +178,7 @@ function M.obtain()
 		if ya.target_os() == "macos" then
 			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
 		else
-			main, sub = p.src:match("^(/dev/[a-z]+[a-z])(%d+)$")
+			main, sub = p.src:match("^(/dev/[a-zA-Z0-9]+)(p?%d*)$")
 		end
 		if sub then
 			if last ~= main then
