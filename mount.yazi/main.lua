@@ -30,6 +30,14 @@ local update_cursor = ya.sync(function(self, cursor)
 	ya.render()
 end)
 
+local function get_fstype(p)
+	local cmd = "lsblk -n -o fstype" .. " " .. p
+	local hnd = io.popen(cmd)
+	local out = hnd:read("*a"):gsub("\n", "")
+	hnd:close()
+	return out
+end
+
 local M = {
 	keys = {
 		{ on = "q", run = "quit" },
@@ -179,8 +187,14 @@ function M.obtain()
 			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
 		elseif p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
 			main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
+			if sub then
+				p.fstype = p.fstype or get_fstype(p.src)
+			end
 		elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
 			main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
+			if sub then
+				p.fstype = p.fstype or get_fstype(p.src)
+			end
 		end
 		if sub then
 			if last ~= main then
