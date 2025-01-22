@@ -177,8 +177,10 @@ function M.obtain()
 		local main, sub
 		if ya.target_os() == "macos" then
 			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
-		else
-			main, sub = p.src:match("^(/dev/[a-z]+[a-z])(%d+)$")
+		elseif p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
+			main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
+		elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
+			main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
 		end
 		if sub then
 			if last ~= main then
