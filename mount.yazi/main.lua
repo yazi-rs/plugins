@@ -30,12 +30,22 @@ local update_cursor = ya.sync(function(self, cursor)
 	ya.render()
 end)
 
-local function get_fstype(p)
-	local cmd = "lsblk -n -o fstype" .. " " .. p
-	local hnd = io.popen(cmd)
-	local out = hnd:read("*a"):gsub("\n", "")
-	hnd:close()
-	return out
+local function get_fstype(p_table)
+	local res = {}
+	local cmd = Command("lsblk"):args({ "-n", "-o", "name,fstype" }):args(p_table):stdout(Command.PIPED)
+	local output, err = cmd:output()
+	if err then
+		M.fail("Failed to get filesystem type for `%s`: %s", p, err)
+	end
+	if output.stdout then
+		for line in output.stdout:gmatch("[^\n]+") do
+			local partition, fstype = line:match("^(%S+)%s*(.*)$")
+			if partition then
+				res["/dev/" .. partition] = fstype
+			end
+		end
+	end
+	return res
 end
 
 local M = {
@@ -179,21 +189,21 @@ function M:redraw()
 end
 
 function M.obtain()
+	local unmounted = {}
 	local tbl = {}
 	local last
 	for _, p in ipairs(fs.partitions()) do
 		local main, sub
 		if ya.target_os() == "macos" then
 			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
-		elseif p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
-			main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
-			if sub then
-				p.fstype = p.fstype or get_fstype(p.src)
+		else
+			if p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
+				main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
+			elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
+				main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
 			end
-		elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
-			main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
-			if sub then
-				p.fstype = p.fstype or get_fstype(p.src)
+			if sub and not p.fstype then
+				table.insert(unmounted, p.src)
 			end
 		end
 		if sub then
@@ -201,6 +211,12 @@ function M.obtain()
 				last, tbl[#tbl + 1] = main, { src = main, main = main, sub = "" }
 			end
 			p.main, p.sub, tbl[#tbl + 1] = main, "  " .. sub, p
+		end
+	end
+	if ya.target_os() == "linux" then
+		local t = get_fstype(unmounted)
+		for _, p in pairs(tbl) do
+			p.fstype = p.fstype or t[p.src]
 		end
 	end
 	table.sort(tbl, function(a, b)
