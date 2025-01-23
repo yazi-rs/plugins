@@ -35,7 +35,7 @@ local function get_fstype(p_table)
 	local cmd = Command("lsblk"):args({ "-n", "-o", "name,fstype" }):args(p_table):stdout(Command.PIPED)
 	local output, err = cmd:output()
 	if err then
-		M.fail("Failed to get filesystem type for `%s`: %s", p, err)
+		M.fail("Failed to get filesystem type for unmounted partitions: %s", err)
 	end
 	if output.stdout then
 		for line in output.stdout:gmatch("[^\n]+") do
