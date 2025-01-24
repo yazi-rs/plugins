@@ -189,13 +189,41 @@ function M.obtain()
 			p.main, p.sub, tbl[#tbl + 1] = main, "  " .. sub, p
 		end
 	end
-	table.sort(tbl, function(a, b)
+	table.sort(M.fillin(tbl), function(a, b)
 		if a.main == b.main then
 			return a.sub < b.sub
 		else
 			return a.main > b.main
 		end
 	end)
+	return tbl
+end
+
+function M.fillin(tbl)
+	if ya.target_os() ~= "linux" then
+		return tbl
+	end
+
+	local sources, indices = {}, {}
+	for i, p in ipairs(tbl) do
+		if p.sub ~= "" and not p.fstype then
+			sources[#sources + 1], indices[#indices + 1] = p.src, i
+		end
+	end
+	if #sources == 0 then
+		return tbl
+	end
+
+	local output, err = Command("lsblk"):args({ "-n", "-o", "FSTYPE" }):args(sources):output()
+	if err then
+		ya.dbg("Failed to fetch filesystem types for unmounted partitions: " .. err)
+		return tbl
+	end
+
+	local i = 1
+	for line in output.stdout:gmatch("[^\r\n]+") do
+		i, tbl[indices[i]].fstype = i + 1, line
+	end
 	return tbl
 end
 
