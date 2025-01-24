@@ -207,22 +207,22 @@ function M.fillin(tbl)
 	local sources, indices = {}, {}
 	for i, p in ipairs(tbl) do
 		if p.sub ~= "" and not p.fstype then
-			sources[#sources + 1], indices[#indices + 1] = p.src, i
+			sources[#sources + 1], indices[p.src] = p.src, i
 		end
 	end
 	if #sources == 0 then
 		return tbl
 	end
 
-	local output, err = Command("lsblk"):args({ "-n", "-o", "FSTYPE" }):args(sources):output()
+	local output, err = Command("lsblk"):args({ "-p", "-o", "name,fstype", "-J" }):args(sources):output()
 	if err then
 		ya.dbg("Failed to fetch filesystem types for unmounted partitions: " .. err)
 		return tbl
 	end
 
-	local i = 1
-	for line in output.stdout:gmatch("[^\r\n]+") do
-		i, tbl[indices[i]].fstype = i + 1, line
+	local t = ya.json_decode(output and output.stdout or "")
+	for _, p in ipairs(t and t.blockdevices or {}) do
+		tbl[indices[p.name]].fstype = p.fstype
 	end
 	return tbl
 end
