@@ -43,7 +43,7 @@ local M = {
 		{ on = "<Right>", run = { "enter", "quit" } },
 
 		{ on = "m", run = "mount" },
-		{ on = "M", run = "unmount" },
+		{ on = "u", run = "unmount" },
 		{ on = "e", run = "eject" },
 	},
 }
