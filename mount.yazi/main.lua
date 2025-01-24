@@ -30,24 +30,6 @@ local update_cursor = ya.sync(function(self, cursor)
 	ya.render()
 end)
 
-local function get_fstype(p_table)
-	local res = {}
-	local cmd = Command("lsblk"):args({ "-n", "-o", "name,fstype" }):args(p_table):stdout(Command.PIPED)
-	local output, err = cmd:output()
-	if err then
-		M.fail("Failed to get filesystem type for unmounted partitions: %s", err)
-	end
-	if output.stdout then
-		for line in output.stdout:gmatch("[^\n]+") do
-			local partition, fstype = line:match("^(%S+)%s*(.*)$")
-			if partition then
-				res["/dev/" .. partition] = fstype
-			end
-		end
-	end
-	return res
-end
-
 local M = {
 	keys = {
 		{ on = "q", run = "quit" },
@@ -189,22 +171,16 @@ function M:redraw()
 end
 
 function M.obtain()
-	local unmounted = {}
 	local tbl = {}
 	local last
 	for _, p in ipairs(fs.partitions()) do
 		local main, sub
 		if ya.target_os() == "macos" then
 			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
-		else
-			if p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
-				main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
-			elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
-				main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
-			end
-			if sub and not p.fstype then
-				table.insert(unmounted, p.src)
-			end
+		elseif p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
+			main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
+		elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
+			main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
 		end
 		if sub then
 			if last ~= main then
@@ -213,19 +189,41 @@ function M.obtain()
 			p.main, p.sub, tbl[#tbl + 1] = main, "  " .. sub, p
 		end
 	end
-	if ya.target_os() == "linux" then
-		local t = get_fstype(unmounted)
-		for _, p in pairs(tbl) do
-			p.fstype = p.fstype or t[p.src]
-		end
-	end
-	table.sort(tbl, function(a, b)
+	table.sort(M.fillin(tbl), function(a, b)
 		if a.main == b.main then
 			return a.sub < b.sub
 		else
 			return a.main > b.main
 		end
 	end)
+	return tbl
+end
+
+function M.fillin(tbl)
+	if ya.target_os() ~= "linux" then
+		return tbl
+	end
+
+	local sources, indices = {}, {}
+	for i, p in ipairs(tbl) do
+		if p.sub ~= "" and not p.fstype then
+			sources[#sources + 1], indices[#indices + 1] = p.src, i
+		end
+	end
+	if #sources == 0 then
+		return tbl
+	end
+
+	local output, err = Command("lsblk"):args({ "-n", "-o", "FSTYPE" }):args(sources):output()
+	if err then
+		ya.dbg("Failed to fetch filesystem types for unmounted partitions: " .. err)
+		return tbl
+	end
+
+	local i = 1
+	for line in output.stdout:gmatch("[^\r\n]+") do
+		i, tbl[indices[i]].fstype = i + 1, line
+	end
 	return tbl
 end
 
