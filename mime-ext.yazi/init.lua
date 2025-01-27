@@ -602,6 +602,7 @@ local EXTS = {
 	p7s = "application/pkcs7-signature",
 	p8 = "application/pkcs8",
 	pas = "text/pascal",
+	patch = "text/diff",
 	paw = "application/pawaafile",
 	pbd = "application/powerbuilder6",
 	pbm = "image/portable-bitmap",
@@ -1066,6 +1067,10 @@ function M:fetch(job)
 
 	local updates, unknown = {}, {}
 	for _, file in ipairs(job.files) do
+		if file.cha.is_dummy then
+			goto continue
+		end
+
 		local mime
 		if file.cha.len == 0 then
 			mime = "inode/empty"
@@ -1081,6 +1086,7 @@ function M:fetch(job)
 		else
 			updates[tostring(file.url)] = "application/octet-stream"
 		end
+		::continue::
 	end
 
 	if next(updates) then
@@ -1092,7 +1098,10 @@ function M:fetch(job)
 		return require("mime"):fetch(job)
 	end
 
-	return 1
+	if not ya.__250127 then -- TODO: remove this
+		return 1
+	end
+	return true
 end
 
 return M
