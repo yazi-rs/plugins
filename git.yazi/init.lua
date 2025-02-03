@@ -131,27 +131,33 @@ local function setup(st, opts)
 		[6] = t.modified_sign and t.modified_sign or "",
 		[5] = t.added_sign and t.added_sign or "",
 		[4] = t.untracked_sign and t.untracked_sign or "",
-		[3] = t.ignored_sign and t.ignored_sign or "",
+		[3] = t.ignored_sign and t.ignored_sign or "󰈉",
 		[2] = t.deleted_sign and t.deleted_sign or "",
-		[1] = t.updated_sign and t.updated_sign or "U",
+		[1] = t.updated_sign and t.updated_sign or "󰚰",
 	}
 
-	Linemode:children_add(function(self)
-		local url = self._file.url
-		local dir = st.dirs[tostring(url:parent())]
-		local change
-		if dir then
-			change = dir == "" and 3 or st.repos[dir][tostring(url):sub(#dir + 2)]
-		end
+  Linemode:children_add(function(self)
+	  local url = self._file.url
+	  local dir = st.dirs[tostring(url:parent())]
+	  local change
+	  if dir then
+		  change = dir == "" and 3 or st.repos[dir][tostring(url):sub(#dir + 2)]
+	  end
 
-		if not change or signs[change] == "" then
-			return ""
-		elseif self._file:is_hovered() then
-			return ui.Line { " ", signs[change] }
-		else
-			return ui.Line { " ", ui.Span(signs[change]):style(styles[change]) }
-		end
-	end, opts.order)
+	  local is_git_repo = dir and st.repos[dir] ~= nil
+
+	  if not is_git_repo then
+		  -- Not a Git repo → show folder icon
+		  return ui.Line { " ", ui.Span("") }
+	  elseif change == nil or change == 0 then
+		  -- Git repo but no modifications → show clean repo icon
+		  return ui.Line { " ", ui.Span("") }
+	  elseif self._file:is_hovered() then
+		  return ui.Line { " ", signs[change] }
+	  else
+		  return ui.Line { " ", ui.Span(signs[change]):style(styles[change]) }
+	  end
+  end, opts.order)
 end
 
 local function fetch(_, job)
