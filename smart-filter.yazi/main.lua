@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local hovered = ya.sync(function()
 	local h = cx.active.current.hovered
 	if not h then

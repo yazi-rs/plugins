@@ -65,12 +65,12 @@ Add following keybindings to your `~/.config/yazi/keymap.toml` to enable it:
 ```toml
 [[manager.prepend_keymap]]
 on   = [ "b", "a" ]
-run  = 'plugin mactag --args="add"'
+run  = "plugin mactag add"
 desc = "Tag selected files"
 
 [[manager.prepend_keymap]]
 on   = [ "b", "r" ]
-run  = 'plugin mactag --args="remove"'
+run  = "plugin mactag remove"
 desc = "Untag selected files"
 ```
 

@@ -1,8 +1,11 @@
+--- @since 25.2.7
+
 local FILES = {
 	[".envrc"] = "text/plain",
 	[".gitconfig"] = "text/plain",
 	[".gitignore"] = "text/plain",
 	[".luacheckrc"] = "text/lua",
+	[".npmrc"] = "text/plain",
 	[".styluaignore"] = "text/plain",
 	[".zshenv"] = "text/plain",
 	[".zshrc"] = "text/plain",
@@ -1067,9 +1070,10 @@ function M:fetch(job)
 	local merged_files = ya.dict_merge(FILES, opts.with_files or {})
 	local merged_exts = ya.dict_merge(EXTS, opts.with_exts or {})
 
-	local updates, unknown = {}, {}
-	for _, file in ipairs(job.files) do
+	local updates, unknown, state = {}, {}, {}
+	for i, file in ipairs(job.files) do
 		if file.cha.is_dummy then
+			state[i] = false
 			goto continue
 		end
 
@@ -1082,11 +1086,11 @@ function M:fetch(job)
 		end
 
 		if mime then
-			updates[tostring(file.url)] = mime
+			updates[tostring(file.url)], state[i] = mime, true
 		elseif opts.fallback_file1 then
 			unknown[#unknown + 1] = file
 		else
-			updates[tostring(file.url)] = "application/octet-stream"
+			updates[tostring(file.url)], state[i] = "application/octet-stream", true
 		end
 		::continue::
 	end
@@ -1096,14 +1100,27 @@ function M:fetch(job)
 	end
 
 	if #unknown > 0 then
-		job.files = unknown
-		return require("mime"):fetch(job)
+		return self.fallback_builtin(job, unknown, state)
 	end
 
-	if not ya.__250127 then -- TODO: remove this
-		return 1
+	return state
+end
+
+function M.fallback_builtin(job, unknown, state)
+	local indices = {}
+	for i, f in ipairs(job.files) do
+		indices[f:hash()] = i
 	end
-	return true
+
+	local result = require("mime"):fetch(ya.dict_merge(job, { files = unknown }))
+	for i, f in unknown do
+		if type(result) == "table" then
+			state[indices[f:hash()]] = result[i]
+		else
+			state[indices[f:hash()]] = result
+		end
+	end
+	return state
 end
 
 return M

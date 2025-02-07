@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local selected_or_hovered = ya.sync(function()
 	local tab, paths = cx.active, {}
 	for _, u in pairs(tab.selected) do

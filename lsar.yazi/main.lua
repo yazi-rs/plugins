@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local M = {}
 
 function M:peek(job)

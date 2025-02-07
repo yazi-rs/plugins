@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local toggle_ui = ya.sync(function(self)
 	if self.children then
 		Modal:children_remove(self.children)
@@ -10,7 +12,7 @@ end)
 
 local subscribe = ya.sync(function(self)
 	ps.unsub("mount")
-	ps.sub("mount", function() ya.manager_emit("plugin", { self._id, args = "refresh" }) end)
+	ps.sub("mount", function() ya.manager_emit("plugin", { self._id, "refresh" }) end)
 end)
 
 local update_partitions = ya.sync(function(self, partitions)

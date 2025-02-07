@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local function setup()
 	local old_layout = Tab.layout
 

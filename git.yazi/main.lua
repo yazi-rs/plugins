@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local WIN = ya.target_family() == "windows"
 local PATS = {
 	{ "[MT]", 6 }, -- Modified
@@ -159,9 +161,6 @@ local function fetch(_, job)
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
-		if not ya.__250127 then -- TODO: remove this
-			return 1
-		end
 		return true
 	end
 
@@ -178,10 +177,6 @@ local function fetch(_, job)
 		:stdout(Command.PIPED)
 		:output()
 	if not output then
-		if not ya.__250127 then -- TODO: remove this
-			ya.err("Cannot spawn git command, error: " .. err)
-			return 0
-		end
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
 
@@ -208,9 +203,6 @@ local function fetch(_, job)
 	end
 	add(tostring(cwd), repo, changed)
 
-	if not ya.__250127 then -- TODO: remove this
-		return 3
-	end
 	return false
 end
 

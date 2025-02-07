@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local function setup(_, opts)
 	local type = opts and opts.type or ui.Border.ROUNDED
 	local old_build = Tab.build

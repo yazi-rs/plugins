@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 --- Verify if `sudo` is already authenticated
 --- @return boolean
 local function sudo_already()

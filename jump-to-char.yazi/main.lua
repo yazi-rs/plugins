@@ -1,3 +1,5 @@
+--- @since 25.2.7
+
 local AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789."
 
 local changed = ya.sync(function(st, new)
