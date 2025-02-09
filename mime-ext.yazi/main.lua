@@ -1113,7 +1113,7 @@ function M.fallback_builtin(job, unknown, state)
 	end
 
 	local result = require("mime"):fetch(ya.dict_merge(job, { files = unknown }))
-	for i, f in unknown do
+	for i, f in ipairs(unknown) do
 		if type(result) == "table" then
 			state[indices[f:hash()]] = result[i]
 		else
