@@ -181,6 +181,8 @@ function M.obtain()
 			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
 		elseif p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
 			main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
+		elseif p.src:find("/dev/mmcblk", 1, true) == 1 then -- /dev/mmcblk0p1
+			main, sub = p.src:match("^(/dev/mmcblk%d+)(p%d+)$")
 		elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
 			main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
 		end
