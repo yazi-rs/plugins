@@ -180,7 +180,11 @@ function M.obtain()
 	for _, p in ipairs(fs.partitions()) do
 		local main, sub = M.split(p.src)
 		if main and last ~= main then
-			last, tbl[#tbl + 1] = main, { src = main, main = main, sub = "" }
+			if p.src == main then
+				last, p.main, p.sub, tbl[#tbl + 1] = p.src, p.src, "", p
+			else
+				last, tbl[#tbl + 1] = main, { src = main, main = main, sub = "" }
+			end
 		end
 		if sub then
 			if tbl[#tbl].sub == "" and tbl[#tbl].main == main then
