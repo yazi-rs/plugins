@@ -144,10 +144,12 @@ function M:reflow() return { self } end
 function M:redraw()
 	local rows = {}
 	for _, p in ipairs(self.partitions or {}) do
-		if p.sub == "" then
+		if not p.sub then
 			rows[#rows + 1] = ui.Row { p.main }
+		elseif p.sub == "" then
+			rows[#rows + 1] = ui.Row { p.main, p.label or "", p.dist or "", p.fstype or "" }
 		else
-			rows[#rows + 1] = ui.Row { p.sub, p.label or "", p.dist or "", p.fstype or "" }
+			rows[#rows + 1] = ui.Row { "  " .. p.sub, p.label or "", p.dist or "", p.fstype or "" }
 		end
 	end
 
@@ -176,31 +178,44 @@ function M.obtain()
 	local tbl = {}
 	local last
 	for _, p in ipairs(fs.partitions()) do
-		local main, sub
-		if ya.target_os() == "macos" then
-			main, sub = p.src:match("^(/dev/disk%d+)(.+)$")
-		elseif p.src:find("/dev/nvme", 1, true) == 1 then -- /dev/nvme0n1p1
-			main, sub = p.src:match("^(/dev/nvme%d+n%d+)(p%d+)$")
-		elseif p.src:find("/dev/mmcblk", 1, true) == 1 then -- /dev/mmcblk0p1
-			main, sub = p.src:match("^(/dev/mmcblk%d+)(p%d+)$")
-		elseif p.src:find("/dev/sd", 1, true) == 1 then -- /dev/sda1
-			main, sub = p.src:match("^(/dev/sd[a-z])(%d+)$")
-		end
-		if sub then
-			if last ~= main then
+		local main, sub = M.split(p.src)
+		if main and last ~= main then
+			if p.src == main then
+				last, p.main, p.sub, tbl[#tbl + 1] = p.src, p.src, "", p
+			else
 				last, tbl[#tbl + 1] = main, { src = main, main = main, sub = "" }
 			end
-			p.main, p.sub, tbl[#tbl + 1] = main, "  " .. sub, p
+		end
+		if sub then
+			if tbl[#tbl].sub == "" and tbl[#tbl].main == main then
+				tbl[#tbl].sub = nil
+			end
+			p.main, p.sub, tbl[#tbl + 1] = main, sub, p
 		end
 	end
 	table.sort(M.fillin(tbl), function(a, b)
 		if a.main == b.main then
-			return a.sub < b.sub
+			return (a.sub or "") < (b.sub or "")
 		else
 			return a.main > b.main
 		end
 	end)
 	return tbl
+end
+
+function M.split(src)
+	local pats = {
+		{ "^/dev/sd[a-z]", "%d+$" }, -- /dev/sda1
+		{ "^/dev/nvme%d+n%d+", "p%d+$" }, -- /dev/nvme0n1p1
+		{ "^/dev/mmcblk%d+", "p%d+$" }, -- /dev/mmcblk0p1
+		{ "^/dev/disk%d+", ".+$" }, -- /dev/disk1s1
+	}
+	for _, p in ipairs(pats) do
+		local main = src:match(p[1])
+		if main then
+			return main, src:sub(#main + 1):match(p[2])
+		end
+	end
 end
 
 function M.fillin(tbl)
@@ -210,7 +225,7 @@ function M.fillin(tbl)
 
 	local sources, indices = {}, {}
 	for i, p in ipairs(tbl) do
-		if p.sub ~= "" and not p.fstype then
+		if p.sub and not p.fstype then
 			sources[#sources + 1], indices[p.src] = p.src, i
 		end
 	end
@@ -235,7 +250,7 @@ function M.operate(type)
 	local active = active_partition()
 	if not active then
 		return
-	elseif active.sub == "" then
+	elseif not active.sub then
 		return -- TODO: mount/unmount main disk
 	end
 
