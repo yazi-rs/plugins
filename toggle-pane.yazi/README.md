@@ -1,6 +1,6 @@
-# toggle-view.yazi
+# toggle-pane.yazi
 
-Toggle the show, hide, and maximize states for different views: parent, current, and preview. It respects the user's [`ratio` settings](https://yazi-rs.github.io/docs/configuration/yazi#manager.ratio)!
+Toggle the show, hide, and maximize states for different panes: parent, current, and preview. It respects the user's [`ratio` settings](https://yazi-rs.github.io/docs/configuration/yazi#manager.ratio)!
 
 Assume the user's `ratio` is $$[A, B, C]$$, that is, $$\text{parent}=A, \text{current}=B, \text{preview}=C$$:
 
@@ -25,7 +25,7 @@ Hide/Show preview:
 ```toml
 [[manager.prepend_keymap]]
 on   = "T"
-run  = "plugin toggle-view min-preview"
+run  = "plugin toggle-pane min-preview"
 desc = "Show/Hide preview"
 ```
 
@@ -34,7 +34,7 @@ Maximize/Restore preview:
 ```toml
 [[manager.prepend_keymap]]
 on   = "T"
-run  = "plugin toggle-view max-preview"
+run  = "plugin toggle-pane max-preview"
 desc = "Maximize/Restore preview"
 ```
 
@@ -46,7 +46,7 @@ In addition to triggering the plugin with a keypress, you can also trigger it in
 
 ```lua
 if os.getenv("NVIM") then
-	require("toggle-view"):entry("min-preview")
+	require("toggle-pane"):entry("min-preview")
 end
 ```
 

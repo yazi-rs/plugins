@@ -1,7 +1,7 @@
 # max-preview.yazi
 
 > [!WARNING]
-> This plugin has been deprecated. Please use the new [toggle-view.yazi](../toggle-view.yazi) instead.
+> This plugin has been deprecated. Please use the new [toggle-pane.yazi](../toggle-pane.yazi) instead.
 
 Maximize or restore the preview pane.
 

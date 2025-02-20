@@ -4,7 +4,7 @@
 local function entry(st)
 	ya.notify {
 		title = "Deprecated plugin",
-		content = "The `hide-preview` plugin is deprecated, please use the new `toggle-view` plugin instead: https://github.com/yazi-rs/plugins/tree/main/toggle-view.yazi",
+		content = "The `hide-preview` plugin is deprecated, please use the new `toggle-pane` plugin instead: https://github.com/yazi-rs/plugins/tree/main/toggle-pane.yazi",
 		timeout = 10,
 		level = "warn",
 	}
