@@ -15,7 +15,7 @@ Assume the user's `ratio` is $$[A, B, C]$$, that is, $$\text{parent}=A, \text{cu
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:full-border
+ya pack -a yazi-rs/plugins:toggle-pane
 ```
 
 ## Usage
