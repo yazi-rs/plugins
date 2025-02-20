@@ -38,7 +38,7 @@ run  = "plugin toggle-pane max-preview"
 desc = "Maximize or restore the preview pane"
 ```
 
-You can replace `preview` with `current` or `parent` to toggle the other columns.
+You can replace `preview` with `current` or `parent` to toggle the other panes.
 
 ## Advanced
 
