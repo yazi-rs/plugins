@@ -1,6 +1,6 @@
 # toggle-view.yazi
 
-Based on the user's [`ratio` configuration](https://yazi-rs.github.io/docs/configuration/yazi#manager.ratio), toggles the minimum and maximum width for each column view.
+Toggle the show, hide, and maximize states for different views: parent, current, and preview. It respects the user's [`ratio` settings](https://yazi-rs.github.io/docs/configuration/yazi#manager.ratio)!
 
 Assume the user's `ratio` is $$[A, B, C]$$, that is, $$\text{parent}=A, \text{current}=B, \text{preview}=C$$:
 

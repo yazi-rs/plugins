@@ -1,5 +1,8 @@
 # hide-preview.yazi
 
+> [!WARNING]
+> This plugin has been deprecated. Please use the new [toggle-view.yazi](../toggle-view.yazi) instead.
+
 Switch the preview pane between hidden and shown.
 
 https://github.com/yazi-rs/plugins/assets/17523360/c4f0b5c4-ff9f-4be8-ba73-4d8e7902e383

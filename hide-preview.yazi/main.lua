@@ -2,6 +2,13 @@
 --- @sync entry
 
 local function entry(st)
+	ya.notify {
+		title = "Deprecated plugin",
+		content = "The `hide-preview` plugin is deprecated, please use the new `toggle-view` plugin instead: https://github.com/yazi-rs/plugins/tree/main/toggle-view.yazi",
+		timeout = 10,
+		level = "warn",
+	}
+
 	if st.old then
 		Tab.layout, st.old = st.old, nil
 	else
