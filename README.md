@@ -11,7 +11,7 @@ For specific installation commands and configuration instructions, check the ind
 
 - [smart-enter.yazi](smart-enter.yazi) - `Open` files or `enter` directories all in one key!
 - [full-border.yazi](full-border.yazi) - Add a full border to Yazi to make it look fancier.
-- [toggle-pane.yazi](toggle-pane.yazi) - Toggle the show, hide, and maximize states for different views: parent, current, and preview.
+- [toggle-pane.yazi](toggle-pane.yazi) - Toggle the show, hide, and maximize states for different panes: parent, current, and preview.
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
 - [git.yazi](git.yazi) - Show the status of Git file changes as linemode in the file list.
 - [mount.yazi](mount.yazi) - A mount manager for Yazi, providing disk mount, unmount, and eject functionality.
