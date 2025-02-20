@@ -26,7 +26,7 @@ Hide/Show preview:
 [[manager.prepend_keymap]]
 on   = "T"
 run  = "plugin toggle-pane min-preview"
-desc = "Show/Hide preview"
+desc = "Show or hide the preview pane"
 ```
 
 Maximize/Restore preview:
@@ -35,7 +35,7 @@ Maximize/Restore preview:
 [[manager.prepend_keymap]]
 on   = "T"
 run  = "plugin toggle-pane max-preview"
-desc = "Maximize/Restore preview"
+desc = "Maximize or restore the preview pane"
 ```
 
 You can replace `preview` with `current` or `parent` to toggle the other columns.
