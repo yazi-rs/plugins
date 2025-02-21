@@ -3,23 +3,21 @@
 
 local function entry(st, job)
 	local R = MANAGER.ratio
+	job = type(job) == "string" and { args = { job } } or job
+
 	st.parent = st.parent and st.parent or R.parent
 	st.current = st.current and st.current or R.current
 	st.preview = st.preview and st.preview or R.preview
 
-	local act = type(job) == "string" and job or job.args[1]
-	if act == "min-parent" then
-		st.parent = st.parent == R.parent and 0 or R.parent
-	elseif act == "min-current" then
-		st.current = st.current == R.current and 0 or R.current
-	elseif act == "min-preview" then
-		st.preview = st.preview == R.preview and 0 or R.preview
-	elseif act == "max-parent" then
-		st.parent = st.parent == 65535 and R.parent or 65535
-	elseif act == "max-current" then
-		st.current = st.current == 65535 and R.current or 65535
-	elseif act == "max-preview" then
-		st.preview = st.preview == 65535 and R.preview or 65535
+	local act, to = string.match(job.args[1] or "", "(.-)-(.+)")
+	if act == "min" then
+		st[to] = st[to] == R[to] and 0 or R[to]
+	elseif act == "max" then
+		local max = st[to] == 65535 and R[to] or 65535
+		st.parent = st.parent == 65535 and R.parent or st.parent
+		st.current = st.current == 65535 and R.current or st.current
+		st.preview = st.preview == 65535 and R.preview or st.preview
+		st[to] = max
 	end
 
 	if not st.old then
@@ -37,7 +35,7 @@ local function entry(st, job)
 		end
 	end
 
-	if act == "reset" then
+	if not act then
 		Tab.layout, st.old = st.old, nil
 		st.parent, st.current, st.preview = nil, nil, nil
 	end

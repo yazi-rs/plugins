@@ -23,6 +23,7 @@ ya pack -a yazi-rs/plugins:toggle-pane
 Hide/Show preview:
 
 ```toml
+# keymap.toml
 [[manager.prepend_keymap]]
 on   = "T"
 run  = "plugin toggle-pane min-preview"
@@ -32,6 +33,7 @@ desc = "Show or hide the preview pane"
 Maximize/Restore preview:
 
 ```toml
+# keymap.toml
 [[manager.prepend_keymap]]
 on   = "T"
 run  = "plugin toggle-pane max-preview"
@@ -51,6 +53,25 @@ end
 ```
 
 In the example above, when it detects that you're [using Yazi in nvim](https://yazi-rs.github.io/docs/resources#vim), the preview is hidden by default — you can always press `T` (or any key you've bound) to show it again.
+
+## Tips
+
+This plugin only maximizes the "available preview area", without actually changing the content size.
+
+This means that the appearance of your preview largely depends on the previewer you are using.
+However, most previewers tend to make the most of the available space, so this usually isn't an issue.
+
+For image previews, you may want to tune up the [`max_width`][max-width] and [`max_height`][max-height] options in your `yazi.toml`:
+
+```toml
+[preview]
+# Change them to your desired values
+max_width  = 1000
+max_height = 1000
+```
+
+[max-width]: https://yazi-rs.github.io/docs/configuration/yazi/#preview.max_width
+[max-height]: https://yazi-rs.github.io/docs/configuration/yazi/#preview.max_height
 
 ## License
 
