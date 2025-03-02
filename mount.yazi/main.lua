@@ -1,4 +1,4 @@
---- @since 25.2.7
+--- @since 25.2.26
 
 local toggle_ui = ya.sync(function(self)
 	if self.children then
@@ -12,7 +12,7 @@ end)
 
 local subscribe = ya.sync(function(self)
 	ps.unsub("mount")
-	ps.sub("mount", function() ya.manager_emit("plugin", { self._id, "refresh" }) end)
+	ps.sub("mount", function() ya.mgr_emit("plugin", { self._id, "refresh" }) end)
 end)
 
 local update_partitions = ya.sync(function(self, partitions)
@@ -113,7 +113,7 @@ function M:entry(job)
 			elseif run == "enter" then
 				local active = active_partition()
 				if active and active.dist then
-					ya.manager_emit("cd", { active.dist })
+					ya.mgr_emit("cd", { active.dist })
 				end
 			else
 				tx2:send(run)

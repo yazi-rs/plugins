@@ -1,4 +1,4 @@
---- @since 25.2.7
+--- @since 25.2.26
 
 local FILES = {
 	[".envrc"] = "text/plain",
@@ -1096,7 +1096,7 @@ function M:fetch(job)
 	end
 
 	if next(updates) then
-		ya.manager_emit("update_mimes", { updates = updates })
+		ya.mgr_emit("update_mimes", { updates = updates })
 	end
 
 	if #unknown > 0 then

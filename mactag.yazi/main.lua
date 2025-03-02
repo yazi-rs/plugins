@@ -1,4 +1,4 @@
---- @since 25.2.7
+--- @since 25.2.26
 
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
@@ -76,7 +76,7 @@ end)
 
 local function entry(self, job)
 	assert(job.args[1] == "add" or job.args[1] == "remove", "Invalid action")
-	ya.manager_emit("escape", { visual = true })
+	ya.mgr_emit("escape", { visual = true })
 
 	local cands = cands()
 	local choice = ya.which { cands = cands }

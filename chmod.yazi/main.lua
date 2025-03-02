@@ -1,4 +1,4 @@
---- @since 25.2.7
+--- @since 25.2.26
 
 local selected_or_hovered = ya.sync(function()
 	local tab, paths = cx.active, {}
@@ -13,7 +13,7 @@ end)
 
 return {
 	entry = function()
-		ya.manager_emit("escape", { visual = true })
+		ya.mgr_emit("escape", { visual = true })
 
 		local urls = selected_or_hovered()
 		if #urls == 0 then
