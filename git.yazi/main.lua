@@ -99,20 +99,20 @@ local function setup(st, opts)
 	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
 	local t = THEME.git or {}
 	local styles = {
-		[6] = t.modified and ui.Style(t.modified) or ui.Style():fg("#ffa500"),
-		[5] = t.added and ui.Style(t.added) or ui.Style():fg("#32cd32"),
-		[4] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("#a9a9a9"),
-		[3] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("#696969"),
-		[2] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("#ff4500"),
-		[1] = t.updated and ui.Style(t.updated) or ui.Style():fg("#1e90ff"),
+		[6] = t.modified and ui.Style(t.modified) or ui.Style():fg("yellow"),
+		[5] = t.added and ui.Style(t.added) or ui.Style():fg("green"),
+		[4] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("magenta"),
+		[3] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("darkgray"),
+		[2] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("red"),
+		[1] = t.updated and ui.Style(t.updated) or ui.Style():fg("yellow"),
 	}
 	local signs = {
-		[6] = t.modified_sign and t.modified_sign or "",
-		[5] = t.added_sign and t.added_sign or "",
-		[4] = t.untracked_sign and t.untracked_sign or "",
-		[3] = t.ignored_sign and t.ignored_sign or "",
-		[2] = t.deleted_sign and t.deleted_sign or "",
-		[1] = t.updated_sign and t.updated_sign or "U",
+		[6] = t.modified_sign or "",
+		[5] = t.added_sign or "",
+		[4] = t.untracked_sign or "?",
+		[3] = t.ignored_sign or "",
+		[2] = t.deleted_sign or "",
+		[1] = t.updated_sign or "",
 	}
 
 	local function get_kind(self)
