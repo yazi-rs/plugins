@@ -19,11 +19,8 @@ local function match(line)
 			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
 			path = WIN and path:gsub("/", "\\") or path
 		end
-		if not path then
-		elseif path:find("[/\\]$") then
-			return p[2] == 3 and 30 or p[2], path:sub(1, -2)
-		else
-			return p[2], path
+		if path then
+			return p[2], path:find("[/\\]$") and path:sub(1, -2) or path
 		end
 	end
 end
@@ -51,7 +48,7 @@ end
 local function bubble_up(changed)
 	local new, empty = {}, Url("")
 	for k, v in pairs(changed) do
-		if v ~= 3 and v ~= 30 then
+		if v ~= 3 then
 			local url = Url(k):parent()
 			while url and url ~= empty do
 				local s = tostring(url)
@@ -63,31 +60,11 @@ local function bubble_up(changed)
 	return new
 end
 
-local function propagate_down(ignored, cwd, repo)
-	local new, rel = {}, cwd:strip_prefix(repo)
-	for k, v in pairs(ignored) do
-		if v == 30 then
-			if rel:starts_with(k) then
-				new[tostring(repo:join(rel))] = 30
-			elseif cwd == repo:join(k):parent() then
-				new[k] = 3
-			end
-		end
-	end
-	return new
-end
-
 local add = ya.sync(function(st, cwd, repo, changed)
 	st.dirs[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
 	for k, v in pairs(changed) do
-		if v == 0 then
-			st.repos[repo][k] = nil
-		elseif v == 30 then
-			st.dirs[k] = ""
-		else
-			st.repos[repo][k] = v
-		end
+		st.repos[repo][k] = v
 	end
 	ya.render()
 end)
@@ -138,14 +115,29 @@ local function setup(st, opts)
 		[1] = t.updated_sign and t.updated_sign or "U",
 	}
 
-	Linemode:children_add(function(self)
+	local function get_kind(self)
 		local url = self._file.url
 		local dir = st.dirs[tostring(url:parent())]
-		local change
 		if dir then
-			change = dir == "" and 3 or st.repos[dir][tostring(url):sub(#dir + 2)]
+			local ret = st.repos[dir][tostring(url):sub(#dir + 2)]
+			if not ret then
+				local path = url:parent()
+				local repo_url = Url(dir)
+				while path and path ~= repo_url do
+					if st.repos[dir][tostring(path):sub(#dir + 2)] == 3 then
+						st.repos[dir][tostring(url):sub(#dir + 2)] = 3
+						return 3
+					end
+					path = path:parent()
+				end
+			else
+				return ret
+			end
 		end
+	end
 
+	Linemode:children_add(function(self)
+		local change = get_kind(self)
 		if not change or signs[change] == "" then
 			return ""
 		elseif self._file:is_hovered() then
@@ -180,27 +172,14 @@ local function fetch(_, job)
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
 
-	local changed, ignored = {}, {}
+	local changed = {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local sign, path = match(line)
-		if sign == 30 then
-			ignored[path] = sign
-		else
-			changed[path] = sign
-		end
+		changed[path] = sign
 	end
 
-	if job.files[1].cha.is_dir then
-		ya.dict_merge(changed, bubble_up(changed))
-		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
-	else
-		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
-	end
+	ya.dict_merge(changed, bubble_up(changed))
 
-	for _, p in ipairs(paths) do
-		local s = p:sub(#repo + 2)
-		changed[s] = changed[s] or 0
-	end
 	add(tostring(cwd), repo, changed)
 
 	return false
