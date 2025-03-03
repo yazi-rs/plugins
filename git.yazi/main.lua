@@ -22,7 +22,6 @@
 
 ---@enum Status
 local Status = {
-	__ignored = 100,
 	ignored = 6,
 	untracked = 5,
 	added = 4,
@@ -34,7 +33,7 @@ local Status = {
 
 ---@type table<string, Status>
 local PATTERNS = {
-	{ "!$", Status.__ignored },
+	{ "!$", Status.ignored },
 	{ "?$", Status.untracked },
 	{ "[AC]", Status.added },
 	{ "[MT]", Status.modified },
@@ -64,6 +63,7 @@ local Config = {
 	},
 }
 
+local __ignored_dir__ = 100
 local is_windows = ya.target_family() == "windows"
 
 ---@param line string
@@ -113,13 +113,11 @@ end
 local function bubble_up(changes)
 	local new, empty = {}, Url("")
 	for path, status in pairs(changes) do
-		if status ~= Status.ignored and status ~= Status.__ignored then
-			local url = Url(path):parent()
-			while url and url ~= empty do
-				local s = tostring(url)
-				new[s] = (new[s] or Status.unkonwn) > status and new[s] or status
-				url = url:parent()
-			end
+		local url = Url(path):parent()
+		while url and url ~= empty do
+			local s = tostring(url)
+			new[s] = (new[s] or Status.unkonwn) > status and new[s] or status
+			url = url:parent()
 		end
 	end
 	return new
@@ -128,15 +126,16 @@ end
 ---@param ignored Changes
 ---@param cwd Url
 ---@param repo Url
+---@return Changes
 local function propagate_down(ignored, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
-	for path, status in pairs(ignored) do
-		if status == Status.__ignored then
-			if rel:starts_with(path) then
-				new[tostring(repo:join(rel))] = Status.__ignored
-			elseif cwd == repo:join(path):parent() then
-				new[path] = Status.ignored
-			end
+	for _, path in ipairs(ignored) do
+		if rel:starts_with(path) then
+			-- if `cwd` is a subfolder of an ignored directory, mark the `cwd` as `__ignored_dir__`
+			new[tostring(cwd)] = __ignored_dir__
+		elseif cwd == repo:join(path):parent() then
+			-- if `cwd` contains any ignored files or directories, mark them as `ignored`
+			new[path] = Status.ignored
 		end
 	end
 	return new
@@ -149,36 +148,40 @@ end
 local add = ya.sync(function(st, cwd, repo, changes)
 	st.dirs_to_repo[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
+
 	for path, status in pairs(changes) do
-		if status == Status.__ignored then
-			st.dirs_to_repo[path] = ""
+		if status == __ignored_dir__ then
+			-- so that we can know if a file is in an ignored directory when handle linemode
+			---@diagnostic disable-next-line: assign-type-mismatch
+			st.dirs_to_repo[path] = __ignored_dir__
 		else
 			st.repos[repo][path] = status
 		end
 	end
+
 	ya.render()
 end)
 
 ---@param st PluginState
 ---@param cwd FullPath
 local remove = ya.sync(function(st, cwd)
-	local dir = st.dirs_to_repo[cwd]
-	if not dir then
+	local repo = st.dirs_to_repo[cwd]
+	if not repo then
 		return
 	end
 
 	ya.render()
 
 	st.dirs_to_repo[cwd] = nil
-	if not st.repos[dir] then
+	if not st.repos[repo] then
 		return
 	end
 	for _, r in pairs(st.dirs_to_repo) do
-		if r == dir then
+		if r == repo then
 			return
 		end
 	end
-	st.repos[dir] = nil
+	st.repos[repo] = nil
 end)
 
 ---@param options SetupOptions
@@ -213,7 +216,7 @@ local function setup(st, opts)
 		local repo = st.dirs_to_repo[tostring(url:parent())]
 		local status
 		if repo then
-			status = repo == "" and Status.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
+			status = repo == __ignored_dir__ and Status.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
 		end
 
 		if not status or Config.icons[status] == "" then
@@ -241,18 +244,10 @@ local function fetch(_, job)
 		paths[#paths + 1] = tostring(f.url)
 	end
 
+  -- stylua: ignore
 	local output, err = Command("git")
 		:cwd(cwd)
-		:args({
-			"--no-optional-locks",
-			"-c",
-			"core.quotePath=",
-			"status",
-			"--porcelain",
-			"-unormal",
-			"--no-renames",
-			"--ignored=matching",
-		})
+    :args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
 		:args(paths)
 		:stdout(Command.PIPED)
 		:output()
@@ -264,13 +259,14 @@ local function fetch(_, job)
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local status, path = match(line)
 		if status and path then
-			if status == Status.__ignored then
-				ignored[path] = status
+			if status == Status.ignored then
+				ignored[#ignored + 1] = path
 			else
 				changes[path] = status
 			end
 		end
 	end
+
 	if job.files[1].cha.is_dir then
 		ya.dict_merge(changes, bubble_up(changes))
 	end
