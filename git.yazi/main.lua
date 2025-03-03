@@ -22,6 +22,7 @@
 
 ---@enum Status
 local Status = {
+	__ignored = 100,
 	ignored = 6,
 	untracked = 5,
 	added = 4,
@@ -33,7 +34,7 @@ local Status = {
 
 ---@type table<string, Status>
 local PATTERNS = {
-	{ "!$", Status.ignored },
+	{ "!$", Status.__ignored },
 	{ "?$", Status.untracked },
 	{ "[AC]", Status.added },
 	{ "[MT]", Status.modified },
@@ -112,12 +113,29 @@ end
 local function bubble_up(changes)
 	local new, empty = {}, Url("")
 	for path, status in pairs(changes) do
-		if status ~= Status.ignored then
+		if status ~= Status.ignored and status ~= Status.__ignored then
 			local url = Url(path):parent()
 			while url and url ~= empty do
 				local s = tostring(url)
 				new[s] = (new[s] or Status.unkonwn) > status and new[s] or status
 				url = url:parent()
+			end
+		end
+	end
+	return new
+end
+
+---@param ignored Changes
+---@param cwd Url
+---@param repo Url
+local function propagate_down(ignored, cwd, repo)
+	local new, rel = {}, cwd:strip_prefix(repo)
+	for path, status in pairs(ignored) do
+		if status == Status.__ignored then
+			if rel:starts_with(path) then
+				new[tostring(repo:join(rel))] = Status.__ignored
+			elseif cwd == repo:join(path):parent() then
+				new[path] = Status.ignored
 			end
 		end
 	end
@@ -132,7 +150,11 @@ local add = ya.sync(function(st, cwd, repo, changes)
 	st.dirs_to_repo[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
 	for path, status in pairs(changes) do
-		st.repos[repo][path] = status
+		if status == Status.__ignored then
+			st.dirs_to_repo[path] = ""
+		else
+			st.repos[repo][path] = status
+		end
 	end
 	ya.render()
 end)
@@ -146,11 +168,11 @@ local remove = ya.sync(function(st, cwd)
 	end
 
 	ya.render()
+
 	st.dirs_to_repo[cwd] = nil
 	if not st.repos[dir] then
 		return
 	end
-
 	for _, r in pairs(st.dirs_to_repo) do
 		if r == dir then
 			return
@@ -186,31 +208,14 @@ local function setup(st, opts)
 	merge_options(opts or {})
 	merge_theme_options(THEME.git or {})
 
-	---@param self { _file: File }
-	---@return Status?
-	local function get_status(self)
+	Linemode:children_add(function(self)
 		local url = self._file.url
 		local repo = st.dirs_to_repo[tostring(url:parent())]
+		local status
 		if repo then
-			local ret = st.repos[repo][tostring(url):sub(#repo + 2)]
-			if not ret then
-				local path = url:parent()
-				local repo_url = Url(repo)
-				while path and path ~= repo_url do
-					if st.repos[repo][tostring(path):sub(#repo + 2)] == Status.ignored then
-						st.repos[repo][tostring(url):sub(#repo + 2)] = Status.ignored
-						return Status.ignored
-					end
-					path = path:parent()
-				end
-			else
-				return ret
-			end
+			status = repo == "" and Status.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
 		end
-	end
 
-	Linemode:children_add(function(self)
-		local status = get_status(self)
 		if not status or Config.icons[status] == "" then
 			return ""
 		elseif self._file:is_hovered() then
@@ -255,15 +260,21 @@ local function fetch(_, job)
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
 
-	local changes = {}
+	local changes, ignored = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local status, path = match(line)
 		if status and path then
-			changes[path] = status
+			if status == Status.__ignored then
+				ignored[path] = status
+			else
+				changes[path] = status
+			end
 		end
 	end
-
-	ya.dict_merge(changes, bubble_up(changes))
+	if job.files[1].cha.is_dir then
+		ya.dict_merge(changes, bubble_up(changes))
+	end
+	ya.dict_merge(changes, propagate_down(ignored, Url(cwd), Url(repo)))
 
 	add(cwd, repo, changes)
 
