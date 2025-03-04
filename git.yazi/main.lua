@@ -1,43 +1,103 @@
 --- @since 25.2.7
 
-local WIN = ya.target_family() == "windows"
-local PATS = {
-	{ "[MT]", 6 }, -- Modified
-	{ "[AC]", 5 }, -- Added
-	{ "?$", 4 }, -- Untracked
-	{ "!$", 3 }, -- Ignored
-	{ "D", 2 }, -- Deleted
-	{ "U", 1 }, -- Updated
-	{ "[AD][AD]", 1 }, -- Updated
+---@alias StatusStr "ignored" | "untracked" | "added" | "modified" | "deleted" | "updated"
+---@alias FullPath string
+---@alias RelativePath string
+---@alias Changes table<RelativePath, Status>
+
+---@class Config
+---@field order number
+---@field styles table<Status, ui.Style>
+---@field icons table<Status, string>
+
+---@class PluginState
+---@field dirs_to_repo table<FullPath, FullPath> stores the mapping from directories to repositories
+---@field repos table<FullPath, Changes> stores the changes of each repository
+
+---@class SetupOptions
+---@field order? number The order of the git linemode to display
+
+---@class ThemeOptions
+---@field [string] ui.Style|table|string
+
+---@enum Status
+local Status = {
+	ignored = 6,
+	untracked = 5,
+	added = 4,
+	modified = 3,
+	deleted = 2,
+	updated = 1,
+	unkonwn = 0,
 }
 
+---@type table<string, Status>
+local PATTERNS = {
+	{ "!$", Status.ignored },
+	{ "?$", Status.untracked },
+	{ "[AC]", Status.added },
+	{ "[MT]", Status.modified },
+	{ "D", Status.deleted },
+	{ "U", Status.updated },
+	{ "[AD][AD]", Status.updated },
+}
+
+---@type Config
+local Config = {
+	order = 1500,
+	styles = {
+		[Status.ignored] = ui.Style():fg("darkgray"),
+		[Status.untracked] = ui.Style():fg("magenta"),
+		[Status.added] = ui.Style():fg("green"),
+		[Status.modified] = ui.Style():fg("yellow"),
+		[Status.deleted] = ui.Style():fg("red"),
+		[Status.updated] = ui.Style():fg("yellow"),
+	},
+	icons = {
+		[Status.ignored] = "",
+		[Status.untracked] = "?",
+		[Status.added] = "",
+		[Status.modified] = "",
+		[Status.deleted] = "",
+		[Status.updated] = "",
+	},
+}
+
+local __ignored_dir__ = 100
+local is_windows = ya.target_family() == "windows"
+
+---@param line string
+---@return Status?, RelativePath?
 local function match(line)
-	local signs = line:sub(1, 2)
-	for _, p in ipairs(PATS) do
+	local sign = line:sub(1, 2)
+	for _, p in ipairs(PATTERNS) do
+		local pattern, status = p[1], p[2]
 		local path
-		if signs:find(p[1]) then
+		if sign:find(pattern) then
 			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
-			path = WIN and path:gsub("/", "\\") or path
+			path = is_windows and path:gsub("/", "\\") or path
 		end
-		if not path then
-		elseif path:find("[/\\]$") then
-			return p[2] == 3 and 30 or p[2], path:sub(1, -2)
-		else
-			return p[2], path
+		if path then
+			return status, path:find("[/\\]$") and path:sub(1, -2) or path
 		end
 	end
 end
 
-local function root(cwd)
-	local is_worktree = function(url)
-		local file, head = io.open(tostring(url)), nil
-		if file then
-			head = file:read(8)
-			file:close()
-		end
-		return head == "gitdir: "
+---@param url Url
+---@return boolean
+local function is_worktree(url)
+	local file, head = io.open(tostring(url)), nil
+	if file then
+		head = file:read(8)
+		file:close()
 	end
+	return head == "gitdir: "
+end
 
+---@param cwd FullPath
+---@return FullPath?
+local function root(cwd)
+	cwd = Url(cwd)
 	repeat
 		local next = cwd:join(".git")
 		local cha = fs.cha(next)
@@ -48,119 +108,134 @@ local function root(cwd)
 	until not cwd
 end
 
-local function bubble_up(changed)
+---@param changes Changes
+---@return Changes
+local function bubble_up(changes)
 	local new, empty = {}, Url("")
-	for k, v in pairs(changed) do
-		if v ~= 3 and v ~= 30 then
-			local url = Url(k):parent()
-			while url and url ~= empty do
-				local s = tostring(url)
-				new[s] = (new[s] or 0) > v and new[s] or v
-				url = url:parent()
-			end
+	for path, status in pairs(changes) do
+		local url = Url(path):parent()
+		while url and url ~= empty do
+			local s = tostring(url)
+			new[s] = (new[s] or Status.unkonwn) > status and new[s] or status
+			url = url:parent()
 		end
 	end
 	return new
 end
 
+---@param ignored Changes
+---@param cwd Url
+---@param repo Url
+---@return Changes
 local function propagate_down(ignored, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
-	for k, v in pairs(ignored) do
-		if v == 30 then
-			if rel:starts_with(k) then
-				new[tostring(repo:join(rel))] = 30
-			elseif cwd == repo:join(k):parent() then
-				new[k] = 3
-			end
+	for _, path in ipairs(ignored) do
+		if rel:starts_with(path) then
+			-- if `cwd` is a subfolder of an ignored directory, mark the `cwd` as `__ignored_dir__`
+			new[tostring(cwd)] = __ignored_dir__
+		elseif cwd == repo:join(path):parent() then
+			-- if `cwd` contains any ignored files or directories, mark them as `ignored`
+			new[path] = Status.ignored
 		end
 	end
 	return new
 end
 
-local add = ya.sync(function(st, cwd, repo, changed)
-	st.dirs[cwd] = repo
+---@param st PluginState
+---@param cwd FullPath
+---@param repo FullPath
+---@param changes Changes
+local add = ya.sync(function(st, cwd, repo, changes)
+	st.dirs_to_repo[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
-	for k, v in pairs(changed) do
-		if v == 0 then
-			st.repos[repo][k] = nil
-		elseif v == 30 then
-			st.dirs[k] = ""
+
+	for path, status in pairs(changes) do
+		if status == __ignored_dir__ then
+			-- so that we can know if a file is in an ignored directory when handle linemode
+			---@diagnostic disable-next-line: assign-type-mismatch
+			st.dirs_to_repo[path] = __ignored_dir__
 		else
-			st.repos[repo][k] = v
+			st.repos[repo][path] = status
 		end
 	end
+
 	ya.render()
 end)
 
+---@param st PluginState
+---@param cwd FullPath
 local remove = ya.sync(function(st, cwd)
-	local dir = st.dirs[cwd]
-	if not dir then
+	local repo = st.dirs_to_repo[cwd]
+	if not repo then
 		return
 	end
 
 	ya.render()
-	st.dirs[cwd] = nil
-	if not st.repos[dir] then
+
+	st.dirs_to_repo[cwd] = nil
+	if not st.repos[repo] then
 		return
 	end
-
-	for _, r in pairs(st.dirs) do
-		if r == dir then
+	for _, r in pairs(st.dirs_to_repo) do
+		if r == repo then
 			return
 		end
 	end
-	st.repos[dir] = nil
+	st.repos[repo] = nil
 end)
 
+---@param options SetupOptions
+local function merge_options(options)
+	if options.order ~= nil then
+		Config.order = options.order
+	end
+end
+
+---@param options ThemeOptions
+local function merge_theme_options(options)
+	for k, v in pairs(options) do
+		if k:find("_sign$") then
+			Config.icons[Status[k:sub(1, -6)]] = v
+		else
+			Config.styles[Status[k]] = ui.Style(v)
+		end
+	end
+end
+
+---@param st PluginState
+---@param opts? SetupOptions
 local function setup(st, opts)
-	st.dirs = {}
+	st.dirs_to_repo = {}
 	st.repos = {}
 
-	opts = opts or {}
-	opts.order = opts.order or 1500
-
-	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
-	local t = THEME.git or {}
-	local styles = {
-		[6] = t.modified and ui.Style(t.modified) or ui.Style():fg("#ffa500"),
-		[5] = t.added and ui.Style(t.added) or ui.Style():fg("#32cd32"),
-		[4] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("#a9a9a9"),
-		[3] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("#696969"),
-		[2] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("#ff4500"),
-		[1] = t.updated and ui.Style(t.updated) or ui.Style():fg("#1e90ff"),
-	}
-	local signs = {
-		[6] = t.modified_sign and t.modified_sign or "",
-		[5] = t.added_sign and t.added_sign or "",
-		[4] = t.untracked_sign and t.untracked_sign or "",
-		[3] = t.ignored_sign and t.ignored_sign or "",
-		[2] = t.deleted_sign and t.deleted_sign or "",
-		[1] = t.updated_sign and t.updated_sign or "U",
-	}
+	merge_options(opts or {})
+	merge_theme_options(THEME.git or {})
 
 	Linemode:children_add(function(self)
 		local url = self._file.url
-		local dir = st.dirs[tostring(url:parent())]
-		local change
-		if dir then
-			change = dir == "" and 3 or st.repos[dir][tostring(url):sub(#dir + 2)]
+		local repo = st.dirs_to_repo[tostring(url:parent())]
+		local status
+		if repo then
+			status = repo == __ignored_dir__ and Status.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
 		end
 
-		if not change or signs[change] == "" then
+		if not status or Config.icons[status] == "" then
 			return ""
 		elseif self._file:is_hovered() then
-			return ui.Line { " ", signs[change] }
+			return ui.Line { " ", Config.icons[status] }
 		else
-			return ui.Line { " ", ui.Span(signs[change]):style(styles[change]) }
+			return ui.Line { " ", ui.Span(Config.icons[status]):style(Config.styles[status]) }
 		end
-	end, opts.order)
+	end, Config.order)
 end
 
+---@param _ PluginState
+---@param job { files: File[] }
 local function fetch(_, job)
-	local cwd = job.files[1].url:parent()
-	local repo = root(cwd)
+	local cwd = tostring(job.files[1].url:parent()) ---@type FullPath
+	local repo = root(cwd) ---@type FullPath?
 	if not repo then
-		remove(tostring(cwd))
+		remove(cwd)
 		return true
 	end
 
@@ -171,7 +246,7 @@ local function fetch(_, job)
 
 	-- stylua: ignore
 	local output, err = Command("git")
-		:cwd(tostring(cwd))
+		:cwd(cwd)
 		:args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
 		:args(paths)
 		:stdout(Command.PIPED)
@@ -180,28 +255,24 @@ local function fetch(_, job)
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
 
-	local changed, ignored = {}, {}
+	local changes, ignored = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
-		local sign, path = match(line)
-		if sign == 30 then
-			ignored[path] = sign
-		else
-			changed[path] = sign
+		local status, path = match(line)
+		if status and path then
+			if status == Status.ignored then
+				ignored[#ignored + 1] = path
+			else
+				changes[path] = status
+			end
 		end
 	end
 
 	if job.files[1].cha.is_dir then
-		ya.dict_merge(changed, bubble_up(changed))
-		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
-	else
-		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
+		ya.dict_merge(changes, bubble_up(changes))
 	end
+	ya.dict_merge(changes, propagate_down(ignored, Url(cwd), Url(repo)))
 
-	for _, p in ipairs(paths) do
-		local s = p:sub(#repo + 2)
-		changed[s] = changed[s] or 0
-	end
-	add(tostring(cwd), repo, changed)
+	add(cwd, repo, changes)
 
 	return false
 end
