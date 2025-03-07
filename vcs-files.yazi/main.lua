@@ -14,13 +14,13 @@ local function entry()
 	end
 
 	local id = ya.id("ft")
-	local cwd = root:to_search("Git changes")
+	local cwd = root:into_search("Git changes")
 	ya.mgr_emit("cd", { Url(cwd) })
 	ya.mgr_emit("update_files", { op = fs.op("part", { id = id, url = Url(cwd), files = {} }) })
 
 	local files = {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
-		local url = root:join(line)
+		local url = cwd:join(line)
 		local cha = fs.cha(url, true)
 		if cha then
 			files[#files + 1] = File { url = url, cha = cha }
