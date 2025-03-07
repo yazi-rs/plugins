@@ -5,6 +5,8 @@
 
 Show Git changed files in Yazi.
 
+https://github.com/user-attachments/assets/465b801b-3516-4f57-be09-8405da21e34d
+
 ## Installation
 
 ```sh
