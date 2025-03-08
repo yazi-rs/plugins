@@ -29,8 +29,7 @@ local PATTERNS = {
 local function match(line)
 	local signs = line:sub(1, 2)
 	for _, p in ipairs(PATTERNS) do
-		local pattern, code = p[1], p[2]
-		local path
+		local path, pattern, code = nil, p[1], p[2]
 		if signs:find(pattern) then
 			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
 			path = WINDOWS and path:gsub("/", "\\") or path
@@ -89,6 +88,8 @@ local function propagate_down(excluded, cwd, repo)
 		elseif cwd == repo:join(path):parent() then
 			-- If `path` is a direct subdirectory of `cwd`, mark it as `ignored`
 			new[path] = CODES.ignored
+		else
+			-- Skipping, we only care about `cwd` itself and its direct subdirectories for maximum performance
 		end
 	end
 	return new
