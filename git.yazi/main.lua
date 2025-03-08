@@ -188,11 +188,11 @@ local function fetch(_, job)
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
 
-	local changed, ignored = {}, {}
+	local changed, excluded = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local sign, path = match(line)
 		if sign == CODES.excluded then
-			ignored[#ignored + 1] = path
+			excluded[#excluded + 1] = path
 		else
 			changed[path] = sign
 		end
@@ -201,7 +201,7 @@ local function fetch(_, job)
 	if job.files[1].cha.is_dir then
 		ya.dict_merge(changed, bubble_up(changed))
 	end
-	ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
+	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
 	for _, p in ipairs(paths) do
 		local s = p:sub(#repo + 2)
