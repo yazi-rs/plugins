@@ -102,23 +102,23 @@ local add = ya.sync(function(st, cwd, repo, changed)
 end)
 
 local remove = ya.sync(function(st, cwd)
-	local dir = st.dirs[cwd]
-	if not dir then
+	local repo = st.dirs[cwd]
+	if not repo then
 		return
 	end
 
 	ya.render()
 	st.dirs[cwd] = nil
-	if not st.repos[dir] then
+	if not st.repos[repo] then
 		return
 	end
 
 	for _, r in pairs(st.dirs) do
-		if r == dir then
+		if r == repo then
 			return
 		end
 	end
-	st.repos[dir] = nil
+	st.repos[repo] = nil
 end)
 
 local function setup(st, opts)
@@ -149,18 +149,18 @@ local function setup(st, opts)
 
 	Linemode:children_add(function(self)
 		local url = self._file.url
-		local dir = st.dirs[tostring(url:parent())]
-		local change
-		if dir then
-			change = dir == CODES.excluded and CODES.ignored or st.repos[dir][tostring(url):sub(#dir + 2)]
+		local repo = st.dirs[tostring(url:parent())]
+		local code
+		if repo then
+			code = repo == CODES.excluded and CODES.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
 		end
 
-		if not change or signs[change] == "" then
+		if not code or signs[code] == "" then
 			return ""
 		elseif self._file:is_hovered() then
-			return ui.Line { " ", signs[change] }
+			return ui.Line { " ", signs[code] }
 		else
-			return ui.Line { " ", ui.Span(signs[change]):style(styles[change]) }
+			return ui.Line { " ", ui.Span(signs[code]):style(styles[code]) }
 		end
 	end, opts.order)
 end
@@ -191,11 +191,11 @@ local function fetch(_, job)
 
 	local changed, excluded = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
-		local sign, path = match(line)
-		if sign == CODES.excluded then
+		local code, path = match(line)
+		if code == CODES.excluded then
 			excluded[#excluded + 1] = path
 		else
-			changed[path] = sign
+			changed[path] = code
 		end
 	end
 
@@ -204,8 +204,8 @@ local function fetch(_, job)
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
-	for _, p in ipairs(paths) do
-		local s = p:sub(#repo + 2)
+	for _, path in ipairs(paths) do
+		local s = path:sub(#repo + 2)
 		changed[s] = changed[s] or CODES.unknown
 	end
 	add(tostring(cwd), repo, changed)
