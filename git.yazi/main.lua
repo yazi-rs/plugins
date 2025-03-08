@@ -61,7 +61,7 @@ end
 local function bubble_up(changed)
 	local new, empty = {}, Url("")
 	for k, v in pairs(changed) do
-		if v ~= CODES.ignored and v ~= CODES.excluded then
+		if v ~= CODES.ignored then
 			local url = Url(k):parent()
 			while url and url ~= empty do
 				local s = tostring(url)
@@ -75,13 +75,11 @@ end
 
 local function propagate_down(ignored, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
-	for k, v in pairs(ignored) do
-		if v == CODES.excluded then
-			if rel:starts_with(k) then
-				new[tostring(repo:join(rel))] = CODES.excluded
-			elseif cwd == repo:join(k):parent() then
-				new[k] = CODES.ignored
-			end
+	for _, path in ipairs(ignored) do
+		if rel:starts_with(path) then
+			new[tostring(cwd)] = CODES.excluded
+		elseif cwd == repo:join(path):parent() then
+			new[path] = CODES.ignored
 		end
 	end
 	return new
@@ -94,7 +92,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 		if v == CODES.unknown then
 			st.repos[repo][k] = nil
 		elseif v == CODES.excluded then
-			st.dirs[k] = ""
+			st.dirs[k] = CODES.excluded
 		else
 			st.repos[repo][k] = v
 		end
@@ -153,7 +151,7 @@ local function setup(st, opts)
 		local dir = st.dirs[tostring(url:parent())]
 		local change
 		if dir then
-			change = dir == "" and CODES.ignored or st.repos[dir][tostring(url):sub(#dir + 2)]
+			change = dir == CODES.excluded and CODES.ignored or st.repos[dir][tostring(url):sub(#dir + 2)]
 		end
 
 		if not change or signs[change] == "" then
@@ -190,11 +188,11 @@ local function fetch(_, job)
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
 
-	local changed, ignored = {}, {}
+	local changed, excluded = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local sign, path = match(line)
 		if sign == CODES.excluded then
-			ignored[path] = sign
+			excluded[#excluded + 1] = path
 		else
 			changed[path] = sign
 		end
@@ -202,10 +200,8 @@ local function fetch(_, job)
 
 	if job.files[1].cha.is_dir then
 		ya.dict_merge(changed, bubble_up(changed))
-		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
-	else
-		ya.dict_merge(changed, propagate_down(ignored, cwd, Url(repo)))
 	end
+	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
 	for _, p in ipairs(paths) do
 		local s = p:sub(#repo + 2)
