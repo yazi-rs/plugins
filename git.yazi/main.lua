@@ -1,6 +1,10 @@
 --- @since 25.2.7
 
 local WINDOWS = ya.target_family() == "windows"
+
+-- the code of each git status,
+-- also used to determine which status to show for directories when they contain different statuses
+-- see `bubble_up`
 local CODES = {
 	excluded = 100, -- ignored directory
 	ignored = 6, -- ignored file
@@ -11,6 +15,7 @@ local CODES = {
 	updated = 1,
 	unknown = 0,
 }
+
 local PATTERNS = {
 	{ "!$", CODES.ignored },
 	{ "?$", CODES.untracked },
@@ -32,6 +37,7 @@ local function match(line)
 		end
 		if not path then
 		elseif path:find("[/\\]$") then
+			-- mark the ignored directory as `excluded`, so that we can use `propagate_down` to handle it
 			return code == CODES.ignored and CODES.excluded or code, path:sub(1, -2)
 		else
 			return code, path
@@ -78,8 +84,10 @@ local function propagate_down(excluded, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
 	for _, path in ipairs(excluded) do
 		if rel:starts_with(path) then
+			-- if `cwd` is a subfolder of an ignored directory, mark the `cwd` as `excluded`
 			new[tostring(cwd)] = CODES.excluded
 		elseif cwd == repo:join(path):parent() then
+			-- if the directory is just contained in `cwd`, keep it `ignored`
 			new[path] = CODES.ignored
 		end
 	end
@@ -93,6 +101,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 		if code == CODES.unknown then
 			st.repos[repo][path] = nil
 		elseif code == CODES.excluded then
+			-- so that we can know if a path leads to an ignored directory when handle the linemode
 			st.dirs[path] = CODES.excluded
 		else
 			st.repos[repo][path] = code
@@ -204,10 +213,13 @@ local function fetch(_, job)
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
+	-- make sure the status changed when a file is reverted from a modified state to an unmodified state
+	-- (when we just open the editor from yazi, edit, then back to yazi)
 	for _, path in ipairs(paths) do
 		local s = path:sub(#repo + 2)
 		changed[s] = changed[s] or CODES.unknown
 	end
+
 	add(tostring(cwd), repo, changed)
 
 	return false
