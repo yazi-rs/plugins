@@ -24,16 +24,17 @@ local PATTERNS = {
 local function match(line)
 	local signs = line:sub(1, 2)
 	for _, p in ipairs(PATTERNS) do
+		local pattern, code = p[1], p[2]
 		local path
-		if signs:find(p[1]) then
+		if signs:find(pattern) then
 			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
 			path = WINDOWS and path:gsub("/", "\\") or path
 		end
 		if not path then
 		elseif path:find("[/\\]$") then
-			return p[2] == CODES.ignored and CODES.excluded or p[2], path:sub(1, -2)
+			return code == CODES.ignored and CODES.excluded or code, path:sub(1, -2)
 		else
-			return p[2], path
+			return code, path
 		end
 	end
 end
@@ -60,12 +61,12 @@ end
 
 local function bubble_up(changed)
 	local new, empty = {}, Url("")
-	for k, v in pairs(changed) do
-		if v ~= CODES.ignored then
-			local url = Url(k):parent()
+	for path, code in pairs(changed) do
+		if code ~= CODES.ignored then
+			local url = Url(path):parent()
 			while url and url ~= empty do
 				local s = tostring(url)
-				new[s] = (new[s] or CODES.unknown) > v and new[s] or v
+				new[s] = (new[s] or CODES.unknown) > code and new[s] or code
 				url = url:parent()
 			end
 		end
@@ -88,13 +89,13 @@ end
 local add = ya.sync(function(st, cwd, repo, changed)
 	st.dirs[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
-	for k, v in pairs(changed) do
-		if v == CODES.unknown then
-			st.repos[repo][k] = nil
-		elseif v == CODES.excluded then
-			st.dirs[k] = CODES.excluded
+	for path, code in pairs(changed) do
+		if code == CODES.unknown then
+			st.repos[repo][path] = nil
+		elseif code == CODES.excluded then
+			st.dirs[path] = CODES.excluded
 		else
-			st.repos[repo][k] = v
+			st.repos[repo][path] = code
 		end
 	end
 	ya.render()
@@ -173,8 +174,8 @@ local function fetch(_, job)
 	end
 
 	local paths = {}
-	for _, f in ipairs(job.files) do
-		paths[#paths + 1] = tostring(f.url)
+	for _, file in ipairs(job.files) do
+		paths[#paths + 1] = tostring(file.url)
 	end
 
 	-- stylua: ignore
