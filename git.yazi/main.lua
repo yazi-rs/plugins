@@ -191,12 +191,10 @@ local function fetch(_, job)
 	local changed, ignored = {}, {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
 		local sign, path = match(line)
-		if sign and path then
-			if sign == CODES.excluded then
-				ignored[#ignored + 1] = path
-			else
-				changed[path] = sign
-			end
+		if sign == CODES.excluded then
+			ignored[#ignored + 1] = path
+		else
+			changed[path] = sign
 		end
 	end
 
