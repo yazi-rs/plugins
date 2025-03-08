@@ -2,7 +2,7 @@
 
 local WINDOWS = ya.target_family() == "windows"
 
--- the code of each git status,
+-- the code of supported git status,
 -- also used to determine which status to show for directories when they contain different statuses
 -- see `bubble_up`
 local CODES = {
@@ -37,7 +37,7 @@ local function match(line)
 		end
 		if not path then
 		elseif path:find("[/\\]$") then
-			-- mark the ignored directory as `excluded`, so that we can use `propagate_down` to handle it
+			-- mark the ignored directory as `excluded`, so we can process it further within `propagate_down`
 			return code == CODES.ignored and CODES.excluded or code, path:sub(1, -2)
 		else
 			return code, path
