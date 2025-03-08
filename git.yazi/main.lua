@@ -73,9 +73,9 @@ local function bubble_up(changed)
 	return new
 end
 
-local function propagate_down(ignored, cwd, repo)
+local function propagate_down(excluded, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
-	for _, path in ipairs(ignored) do
+	for _, path in ipairs(excluded) do
 		if rel:starts_with(path) then
 			new[tostring(cwd)] = CODES.excluded
 		elseif cwd == repo:join(path):parent() then
