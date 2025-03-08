@@ -2,7 +2,7 @@
 
 local WINDOWS = ya.target_family() == "windows"
 
--- the code of supported git status,
+-- The code of supported git status,
 -- also used to determine which status to show for directories when they contain different statuses
 -- see `bubble_up`
 local CODES = {
@@ -37,7 +37,7 @@ local function match(line)
 		end
 		if not path then
 		elseif path:find("[/\\]$") then
-			-- mark the ignored directory as `excluded`, so we can process it further within `propagate_down`
+			-- Mark the ignored directory as `excluded`, so we can process it further within `propagate_down`
 			return code == CODES.ignored and CODES.excluded or code, path:sub(1, -2)
 		else
 			return code, path
@@ -84,10 +84,10 @@ local function propagate_down(excluded, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
 	for _, path in ipairs(excluded) do
 		if rel:starts_with(path) then
-			-- if `cwd` is a subfolder of an ignored directory, mark the `cwd` as `excluded`
+			-- If `cwd` is a subdirectory of an excluded directory, also mark it as `excluded`
 			new[tostring(cwd)] = CODES.excluded
 		elseif cwd == repo:join(path):parent() then
-			-- if the directory is just contained in `cwd`, keep it `ignored`
+			-- If `path` is a direct subdirectory of `cwd`, mark it as `ignored`
 			new[path] = CODES.ignored
 		end
 	end
@@ -101,7 +101,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 		if code == CODES.unknown then
 			st.repos[repo][path] = nil
 		elseif code == CODES.excluded then
-			-- so that we can know if a path leads to an ignored directory when handle the linemode
+			-- So that we can know if a path leads to an ignored directory when handle the linemode
 			st.dirs[path] = CODES.excluded
 		else
 			st.repos[repo][path] = code
@@ -131,8 +131,8 @@ local remove = ya.sync(function(st, cwd)
 end)
 
 local function setup(st, opts)
-	st.dirs = {} -- stores the mapping from directories to repositories
-	st.repos = {} -- stores the changes of each repository
+	st.dirs = {} -- Stores the mapping from directories to repositories
+	st.repos = {} -- Stores the changes of each repository
 
 	opts = opts or {}
 	opts.order = opts.order or 1500
@@ -213,7 +213,7 @@ local function fetch(_, job)
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
-	-- make sure the status changed when a file is reverted from a modified state to an unmodified state
+	-- Make sure the status changed when a file is reverted from a modified state to an unmodified state
 	-- (when we just open the editor from yazi, edit, then back to yazi)
 	for _, path in ipairs(paths) do
 		local s = path:sub(#repo + 2)
