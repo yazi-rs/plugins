@@ -2,20 +2,20 @@
 
 local WINDOWS = ya.target_family() == "windows"
 local CODES = {
-	modified = 6,
-	added = 5,
-	untracked = 4,
-	ignored = 3, -- ignored file
-	excluded = 30, -- ignored directory
+	excluded = 100, -- ignored directory
+	ignored = 6, -- ignored file
+	untracked = 5,
+	modified = 4,
+	added = 3,
 	deleted = 2,
 	updated = 1,
 	unknown = 0,
 }
 local PATTERNS = {
+	{ "!$", CODES.ignored },
+	{ "?$", CODES.untracked },
 	{ "[MT]", CODES.modified },
 	{ "[AC]", CODES.added },
-	{ "?$", CODES.untracked },
-	{ "!$", CODES.ignored },
 	{ "D", CODES.deleted },
 	{ "U", CODES.updated },
 	{ "[AD][AD]", CODES.updated },
@@ -131,18 +131,18 @@ local function setup(st, opts)
 	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
 	local t = THEME.git or {}
 	local styles = {
+		[CODES.ignored] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("#696969"),
+		[CODES.untracked] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("#a9a9a9"),
 		[CODES.modified] = t.modified and ui.Style(t.modified) or ui.Style():fg("#ffa500"),
 		[CODES.added] = t.added and ui.Style(t.added) or ui.Style():fg("#32cd32"),
-		[CODES.untracked] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("#a9a9a9"),
-		[CODES.ignored] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("#696969"),
 		[CODES.deleted] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("#ff4500"),
 		[CODES.updated] = t.updated and ui.Style(t.updated) or ui.Style():fg("#1e90ff"),
 	}
 	local signs = {
+		[CODES.ignored] = t.ignored_sign or "",
+		[CODES.untracked] = t.untracked_sign or "",
 		[CODES.modified] = t.modified_sign or "",
 		[CODES.added] = t.added_sign or "",
-		[CODES.untracked] = t.untracked_sign or "",
-		[CODES.ignored] = t.ignored_sign or "",
 		[CODES.deleted] = t.deleted_sign or "",
 		[CODES.updated] = t.updated_sign or "U",
 	}
