@@ -101,7 +101,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 		if code == CODES.unknown then
 			st.repos[repo][path] = nil
 		elseif code == CODES.excluded then
-			-- So that we can know if a path leads to an ignored directory when handle the linemode
+			-- Mark the directory with a special value `excluded` so that it can be distinguished during UI rendering
 			st.dirs[path] = CODES.excluded
 		else
 			st.repos[repo][path] = code
@@ -131,8 +131,8 @@ local remove = ya.sync(function(st, cwd)
 end)
 
 local function setup(st, opts)
-	st.dirs = {} -- Stores the mapping from directories to repositories
-	st.repos = {} -- Stores the changes of each repository
+	st.dirs = {} -- Mapping between a directory and its corresponding repository
+	st.repos = {} -- Mapping between a repository and the status of each of its files
 
 	opts = opts or {}
 	opts.order = opts.order or 1500
