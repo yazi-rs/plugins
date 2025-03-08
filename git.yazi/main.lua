@@ -213,8 +213,8 @@ local function fetch(_, job)
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
-	-- Make sure the status changed when a file is reverted from a modified state to an unmodified state
-	-- (when we just open the editor from yazi, edit, then back to yazi)
+	-- Reset the status of any files that don't appear in the output of `git status` to `unknown`,
+	-- so that cleaning up outdated statuses from `st.repos`
 	for _, path in ipairs(paths) do
 		local s = path:sub(#repo + 2)
 		changed[s] = changed[s] or CODES.unknown
