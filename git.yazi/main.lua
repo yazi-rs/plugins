@@ -1,6 +1,10 @@
 --- @since 25.2.7
 
 local WINDOWS = ya.target_family() == "windows"
+
+-- The code of supported git status,
+-- also used to determine which status to show for directories when they contain different statuses
+-- see `bubble_up`
 local CODES = {
 	excluded = 100, -- ignored directory
 	ignored = 6, -- ignored file
@@ -11,6 +15,7 @@ local CODES = {
 	updated = 1,
 	unknown = 0,
 }
+
 local PATTERNS = {
 	{ "!$", CODES.ignored },
 	{ "?$", CODES.untracked },
@@ -32,6 +37,7 @@ local function match(line)
 		end
 		if not path then
 		elseif path:find("[/\\]$") then
+			-- Mark the ignored directory as `excluded`, so we can process it further within `propagate_down`
 			return code == CODES.ignored and CODES.excluded or code, path:sub(1, -2)
 		else
 			return code, path
@@ -78,8 +84,10 @@ local function propagate_down(excluded, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
 	for _, path in ipairs(excluded) do
 		if rel:starts_with(path) then
+			-- If `cwd` is a subdirectory of an excluded directory, also mark it as `excluded`
 			new[tostring(cwd)] = CODES.excluded
 		elseif cwd == repo:join(path):parent() then
+			-- If `path` is a direct subdirectory of `cwd`, mark it as `ignored`
 			new[path] = CODES.ignored
 		end
 	end
@@ -93,6 +101,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 		if code == CODES.unknown then
 			st.repos[repo][path] = nil
 		elseif code == CODES.excluded then
+			-- Mark the directory with a special value `excluded` so that it can be distinguished during UI rendering
 			st.dirs[path] = CODES.excluded
 		else
 			st.repos[repo][path] = code
@@ -122,8 +131,8 @@ local remove = ya.sync(function(st, cwd)
 end)
 
 local function setup(st, opts)
-	st.dirs = {}
-	st.repos = {}
+	st.dirs = {} -- Mapping between a directory and its corresponding repository
+	st.repos = {} -- Mapping between a repository and the status of each of its files
 
 	opts = opts or {}
 	opts.order = opts.order or 1500
@@ -204,10 +213,13 @@ local function fetch(_, job)
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
 
+	-- Reset the status of any files that don't appear in the output of `git status` to `unknown`,
+	-- so that cleaning up outdated statuses from `st.repos`
 	for _, path in ipairs(paths) do
 		local s = path:sub(#repo + 2)
 		changed[s] = changed[s] or CODES.unknown
 	end
+
 	add(tostring(cwd), repo, changed)
 
 	return false
