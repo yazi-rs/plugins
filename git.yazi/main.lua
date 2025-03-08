@@ -131,8 +131,8 @@ local remove = ya.sync(function(st, cwd)
 end)
 
 local function setup(st, opts)
-	st.dirs = {}
-	st.repos = {}
+	st.dirs = {} -- stores the mapping from directories to repositories
+	st.repos = {} -- stores the changes of each repository
 
 	opts = opts or {}
 	opts.order = opts.order or 1500
