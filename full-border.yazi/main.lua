@@ -6,7 +6,7 @@ local function setup(_, opts)
 
 	Tab.build = function(self, ...)
 		local bar = function(c, x, y)
-			if x <= 0 or x == self._area.w - 1 then
+			if x <= 0 or x == self._area.w - 1 or th.mgr.border_symbol ~= "│" then
 				return ui.Bar(ui.Bar.TOP)
 			end
 
