@@ -138,24 +138,31 @@ local function setup(st, opts)
 	opts = opts or {}
 	opts.order = opts.order or 1500
 
-	-- Chosen by ChatGPT fairly, PRs are welcome to adjust them
-	local t = THEME.git or {}
 	local styles = {
-		[CODES.ignored] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("#696969"),
-		[CODES.untracked] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("#a9a9a9"),
-		[CODES.modified] = t.modified and ui.Style(t.modified) or ui.Style():fg("#ffa500"),
-		[CODES.added] = t.added and ui.Style(t.added) or ui.Style():fg("#32cd32"),
-		[CODES.deleted] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("#ff4500"),
-		[CODES.updated] = t.updated and ui.Style(t.updated) or ui.Style():fg("#1e90ff"),
+		[CODES.ignored] = ui.Style():fg("darkgray"),
+		[CODES.untracked] = ui.Style():fg("magenta"),
+		[CODES.modified] = ui.Style():fg("yellow"),
+		[CODES.added] = ui.Style():fg("green"),
+		[CODES.deleted] = ui.Style():fg("red"),
+		[CODES.updated] = ui.Style():fg("yellow"),
 	}
+
 	local signs = {
-		[CODES.ignored] = t.ignored_sign or "",
-		[CODES.untracked] = t.untracked_sign or "",
-		[CODES.modified] = t.modified_sign or "",
-		[CODES.added] = t.added_sign or "",
-		[CODES.deleted] = t.deleted_sign or "",
-		[CODES.updated] = t.updated_sign or "U",
+		[CODES.ignored] = "",
+		[CODES.untracked] = "?",
+		[CODES.modified] = "",
+		[CODES.added] = "",
+		[CODES.deleted] = "",
+		[CODES.updated] = "",
 	}
+
+	for k, v in pairs(THEME.git or {}) do
+		if k:find("_sign$") then
+			signs[CODES[k:sub(1, -6)]] = v
+		else
+			styles[CODES[k]] = ui.Style(v)
+		end
+	end
 
 	Linemode:children_add(function(self)
 		local url = self._file.url
