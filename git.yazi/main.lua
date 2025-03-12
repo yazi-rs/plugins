@@ -138,7 +138,7 @@ local function setup(st, opts)
 	opts = opts or {}
 	opts.order = opts.order or 1500
 
-	local t = THEME.git or {}
+	local t = th.git or {}
 	local styles = {
 		[CODES.ignored] = t.ignored and ui.Style(t.ignored) or ui.Style():fg("darkgray"),
 		[CODES.untracked] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("magenta"),
