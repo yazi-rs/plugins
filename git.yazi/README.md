@@ -1,7 +1,7 @@
 # git.yazi
 
 > [!NOTE]
-> Yazi v25.2.7 or later is required for this plugin to work.
+> Yazi v25.2.26 or later is required for this plugin to work.
 
 Show the status of Git file changes as linemode in the file list.
 
