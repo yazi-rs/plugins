@@ -1,6 +1,13 @@
 --- @since 25.2.26
 
-local toggle_ui = ya.sync(function(self)
+---@type fun(): nil
+local MUI_refresh = ya.sync(function(self)
+	---@cast self PluginState
+	ya.mgr_emit("plugin", { self._id, "__refresh", })
+end)
+
+---@type fun(): nil
+local MUI_toggle = ya.sync(function(self)
 	if self.children then
 		Modal:children_remove(self.children)
 		self.children = nil
@@ -10,24 +17,35 @@ local toggle_ui = ya.sync(function(self)
 	ya.render()
 end)
 
-local subscribe = ya.sync(function(self)
+---@type fun(): nil
+local MUI_subscribe_to_mounts = ya.sync(function()
 	ps.unsub("mount")
-	ps.sub("mount", function() ya.mgr_emit("plugin", { self._id, "refresh" }) end)
+	ps.sub("mount", function()
+		MUI_refresh()
+	end)
 end)
 
-local update_partitions = ya.sync(function(self, partitions)
-	self.partitions = partitions
-	self.cursor = math.max(0, math.min(self.cursor or 0, #self.partitions - 1))
+---@type fun(): MountDescription
+local MUI_get_selected_entry = ya.sync(function(self)
+	---@cast self PluginState
+	return self.entries[self.cursor + 1]
+end)
+
+---@type fun(entries: table<number, MountDescription>): nil
+local MUI_set_entries_cache = ya.sync(function(self, entries)
+	---@cast self PluginState
+	self.entries = entries
+	self.cursor = math.max(0, math.min(self.cursor or 0, #self.entries - 1))
 	ya.render()
 end)
 
-local active_partition = ya.sync(function(self) return self.partitions[self.cursor + 1] end)
-
-local update_cursor = ya.sync(function(self, cursor)
-	if #self.partitions == 0 then
-		self.cursor = 0
+---@type fun(cursor: number): nil
+local MUI_update_cursor = ya.sync(function(self, cursor)
+	---@cast self PluginState
+	if #self.entries ~= 0 then
+		self.cursor = ya.clamp(0, self.cursor + cursor, #self.entries - 1)
 	else
-		self.cursor = ya.clamp(0, self.cursor + cursor, #self.partitions - 1)
+		self.cursor = 0
 	end
 	ya.render()
 end)
@@ -77,13 +95,13 @@ function M:layout(area)
 end
 
 function M:entry(job)
-	if job.args[1] == "refresh" then
-		return update_partitions(self.obtain())
+	if job.args[1] == "__refresh" then
+		return MUI_set_entries_cache(self.obtain())
 	end
 
-	toggle_ui()
-	update_partitions(self.obtain())
-	subscribe()
+	MUI_toggle()
+	MUI_set_entries_cache(self.obtain())
+	MUI_subscribe_to_mounts()
 
 	local tx1, rx1 = ya.chan("mpsc")
 	local tx2, rx2 = ya.chan("mpsc")
@@ -93,7 +111,7 @@ function M:entry(job)
 			for _, r in ipairs(type(cand.run) == "table" and cand.run or { cand.run }) do
 				tx1:send(r)
 				if r == "quit" then
-					toggle_ui()
+					MUI_toggle()
 					return
 				end
 			end
@@ -107,11 +125,11 @@ function M:entry(job)
 				tx2:send(run)
 				break
 			elseif run == "up" then
-				update_cursor(-1)
+				MUI_update_cursor(-1)
 			elseif run == "down" then
-				update_cursor(1)
+				MUI_update_cursor(1)
 			elseif run == "enter" then
-				local active = active_partition()
+				local active = MUI_get_selected_entry()
 				if active and active.dist then
 					ya.mgr_emit("cd", { active.dist })
 				end
@@ -143,7 +161,7 @@ function M:reflow() return { self } end
 
 function M:redraw()
 	local rows = {}
-	for _, p in ipairs(self.partitions or {}) do
+	for _, p in ipairs(self.entries or {}) do
 		if not p.sub then
 			rows[#rows + 1] = ui.Row { p.main }
 		elseif p.sub == "" then
@@ -247,7 +265,7 @@ function M.fillin(tbl)
 end
 
 function M.operate(type)
-	local active = active_partition()
+	local active = MUI_get_selected_entry()
 	if not active then
 		return
 	elseif not active.sub then
