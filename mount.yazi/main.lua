@@ -75,7 +75,7 @@ function M:layout(area)
 		})
 		:split(area)
 
-	chunks = ui.Layout()
+	local chunks = ui.Layout()
 		:direction(ui.Layout.HORIZONTAL)
 		:constraints({
 			ui.Constraint.Percentage(10),
@@ -98,7 +98,7 @@ function M:entry(job)
 
 	local tx1, rx1 = ya.chan("mpsc")
 	local tx2, rx2 = ya.chan("mpsc")
-	local function producer()
+	function producer()
 		while true do
 			local cand = self.keys[ya.which { cands = self.keys, silent = true }] or { run = {} }
 			for _, r in ipairs(type(cand.run) == "table" and cand.run or { cand.run }) do
@@ -111,7 +111,7 @@ function M:entry(job)
 		end
 	end
 
-	local function consumer1()
+	function consumer1()
 		repeat
 			local run = rx1:recv()
 			if run == "quit" then
@@ -132,7 +132,7 @@ function M:entry(job)
 		until not run
 	end
 
-	local function consumer2()
+	function consumer2()
 		repeat
 			local run = rx2:recv()
 			if run == "quit" then
