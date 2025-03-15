@@ -1,12 +1,6 @@
 --- @since 25.2.26
 
 ---@type fun(): nil
-local MUI_refresh = ya.sync(function(self)
-	---@cast self PluginState
-	ya.mgr_emit("plugin", { self._id, "__refresh", })
-end)
-
----@type fun(): nil
 local MUI_toggle = ya.sync(function(self)
 	if self.children then
 		Modal:children_remove(self.children)
@@ -18,10 +12,11 @@ local MUI_toggle = ya.sync(function(self)
 end)
 
 ---@type fun(): nil
-local MUI_subscribe_to_mounts = ya.sync(function()
+local MUI_subscribe_to_mounts = ya.sync(function(self)
+	---@cast self PluginState
 	ps.unsub("mount")
 	ps.sub("mount", function()
-		MUI_refresh()
+		ya.mgr_emit("plugin", { self._id, "__refresh", })
 	end)
 end)
 
