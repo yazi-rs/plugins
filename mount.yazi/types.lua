@@ -21,7 +21,7 @@
 ---@field rows fun(entries: MountDescription): table<any> return ui.Rows representation of devices
 ---@field init nil | fun(): nil -- Perform any additional initialization
 ---@field mount nil | fun(desc: MountDescription): any, string -- Command output and error if any
----@field unmount  nil |fun(desc: MountDescription): any, string -- Command output and error if any
+---@field unmount nil |fun(desc: MountDescription): any, string -- Command output and error if any
 ---@field eject nil | fun(desc: MountDescription): any, string -- Command output and error if any
 ---@field operate nil | fun(desc: MountDescription, action: DiskAction): any, string -- Command output and error if any
 ---@field refresh nil | boolean Refresh after running action
