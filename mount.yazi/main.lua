@@ -15,9 +15,7 @@ end)
 local MUI_subscribe_to_mounts = ya.sync(function(self)
 	---@cast self PluginState
 	ps.unsub("mount")
-	ps.sub("mount", function()
-		ya.mgr_emit("plugin", { self._id, "__refresh", })
-	end)
+	ps.sub("mount", function() ya.mgr_emit("plugin", { self._id, "__refresh", }) end)
 end)
 
 ---@type fun(entries: table<number, MountDescription>): nil
