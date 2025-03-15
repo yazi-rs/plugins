@@ -20,18 +20,18 @@ local MUI_subscribe_to_mounts = ya.sync(function(self)
 	end)
 end)
 
----@type fun(): MountDescription
-local MUI_get_selected_entry = ya.sync(function(self)
-	---@cast self PluginState
-	return self.entries[self.cursor + 1]
-end)
-
 ---@type fun(entries: table<number, MountDescription>): nil
 local MUI_set_entries_cache = ya.sync(function(self, entries)
 	---@cast self PluginState
 	self.entries = entries
 	self.cursor = math.max(0, math.min(self.cursor or 0, #self.entries - 1))
 	ya.render()
+end)
+
+---@type fun(): MountDescription
+local MUI_get_selected_entry = ya.sync(function(self)
+	---@cast self PluginState
+	return self.entries[self.cursor + 1]
 end)
 
 ---@type fun(cursor: number): nil
