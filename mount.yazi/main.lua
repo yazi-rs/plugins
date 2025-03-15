@@ -35,10 +35,10 @@ end)
 ---@type fun(cursor: number): nil
 local MUI_update_cursor = ya.sync(function(self, cursor)
 	---@cast self PluginState
-	if #self.entries ~= 0 then
-		self.cursor = ya.clamp(0, self.cursor + cursor, #self.entries - 1)
-	else
+	if #self.entries == 0 then
 		self.cursor = 0
+	else
+		self.cursor = ya.clamp(0, self.cursor + cursor, #self.entries - 1)
 	end
 	ya.render()
 end)
