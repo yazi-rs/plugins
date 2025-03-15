@@ -15,7 +15,7 @@ end)
 local subscribe = ya.sync(function(self)
 	---@cast self PluginState
 	ps.unsub("mount")
-	ps.sub("mount", function() ya.mgr_emit("plugin", { self._id, "refresh", }) end)
+	ps.sub("mount", function() ya.mgr_emit("plugin", { self._id, "refresh" }) end)
 end)
 
 ---@type fun(entries: table<number, MountDescription>): nil
