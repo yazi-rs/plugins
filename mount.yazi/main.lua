@@ -2,6 +2,7 @@
 
 ---@type fun(): nil
 local toggle_ui = ya.sync(function(self)
+	---@cast self PluginState
 	if self.children then
 		Modal:children_remove(self.children)
 		self.children = nil
