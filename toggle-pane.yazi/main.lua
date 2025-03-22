@@ -3,6 +3,7 @@
 
 local function entry(st, job)
 	local R = rt.mgr.ratio
+	local rs = st.reset_state and st.reset_state or R
 	job = type(job) == "string" and { args = { job } } or job
 
 	st.parent = st.parent or R.parent
@@ -14,9 +15,9 @@ local function entry(st, job)
 		st[to] = st[to] == R[to] and 0 or R[to]
 	elseif act == "max" then
 		local max = st[to] == 65535 and R[to] or 65535
-		st.parent = st.parent == 65535 and R.parent or st.parent
-		st.current = st.current == 65535 and R.current or st.current
-		st.preview = st.preview == 65535 and R.preview or st.preview
+		st.parent = st.parent == 65535 and rs.parent or st.parent
+		st.current = st.current == 65535 and rs.current or st.current
+		st.preview = st.preview == 65535 and rs.preview or st.preview
 		st[to] = max
 	end
 
@@ -43,4 +44,8 @@ local function entry(st, job)
 	ya.app_emit("resize", {})
 end
 
-return { entry = entry }
+local function setup(st, opts)
+	st.reset_state = opts.reset_state
+end
+
+return { setup = setup, entry = entry }

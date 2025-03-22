@@ -73,6 +73,23 @@ max_height = 1000
 [max-width]: https://yazi-rs.github.io/docs/configuration/yazi/#preview.max_width
 [max-height]: https://yazi-rs.github.io/docs/configuration/yazi/#preview.max_height
 
+## Tips
+
+If you want to change the default ratio restored after using the maximize function,
+set it up as follow below configuration in your `init.lua` file.
+
+```lua
+	-- restore the preview window from its minimized state
+	require('toggle-pane'):setup({
+		reset_state = {
+			parent = 1,
+			current = 4,
+			preview = 0,
+		}
+	})
+```
+
+
 ## License
 
 This plugin is MIT-licensed. For more information, check the [LICENSE](LICENSE) file.
