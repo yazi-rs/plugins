@@ -3,21 +3,25 @@
 
 local function entry(st, job)
 	local R = rt.mgr.ratio
-	local rs = st.reset_state and st.reset_state or R
 	job = type(job) == "string" and { args = { job } } or job
 
-	st.parent = st.parent or R.parent
-	st.current = st.current or R.current
-	st.preview = st.preview or R.preview
+	st.parent = st.parent and st.parent or R.parent
+	st.current = st.current and st.current or R.current
+	st.preview = st.preview and st.preview or R.preview
+
+	st.bf_state.parent  = st.bf_state.parent and st.bf_state.parent  or R.parent
+	st.bf_state.current = st.bf_state.current and st.bf_state.current  or R.current
+	st.bf_state.preview = st.bf_state.preview and st.bf_state.preview  or R.preview
 
 	local act, to = string.match(job.args[1] or "", "(.-)-(.+)")
 	if act == "min" then
 		st[to] = st[to] == R[to] and 0 or R[to]
+		st.bf_state[to] = st[to]
 	elseif act == "max" then
-		local max = st[to] == 65535 and R[to] or 65535
-		st.parent = st.parent == 65535 and rs.parent or st.parent
-		st.current = st.current == 65535 and rs.current or st.current
-		st.preview = st.preview == 65535 and rs.preview or st.preview
+		local max = st[to] == 65535 and st.bf_state[to] or 65535
+		st.parent = st.parent == 65535 and st.bf_state.parent or st.parent
+		st.current = st.current == 65535 and st.bf_state.current or st.current
+		st.preview = st.preview == 65535 and st.bf_state.preview or st.preview
 		st[to] = max
 	end
 
@@ -45,7 +49,7 @@ local function entry(st, job)
 end
 
 local function setup(st, opts)
-	st.reset_state = opts.reset_state
+	st.bf_state = {}
 end
 
 return { setup = setup, entry = entry }
