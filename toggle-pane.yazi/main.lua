@@ -9,6 +9,7 @@ local function entry(st, job)
 	st.current = st.current and st.current or R.current
 	st.preview = st.preview and st.preview or R.preview
 
+	st.bf_state = st.bf_state and st.bf_state or {}
 	st.bf_state.parent  = st.bf_state.parent and st.bf_state.parent  or R.parent
 	st.bf_state.current = st.bf_state.current and st.bf_state.current  or R.current
 	st.bf_state.preview = st.bf_state.preview and st.bf_state.preview  or R.preview
@@ -48,8 +49,4 @@ local function entry(st, job)
 	ya.app_emit("resize", {})
 end
 
-local function setup(st, opts)
-	st.bf_state = {}
-end
-
-return { setup = setup, entry = entry }
+return { entry = entry }
