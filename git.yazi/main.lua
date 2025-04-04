@@ -1,4 +1,4 @@
---- @since 25.2.26
+--- @since 25.4.4
 
 local WINDOWS = ya.target_family() == "windows"
 
@@ -60,7 +60,7 @@ local function root(cwd)
 		if cha and (cha.is_dir or is_worktree(next)) then
 			return tostring(cwd)
 		end
-		cwd = cwd:parent()
+		cwd = cwd.parent
 	until not cwd
 end
 
@@ -68,11 +68,11 @@ local function bubble_up(changed)
 	local new, empty = {}, Url("")
 	for path, code in pairs(changed) do
 		if code ~= CODES.ignored then
-			local url = Url(path):parent()
+			local url = Url(path).parent
 			while url and url ~= empty do
 				local s = tostring(url)
 				new[s] = (new[s] or CODES.unknown) > code and new[s] or code
-				url = url:parent()
+				url = url.parent
 			end
 		end
 	end
@@ -85,7 +85,7 @@ local function propagate_down(excluded, cwd, repo)
 		if rel:starts_with(path) then
 			-- If `cwd` is a subdirectory of an excluded directory, also mark it as `excluded`
 			new[tostring(cwd)] = CODES.excluded
-		elseif cwd == repo:join(path):parent() then
+		elseif cwd == repo:join(path).parent then
 			-- If `path` is a direct subdirectory of `cwd`, mark it as `ignored`
 			new[path] = CODES.ignored
 		else
@@ -158,7 +158,7 @@ local function setup(st, opts)
 
 	Linemode:children_add(function(self)
 		local url = self._file.url
-		local repo = st.dirs[tostring(url.base or url:parent())] -- TODO: remove this
+		local repo = st.dirs[tostring(url.base)]
 		local code
 		if repo then
 			code = repo == CODES.excluded and CODES.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
@@ -166,7 +166,7 @@ local function setup(st, opts)
 
 		if not code or signs[code] == "" then
 			return ""
-		elseif self._file:is_hovered() then
+		elseif self._file.is_hovered then
 			return ui.Line { " ", signs[code] }
 		else
 			return ui.Line { " ", ui.Span(signs[code]):style(styles[code]) }
@@ -175,7 +175,7 @@ local function setup(st, opts)
 end
 
 local function fetch(_, job)
-	local cwd = job.files[1].url.base or job.files[1].url:parent() -- TODO: remove this
+	local cwd = job.files[1].url.base
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
