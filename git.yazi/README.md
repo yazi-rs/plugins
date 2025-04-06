@@ -15,7 +15,7 @@ ya pack -a yazi-rs/plugins:git
 
 ## Setup
 
-Add the following to your `~/.config/yazi/init.lua`:
+Add the following to your `~/.config/yazi/main.lua`:
 
 ```lua
 require("git"):setup()
