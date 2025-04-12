@@ -16,6 +16,7 @@ For specific installation commands and configuration instructions, check the ind
 - [git.yazi](git.yazi) - Show the status of Git file changes as linemode in the file list.
 - [mount.yazi](mount.yazi) - A mount manager for Yazi, providing disk mount, unmount, and eject functionality.
 - [vcs-files.yazi](vcs-files.yazi) - Show Git file changes in Yazi.
+- [piper.yazi](piper.yazi) - Pipe any shell command as a previewer.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [chmod.yazi](chmod.yazi) - Execute `chmod` on the selected files to change their mode.
 - [mime-ext.yazi](mime-ext.yazi) - A mime-type provider based on a file extension database, replacing the builtin `file(1)` to speed up mime-type retrieval at the expense of accuracy.
