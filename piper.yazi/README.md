@@ -1,0 +1,64 @@
+# piper.yazi
+
+Pipe any shell command as a previewer.
+
+## Installation
+
+```sh
+ya pack -a yazi-rs/plugins:piper
+```
+
+## Usage
+
+Piper is a general-purpose previewer - you can pass any shell command to `piper` and it will use the command's output as the preview content.
+
+It accepts a string parameter, which is the shell command to be executed, for example:
+
+```toml
+# ~/.config/yazi/yaiz.toml
+[[plugin.prepend_previewers]]
+name = "*"
+run  = 'piper -- echo "$1"'
+```
+
+This will set `piper` as the previewer for all file types and use `$1` (file path) as the preview content.
+
+## Variables
+
+Available variables:
+
+- `$w`: the width of the preview area.
+- `$h`: the height of the preview area.
+- `$1`: the path to the file being previewed.
+
+## Examples
+
+Here are some configuration examples:
+
+### Preview CSV with [`bat`](https://github.com/sharkdp/bat)
+
+```toml
+[[plugin.prepend_previewers]]
+name = "*.csv"
+run  = 'piper -- bat -p --color=always "$1"'
+```
+
+### Preview Markdown with [`glow`](https://github.com/charmbracelet/glow)
+
+```toml
+[[plugin.prepend_previewers]]
+name = "*.md"
+run  = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
+```
+
+### Preview directory tree with [`eza`](https://github.com/eza-community/eza)
+
+```toml
+[[plugin.prepend_previewers]]
+name = "*/"
+run  = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"'
+```
+
+## License
+
+This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.
