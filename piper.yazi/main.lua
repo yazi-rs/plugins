@@ -1,3 +1,5 @@
+--- @since 25.4.8
+
 local M = {}
 
 local function fail(job, s)
