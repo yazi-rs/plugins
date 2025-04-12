@@ -61,6 +61,18 @@ name = "*/"
 run  = 'piper -- eza -TL=3 --color=always --icons=always --group-directories-first --no-quotes "$1"'
 ```
 
+### Use [`hexyl`](https://github.com/sharkdp/hexyl) as fallback previewer
+
+Yazi defaults to using [`file -bL "$1"`](https://github.com/sxyazi/yazi/blob/main/yazi-plugin/preset/plugins/file.lua) if there's no matched previewer.
+
+This example uses `hexyl` as a fallback previewer instead of `file`.
+
+```toml
+[[plugin.append_previewers]]
+name = "*"
+run  = 'piper -- hexyl --border=none --terminal-width=$w "$1"'
+```
+
 ## License
 
 This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.
