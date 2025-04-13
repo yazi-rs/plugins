@@ -26,7 +26,7 @@ function M:peek(job)
 	end
 
 	local limit = job.area.h
-	local i, lines = 0, ""
+	local i, lines = 0, {}
 	repeat
 		local next, event = child:read_line()
 		if event == 1 then
@@ -37,7 +37,7 @@ function M:peek(job)
 
 		i = i + 1
 		if i > job.skip then
-			lines = lines .. next
+			lines[#lines + 1] = next
 		end
 	until i >= job.skip + limit
 
@@ -45,13 +45,32 @@ function M:peek(job)
 	if job.skip > 0 and i < job.skip + limit then
 		ya.mgr_emit("peek", { math.max(0, i - limit), only_if = job.file.url, upper_bound = true })
 	else
-		lines = lines:gsub("\t", string.rep(" ", rt.preview.tab_size))
-		ya.preview_widgets(job, {
-			ui.Text.parse(lines):area(job.area),
-		})
+		ya.preview_widgets(job, { M.format(job, lines) })
 	end
 end
 
 function M:seek(job) require("code"):seek(job) end
+
+function M.format(job, lines)
+	local format = job.args.format
+	if format ~= "url" then
+		local s = table.concat(lines, ""):gsub("\t", string.rep(" ", rt.preview.tab_size))
+		return ui.Text.parse(s):area(job.area)
+	end
+
+	for i = 1, #lines do
+		lines[i] = lines[i]:gsub("[\r\n]+$", "")
+
+		local icon = File({
+			url = Url(lines[i]),
+			cha = Cha { kind = lines[i]:sub(-1) == "/" and 1 or 0 },
+		}):icon()
+
+		if icon then
+			lines[i] = ui.Line { ui.Span(" " .. icon.text .. " "):style(icon.style), lines[i] }
+		end
+	end
+	return ui.Text(lines):area(job.area)
+end
 
 return M

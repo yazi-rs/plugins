@@ -35,6 +35,16 @@ Available variables:
 
 Here are some configuration examples:
 
+### Preview tarballs with [`tar`](https://man7.org/linux/man-pages/man1/tar.1.html)
+
+```toml
+[[plugin.prepend_previewers]]
+name = "*.tar*"
+run  = 'piper --format=url -- tar tf "$1"'
+```
+
+In this example, `--format=url` tells `piper` to parse the `tar` output as file URLs, so you'll be able to get a list of files with icons.
+
 ### Preview CSV with [`bat`](https://github.com/sharkdp/bat)
 
 ```toml
