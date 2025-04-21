@@ -53,6 +53,8 @@ name = "*.csv"
 run  = 'piper -- bat -p --color=always "$1"'
 ```
 
+Note that certain distributions might use a different name for `bat`, like Debian and Ubuntu uses `batcat` instead, so please adjust accordingly.
+
 ### Preview Markdown with [`glow`](https://github.com/charmbracelet/glow)
 
 ```toml
