@@ -40,7 +40,12 @@ local function entry(st, job)
 		st.parent, st.current, st.preview = nil, nil, nil
 	end
 
-	ya.app_emit("resize", {})
+	-- TODO: remove this in the future
+	if ya.emit then
+		ya.emit("app:resize", {})
+	else
+		ya.app_emit("resize", {})
+	end
 end
 
 return { entry = entry }
