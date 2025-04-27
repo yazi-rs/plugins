@@ -20,6 +20,7 @@ For specific installation commands and configuration instructions, check the ind
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [chmod.yazi](chmod.yazi) - Execute `chmod` on the selected files to change their mode.
 - [mime-ext.yazi](mime-ext.yazi) - A mime-type provider based on a file extension database, replacing the builtin `file(1)` to speed up mime-type retrieval at the expense of accuracy.
+- [smart-paste.yazi](smart-paste.yazi) - Paste files into the hovered directory or to the CWD if hovering over a file.
 - [diff.yazi](diff.yazi) - Diff the selected file with the hovered file, create a living patch, and copy it to the clipboard.
 - [no-status.yazi](no-status.yazi) - Remove the status bar.
 - [mactag.yazi](mactag.yazi) - Bring macOS's awesome tagging feature to Yazi! The plugin is only available for macOS just like the name says.
