@@ -24,6 +24,3 @@ desc = "Paste into the hovered directory or CWD"
 ## License
 
 This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.
-
-[open]: https://yazi-rs.github.io/docs/configuration/keymap/#manager.open
-[enter]: https://yazi-rs.github.io/docs/configuration/keymap/#manager.enter
