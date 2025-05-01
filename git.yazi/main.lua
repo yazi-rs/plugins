@@ -1,10 +1,21 @@
 --- @since 25.5.31
 
+---@alias Changes table<string, CODES>
+
+---@class State
+---@field dirs table<string, string|CODES> Mapping between a directory and its corresponding repository
+---@field repos table<string, Changes> Mapping between a repository and the status of each of its files
+
+---@class Options
+---@field order number The order in which the status is displayed
+---@field renamed boolean Whether to include renamed files in the status (or treat them as modified)
+
 local WINDOWS = ya.target_family() == "windows"
 
 -- The code of supported git status,
 -- also used to determine which status to show for directories when they contain different statuses
 -- see `bubble_up`
+---@enum CODES
 local CODES = {
 	excluded = 100, -- ignored directory
 	ignored = 6, -- ignored file
@@ -26,6 +37,8 @@ local PATTERNS = {
 	{ "[AD][AD]", CODES.updated },
 }
 
+---@param line string
+---@return CODES, string
 local function match(line)
 	local signs = line:sub(1, 2)
 	for _, p in ipairs(PATTERNS) do
@@ -41,9 +54,12 @@ local function match(line)
 		else
 			return code, path
 		end
+		---@diagnostic disable-next-line: missing-return
 	end
 end
 
+---@param cwd Url
+---@return string?
 local function root(cwd)
 	local is_worktree = function(url)
 		local file, head = io.open(tostring(url)), nil
@@ -64,6 +80,8 @@ local function root(cwd)
 	until not cwd
 end
 
+---@param changed Changes
+---@return Changes
 local function bubble_up(changed)
 	local new, empty = {}, Url("")
 	for path, code in pairs(changed) do
@@ -79,6 +97,10 @@ local function bubble_up(changed)
 	return new
 end
 
+---@param excluded string[]
+---@param cwd Url
+---@param repo Url
+---@return Changes
 local function propagate_down(excluded, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
 	for _, path in ipairs(excluded) do
@@ -95,7 +117,12 @@ local function propagate_down(excluded, cwd, repo)
 	return new
 end
 
+---@param cwd string
+---@param repo string
+---@param changed Changes
 local add = ya.sync(function(st, cwd, repo, changed)
+	---@cast st State
+
 	st.dirs[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
 	for path, code in pairs(changed) do
@@ -116,7 +143,10 @@ local add = ya.sync(function(st, cwd, repo, changed)
 	end
 end)
 
+---@param cwd string
 local remove = ya.sync(function(st, cwd)
+	---@cast st State
+
 	local repo = st.dirs[cwd]
 	if not repo then
 		return
@@ -141,9 +171,11 @@ local remove = ya.sync(function(st, cwd)
 	st.repos[repo] = nil
 end)
 
+---@param st State
+---@param opts Options
 local function setup(st, opts)
-	st.dirs = {} -- Mapping between a directory and its corresponding repository
-	st.repos = {} -- Mapping between a repository and the status of each of its files
+	st.dirs = {}
+	st.repos = {}
 
 	opts = opts or {}
 	opts.order = opts.order or 1500
@@ -185,7 +217,8 @@ local function setup(st, opts)
 end
 
 local function fetch(_, job)
-	local cwd = job.files[1].url.base
+	local files = job.files ---@type File[]
+	local cwd = files[1].url.base
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
@@ -193,7 +226,7 @@ local function fetch(_, job)
 	end
 
 	local paths = {}
-	for _, file in ipairs(job.files) do
+	for _, file in ipairs(files) do
 		paths[#paths + 1] = tostring(file.url)
 	end
 
@@ -218,7 +251,7 @@ local function fetch(_, job)
 		end
 	end
 
-	if job.files[1].cha.is_dir then
+	if files[1].cha.is_dir then
 		ya.dict_merge(changed, bubble_up(changed))
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
