@@ -18,6 +18,8 @@ Add the following to your `~/.config/yazi/init.lua`:
 require("git"):setup {
 	-- Order of status signs showing in the linemode
 	order = 1500,
+	-- Whether to include `renamed` files in the status (or treat them as `deleted` and `added`)
+	renamed = false,
 }
 ```
 
