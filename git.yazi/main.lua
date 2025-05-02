@@ -8,8 +8,8 @@
 ---@field repos table<string, Changes> Mapping between a repository and the status of each of its files
 
 ---@class Options
----@field order number The order in which the status is displayed
----@field renamed boolean Whether to include renamed files in the status (or treat them as modified)
+---@field order number The order in which the status icon is displayed
+---@field renamed boolean Whether to include `renamed` files in the status (or treat them as `deleted` and `added`)
 
 local WINDOWS = ya.target_family() == "windows"
 
