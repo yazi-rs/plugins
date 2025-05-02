@@ -168,14 +168,22 @@ local remove = ya.sync(function(st, cwd)
 	st.repos[repo] = nil
 end)
 
+---@return Options
+local get_opts = ya.sync(function(st)
+	---@cast st State
+	return st.opts
+end)
+
 ---@param st State
 ---@param opts Options
 local function setup(st, opts)
-	st.dirs = {}
-	st.repos = {}
-
 	opts = opts or {}
 	opts.order = opts.order or 1500
+	opts.renamed = opts.renamed or false
+
+	st.opts = opts
+	st.dirs = {}
+	st.repos = {}
 
 	local t = th.git or {}
 	local styles = {
@@ -230,11 +238,17 @@ local function fetch(_, job)
 	end
 
 	-- stylua: ignore
-	local output, err = Command("git")
-		:cwd(repo)
+	local cmd = Command("git")
 		:args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--ignored=matching" })
 		:stdout(Command.PIPED)
-		:output()
+
+	if get_opts().renamed then
+		cmd = cmd:cwd(repo)
+	else
+		cmd = cmd:cwd(tostring(cwd)):args({ "--no-renames" }):args(paths)
+	end
+
+	local output, err = cmd:output()
 	if not output then
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
