@@ -1,16 +1,29 @@
 --- @since 25.4.4
 
+---@alias Changes table<string, CODES>
+
+---@class State
+---@field opts Options The options to use in `fetch()` context
+---@field dirs table<string, string|CODES> Mapping between a directory and its corresponding repository
+---@field repos table<string, Changes> Mapping between a repository and the status of each of its files
+
+---@class Options
+---@field order number The order in which the status icon is displayed
+---@field renamed boolean Whether to include `renamed` files in the status (or treat them as `deleted` and `added`)
+
 local WINDOWS = ya.target_family() == "windows"
 
 -- The code of supported git status,
 -- also used to determine which status to show for directories when they contain different statuses
 -- see `bubble_up`
+---@enum CODES
 local CODES = {
 	excluded = 100, -- ignored directory
-	ignored = 6, -- ignored file
-	untracked = 5,
-	modified = 4,
-	added = 3,
+	ignored = 7, -- ignored file
+	untracked = 6,
+	modified = 5,
+	added = 4,
+	renamed = 3,
 	deleted = 2,
 	updated = 1,
 	unknown = 0,
@@ -21,17 +34,25 @@ local PATTERNS = {
 	{ "?$", CODES.untracked },
 	{ "[MT]", CODES.modified },
 	{ "[AC]", CODES.added },
+	{ "R", CODES.renamed },
 	{ "D", CODES.deleted },
 	{ "U", CODES.updated },
 	{ "[AD][AD]", CODES.updated },
 }
 
+---@param line string
+---@return CODES, string
 local function match(line)
 	local signs = line:sub(1, 2)
 	for _, p in ipairs(PATTERNS) do
 		local path, pattern, code = nil, p[1], p[2]
 		if signs:find(pattern) then
-			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
+			if code == CODES.renamed then
+				path = line:match("^.+-> (.+)$")
+				path = path:sub(1, 1) == '"' and path:sub(2, -2) or path
+			else
+				path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
+			end
 			path = WINDOWS and path:gsub("/", "\\") or path
 		end
 		if not path then
@@ -41,9 +62,12 @@ local function match(line)
 		else
 			return code, path
 		end
+		---@diagnostic disable-next-line: missing-return
 	end
 end
 
+---@param cwd Url
+---@return string?
 local function root(cwd)
 	local is_worktree = function(url)
 		local file, head = io.open(tostring(url)), nil
@@ -64,6 +88,8 @@ local function root(cwd)
 	until not cwd
 end
 
+---@param changed Changes
+---@return Changes
 local function bubble_up(changed)
 	local new, empty = {}, Url("")
 	for path, code in pairs(changed) do
@@ -79,6 +105,10 @@ local function bubble_up(changed)
 	return new
 end
 
+---@param excluded string[]
+---@param cwd Url
+---@param repo Url
+---@return Changes
 local function propagate_down(excluded, cwd, repo)
 	local new, rel = {}, cwd:strip_prefix(repo)
 	for _, path in ipairs(excluded) do
@@ -95,7 +125,12 @@ local function propagate_down(excluded, cwd, repo)
 	return new
 end
 
+---@param cwd string
+---@param repo string
+---@param changed Changes
 local add = ya.sync(function(st, cwd, repo, changed)
+	---@cast st State
+
 	st.dirs[cwd] = repo
 	st.repos[repo] = st.repos[repo] or {}
 	for path, code in pairs(changed) do
@@ -111,7 +146,10 @@ local add = ya.sync(function(st, cwd, repo, changed)
 	ya.render()
 end)
 
+---@param cwd string
 local remove = ya.sync(function(st, cwd)
+	---@cast st State
+
 	local repo = st.dirs[cwd]
 	if not repo then
 		return
@@ -131,12 +169,22 @@ local remove = ya.sync(function(st, cwd)
 	st.repos[repo] = nil
 end)
 
-local function setup(st, opts)
-	st.dirs = {} -- Mapping between a directory and its corresponding repository
-	st.repos = {} -- Mapping between a repository and the status of each of its files
+---@return Options
+local get_opts = ya.sync(function(st)
+	---@cast st State
+	return st.opts
+end)
 
+---@param st State
+---@param opts Options
+local function setup(st, opts)
 	opts = opts or {}
 	opts.order = opts.order or 1500
+	opts.renamed = opts.renamed or false
+
+	st.opts = opts
+	st.dirs = {}
+	st.repos = {}
 
 	local t = th.git or {}
 	local styles = {
@@ -144,6 +192,7 @@ local function setup(st, opts)
 		[CODES.untracked] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("magenta"),
 		[CODES.modified] = t.modified and ui.Style(t.modified) or ui.Style():fg("yellow"),
 		[CODES.added] = t.added and ui.Style(t.added) or ui.Style():fg("green"),
+		[CODES.renamed] = t.renamed and ui.Style(t.renamed) or ui.Style():fg("yellow"),
 		[CODES.deleted] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("red"),
 		[CODES.updated] = t.updated and ui.Style(t.updated) or ui.Style():fg("yellow"),
 	}
@@ -152,6 +201,7 @@ local function setup(st, opts)
 		[CODES.untracked] = t.untracked_sign or "?",
 		[CODES.modified] = t.modified_sign or "",
 		[CODES.added] = t.added_sign or "",
+		[CODES.renamed] = t.renamed_sign or "",
 		[CODES.deleted] = t.deleted_sign or "",
 		[CODES.updated] = t.updated_sign or "",
 	}
@@ -175,7 +225,8 @@ local function setup(st, opts)
 end
 
 local function fetch(_, job)
-	local cwd = job.files[1].url.base
+	local files = job.files ---@type File[]
+	local cwd = files[1].url.base
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
@@ -183,17 +234,22 @@ local function fetch(_, job)
 	end
 
 	local paths = {}
-	for _, file in ipairs(job.files) do
+	for _, file in ipairs(files) do
 		paths[#paths + 1] = tostring(file.url)
 	end
 
 	-- stylua: ignore
-	local output, err = Command("git")
-		:cwd(tostring(cwd))
-		:args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
-		:args(paths)
+	local cmd = Command("git")
+		:args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--ignored=matching" })
 		:stdout(Command.PIPED)
-		:output()
+
+	if get_opts().renamed then
+		cmd = cmd:cwd(repo)
+	else
+		cmd = cmd:cwd(tostring(cwd)):args({ "--no-renames" }):args(paths)
+	end
+
+	local output, err = cmd:output()
 	if not output then
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
@@ -208,7 +264,7 @@ local function fetch(_, job)
 		end
 	end
 
-	if job.files[1].cha.is_dir then
+	if files[1].cha.is_dir then
 		ya.dict_merge(changed, bubble_up(changed))
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
