@@ -15,7 +15,7 @@ Piper is a general-purpose previewer - you can pass any shell command to `piper`
 It accepts a string parameter, which is the shell command to be executed, for example:
 
 ```toml
-# ~/.config/yazi/yaiz.toml
+# ~/.config/yazi/yazi.toml
 [[plugin.prepend_previewers]]
 name = "*"
 run  = 'piper -- echo "$1"'
