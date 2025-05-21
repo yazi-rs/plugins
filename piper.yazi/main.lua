@@ -10,13 +10,13 @@ end
 
 function M:peek(job)
 	local child, err = Command("sh")
-		:args({
+		:arg({
 			"-c",
 			job.args[1],
 		})
 		:env("w", job.area.w)
 		:env("h", job.area.h)
-		:args({ "sh", tostring(job.file.url) })
+		:arg({ "sh", tostring(job.file.url) })
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 		:spawn()
