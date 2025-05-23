@@ -3,7 +3,10 @@
 local function setup(_, opts)
 	local type = opts and opts.type or ui.Border.ROUNDED
 	local old_build = Tab.build
-	local no_borders = opts and opts.no_borders or false
+	local borders = true
+	if opts and opts.borders ~= nil then
+		borders = opts.borders
+	end
 
 	Tab.build = function(self, ...)
 		local c = self._chunks
@@ -13,16 +16,19 @@ local function setup(_, opts)
 			c[3]:pad(ui.Pad.y(1)),
 		}
 
-		if not no_borders then
+		if borders then
 			local bar = function(c, x, y)
 				if x <= 0 or x == self._area.w - 1 or th.mgr.border_symbol ~= "│" then
 					return ui.Bar(ui.Bar.TOP)
 				end
 
 				return ui.Bar(ui.Bar.TOP)
-					:area(
-						ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) }
-					)
+					:area(ui.Rect {
+						x = x,
+						y = math.max(0, y),
+						w = ya.clamp(0, self._area.w - x, 1),
+						h = math.min(1, self._area.h),
+					})
 					:symbol(c)
 			end
 
