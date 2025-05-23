@@ -24,6 +24,8 @@ Or you can customize the border type:
 require("full-border"):setup {
 	-- Available values: ui.Border.PLAIN, ui.Border.ROUNDED
 	type = ui.Border.ROUNDED,
+	-- Available values: false, true
+	borders = true,
 }
 ```
 
