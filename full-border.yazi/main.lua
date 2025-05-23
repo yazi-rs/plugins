@@ -6,18 +6,6 @@ local function setup(_, opts)
 	local no_borders = opts and opts.no_borders or false
 
 	Tab.build = function(self, ...)
-		local bar = function(c, x, y)
-			if x <= 0 or x == self._area.w - 1 or th.mgr.border_symbol ~= "│" then
-				return ui.Bar(ui.Bar.TOP)
-			end
-
-			return ui.Bar(ui.Bar.TOP)
-				:area(
-					ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) }
-				)
-				:symbol(c)
-		end
-
 		local c = self._chunks
 		self._chunks = {
 			c[1]:pad(ui.Pad.y(1)),
@@ -26,6 +14,18 @@ local function setup(_, opts)
 		}
 
 		if not no_borders then
+			local bar = function(c, x, y)
+				if x <= 0 or x == self._area.w - 1 or th.mgr.border_symbol ~= "│" then
+					return ui.Bar(ui.Bar.TOP)
+				end
+
+				return ui.Bar(ui.Bar.TOP)
+					:area(
+						ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) }
+					)
+					:symbol(c)
+			end
+
 			local style = th.mgr.border_style
 			self._base = ya.list_merge(self._base or {}, {
 				ui.Border(ui.Border.ALL):area(self._area):type(type):style(style),
