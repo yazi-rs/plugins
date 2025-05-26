@@ -10,25 +10,21 @@ ya pack -a yazi-rs/plugins:types
 
 ## Usage
 
-### Neovim
+Create a `.luarc.json` file in your project root:
 
-```lua
-require("lspconfig").lua_ls.setup {
-  settings = {
-    Lua = {
-      workspace = {
-        library = {
-          vim.fn.expand("$HOME/.config/yazi/plugins/types.yazi"),
-        },
-      },
-    },
-  },
+<!-- prettier-ignore -->
+```json5
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "Lua 5.4",
+  "workspace.library": [
+    // You may need to change the path to your local plugin directory
+    "~/.config/yazi/plugins/types.yazi/",
+  ],
 }
 ```
 
-### Other editors
-
-PRs are welcome!
+See https://luals.github.io/wiki/configuration/ for more information on how to configure LuaLS.
 
 ## Contributing
 
