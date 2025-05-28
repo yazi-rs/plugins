@@ -1,7 +1,7 @@
 
 -- luacheck: globals Command Url cx fs ps rt th ui ya
 
----@alias undefined any
+---@alias unknown any
 
 ---@alias Color string
 ---@alias Direction integer
@@ -613,7 +613,7 @@ ya = ya
 -- | `self`  | `Self`            |
 -- | `align` | [`Align`](#align) |
 -- | Return  | `self`            |
----@field align fun(self: self, align: Align): self
+---@field align fun(self: self, align: ui.Align): self
 -- Whether the line is visible, i.e. includes any printable characters.
 -- | In/Out | Type      |
 -- | ------ | --------- |
@@ -664,14 +664,14 @@ ya = ya
 -- | `self`  | `Self`            |
 -- | `align` | [`Align`](#align) |
 -- | Return  | `self`            |
----@field align fun(self: self, align: Align): self
+---@field align fun(self: self, align: ui.Align): self
 -- Set the wrap of the text.
 -- | In/Out | Type            |
 -- | ------ | --------------- |
 -- | `self` | `Self`          |
 -- | `wrap` | [`Wrap`](#wrap) |
 -- | Return | `self`          |
----@field wrap fun(self: self, wrap: Wrap): self
+---@field wrap fun(self: self, wrap: ui.Wrap): self
 -- Calculate the maximum width of the text across all lines.
 -- | In/Out | Type      |
 -- | ------ | --------- |
@@ -970,7 +970,7 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field style fun(self: self, style: ui.Style): self
----@overload fun(edge: Edge): ui.Border
+---@overload fun(edge: ui.Edge): ui.Border
 
 -- Create a gauge:
 -- ```lua
@@ -1042,73 +1042,73 @@ ya = ya
 ---@overload fun(): ui.Clear
 
 -- Align is used to set the alignment of an element, such as a [Line](#line) or [Text](#text).
----@class (exact) Align
+---@class (exact) ui.Align
 -- Align to the left.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field LEFT undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field LEFT unknown
 -- Align to the center.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field CENTER undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field CENTER unknown
 -- Align to the right.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field RIGHT undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field RIGHT unknown
 
 -- 
----@class (exact) Wrap
+---@class (exact) ui.Wrap
 -- Disables wrapping.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field NO undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field NO unknown
 -- Enables wrapping.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field YES undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field YES unknown
 -- Enables wrapping and trims the leading whitespace.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field TRIM undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field TRIM unknown
 
 -- 
----@class (exact) Edge
+---@class (exact) ui.Edge
 -- No edge is applied.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field NONE undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field NONE unknown
 -- Applies the top edge.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field TOP undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field TOP unknown
 -- Applies the right edge.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field RIGHT undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field RIGHT unknown
 -- Applies the bottom edge.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field BOTTOM undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field BOTTOM unknown
 -- Applies the left edge.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field LEFT undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field LEFT unknown
 -- Applies all edges.
--- |      |             |
--- | ---- | ----------- |
--- | Type | `undefined` |
----@field ALL undefined
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `unknown` |
+---@field ALL unknown
 
 
 -- You can access all states within [sync context](/docs/plugins/overview#sync-context) through `cx`.
@@ -1609,9 +1609,9 @@ ya = ya
 -- ```
 -- | In/Out    | Type              |
 -- | --------- | ----------------- |
--- | Return    | `undefined`       |
+-- | Return    | `unknown`         |
 -- | Available | Sync context only |
----@field render fun(): undefined
+---@field render fun(): unknown
 -- Send a command to the [`[manager]`](/docs/configuration/keymap#manager) without waiting for the executor to execute:
 -- ```lua
 -- ya.mgr_emit("my-cmd", { "hello", 123, foo = true, bar_baz = "world" })
@@ -1622,24 +1622,24 @@ ya = ya
 -- | ------ | --------------------------------- | --------------------------------------------------------------------------------------- |
 -- | `cmd`  | `string`                          | -                                                                                       |
 -- | `args` | `{ [integer\|string]: Sendable }` | Table values are [Sendable][sendable] that follow [Ownership transfer rules][ownership] |
--- | Return | `undefined`                       | -                                                                                       |
----@field mgr_emit fun(cmd: string, args: { [integer|string]: Sendable }): undefined
+-- | Return | `unknown`                         | -                                                                                       |
+---@field mgr_emit fun(cmd: string, args: { [integer|string]: Sendable }): unknown
 -- Display the image of `url` within the `rect`, and the image will downscale to fit the area automatically:
 -- | In/Out    | Type               |
 -- | --------- | ------------------ |
 -- | `url`     | `Url`              |
 -- | `rect`    | `Rect`             |
--- | Return    | `undefined`        |
+-- | Return    | `unknown`          |
 -- | Available | Async context only |
----@field image_show fun(url: Url, rect: ui.Rect): undefined
+---@field image_show fun(url: Url, rect: ui.Rect): unknown
 -- Pre-cache the image of `src` as `dist` based on user-configured [`max_width` and `max_height`](/docs/configuration/yazi#preview).
 -- | In/Out    | Type               |
 -- | --------- | ------------------ |
 -- | `src`     | `Url`              |
 -- | `dist`    | `Url`              |
--- | Return    | `undefined`        |
+-- | Return    | `unknown`          |
 -- | Available | Async context only |
----@field image_precache fun(src: Url, dist: Url): undefined
+---@field image_precache fun(src: Url, dist: Url): unknown
 -- Prompt users with a set of available keys:
 -- ```lua
 -- local cand = ya.which {
@@ -1729,30 +1729,30 @@ ya = ya
 -- | In/Out | Type                                                                   |
 -- | ------ | ---------------------------------------------------------------------- |
 -- | `opts` | `{ title: string, content: string, timeout: number?, level: string? }` |
--- | Return | `undefined`                                                            |
----@field notify fun(opts: { title: string, content: string, timeout: number?, level: string? }): undefined
+-- | Return | `unknown`                                                              |
+---@field notify fun(opts: { title: string, content: string, timeout: number?, level: string? }): unknown
 -- Append messages to [the log file](/docs/plugins/overview#logging) at the debug level:
 -- ```lua
 -- ya.dbg("Hello", "World!")                       -- Multiple arguments are supported
 -- ya.dbg({ foo = "bar", baz = 123, qux = true })  -- Any type of data is supported
 -- ```
--- | In/Out | Type        |
--- | ------ | ----------- |
--- | `msg`  | `any`       |
--- | `...`  | `any`       |
--- | Return | `undefined` |
----@field dbg fun(msg: any, ...: any): undefined
+-- | In/Out | Type      |
+-- | ------ | --------- |
+-- | `msg`  | `any`     |
+-- | `...`  | `any`     |
+-- | Return | `unknown` |
+---@field dbg fun(msg: any, ...: any): unknown
 -- Append messages to [the log file](/docs/plugins/overview#logging) at the error level:
 -- ```lua
 -- ya.err("Hello", "World!")                       -- Multiple arguments are supported
 -- ya.err({ foo = "bar", baz = 123, qux = true })  -- Any type of data is supported
 -- ```
--- | In/Out | Type        |
--- | ------ | ----------- |
--- | `msg`  | `any`       |
--- | `...`  | `any`       |
--- | Return | `undefined` |
----@field err fun(msg: any, ...: any): undefined
+-- | In/Out | Type      |
+-- | ------ | --------- |
+-- | `msg`  | `any`     |
+-- | `...`  | `any`     |
+-- | Return | `unknown` |
+---@field err fun(msg: any, ...: any): unknown
 -- Preview the file as code into the specified area:
 -- ```lua
 -- ya.preview_code {
@@ -1795,9 +1795,9 @@ ya = ya
 -- | --------- | --------------------------------------------------------- |
 -- | `opts`    | `{ area: Rect, file: File, mime: string, skip: integer }` |
 -- | `widgets` | `Renderable[]`                                            |
--- | Return    | `undefined`                                               |
+-- | Return    | `unknown`                                                 |
 -- | Available | Async context only                                        |
----@field preview_widgets fun(opts: { area: ui.Rect, file: File, mime: string, skip: integer }, widgets: Renderable[]): undefined
+---@field preview_widgets fun(opts: { area: ui.Rect, file: File, mime: string, skip: integer }, widgets: Renderable[]): unknown
 -- See [Async context](/docs/plugins/overview#async-context).
 -- | In/Out | Type                 |
 -- | ------ | -------------------- |
@@ -1875,9 +1875,9 @@ ya = ya
 -- | In/Out    | Type               |
 -- | --------- | ------------------ |
 -- | `secs`    | `number`           |
--- | Return    | `undefined`        |
+-- | Return    | `unknown`          |
 -- | Available | Async context only |
----@field sleep fun(secs: number): undefined
+---@field sleep fun(secs: number): unknown
 -- Returns the id of the current user.
 -- | In/Out    | Type                   |
 -- | --------- | ---------------------- |
@@ -1932,12 +1932,12 @@ ya = ya
 -- ```
 -- Since the `kind` is used globally, to add the plugin name as the prefix is a best practice.
 -- For example, the combination of the plugin `my-plugin` and the kind `event1` would be `my-plugin-event1`.
--- | In/Out  | Type        | Note                                                                            |
--- | ------- | ----------- | ------------------------------------------------------------------------------- |
--- | `kind`  | `string`    | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
--- | `value` | `Sendable`  | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
--- | Return  | `undefined` | -                                                                               |
----@field pub fun(kind: string, value: Sendable): undefined
+-- | In/Out  | Type       | Note                                                                            |
+-- | ------- | ---------- | ------------------------------------------------------------------------------- |
+-- | `kind`  | `string`   | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
+-- | `value` | `Sendable` | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
+-- | Return  | `unknown`  | -                                                                               |
+---@field pub fun(kind: string, value: Sendable): unknown
 -- Publish a message to a specific instance with `receiver` as the ID:
 -- ```lua
 -- ps.pub_to(1711957283332834, "greeting", "Hello, World!")
@@ -1946,13 +1946,13 @@ ya = ya
 -- - Local - `receiver` is the current instance, and is subscribed to this `kind` via `sub()`, it will receive the message.
 -- - Remote - `receiver` isn't the current instance, and is subscribed to this `kind` via `sub_remote()`, it will receive the message.
 -- - Broadcast - `receiver` is `0`, all remote instances subscribed to this `kind` via `sub_remote()` will receive the message.
--- | In/Out     | Type        | Note                                                                            |
--- | ---------- | ----------- | ------------------------------------------------------------------------------- |
--- | `receiver` | `integer`   | -                                                                               |
--- | `kind`     | `string`    | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
--- | `value`    | `Sendable`  | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
--- | Return     | `undefined` | -                                                                               |
----@field pub_to fun(receiver: integer, kind: string, value: Sendable): undefined
+-- | In/Out     | Type       | Note                                                                            |
+-- | ---------- | ---------- | ------------------------------------------------------------------------------- |
+-- | `receiver` | `integer`  | -                                                                               |
+-- | `kind`     | `string`   | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
+-- | `value`    | `Sendable` | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
+-- | Return     | `unknown`  | -                                                                               |
+---@field pub_to fun(receiver: integer, kind: string, value: Sendable): unknown
 -- Subscribe to local messages of `kind` and call the `callback` handler for it:
 -- ```lua
 -- -- The same `kind` from the same plugin can only be subscribed once,
@@ -1966,33 +1966,33 @@ ya = ya
 -- | ---------- | --------------------- | --------------------------------------------------------------------- |
 -- | `kind`     | `string`              | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
 -- | `callback` | `fun(body: Sendable)` | No time-consuming work should be done in the callback                 |
--- | Return     | `undefined`           | -                                                                     |
----@field sub fun(kind: string, callback: fun(body: Sendable)): undefined
+-- | Return     | `unknown`             | -                                                                     |
+---@field sub fun(kind: string, callback: fun(body: Sendable)): unknown
 -- Same as `sub()`, except it subscribes to remote messages of this `kind` instead of local.
 -- | In/Out     | Type                  | Note            |
 -- | ---------- | --------------------- | --------------- |
 -- | `kind`     | `string`              | Same as `sub()` |
 -- | `callback` | `fun(body: Sendable)` | Same as `sub()` |
--- | Return     | `undefined`           | -               |
----@field sub_remote fun(kind: string, callback: fun(body: Sendable)): undefined
+-- | Return     | `unknown`             | -               |
+---@field sub_remote fun(kind: string, callback: fun(body: Sendable)): unknown
 -- Unsubscribe from local messages of this `kind`:
 -- ```lua
 -- ps.unsub("my-message")
 -- ```
--- | In/Out | Type        | Note                                                                  |
--- | ------ | ----------- | --------------------------------------------------------------------- |
--- | `kind` | `string`    | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
--- | Return | `undefined` | -                                                                     |
----@field unsub fun(kind: string): undefined
+-- | In/Out | Type      | Note                                                                  |
+-- | ------ | --------- | --------------------------------------------------------------------- |
+-- | `kind` | `string`  | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
+-- | Return | `unknown` | -                                                                     |
+---@field unsub fun(kind: string): unknown
 -- Unsubscribe from remote messages of this `kind`:
 -- ```lua
 -- ps.unsub_remote("my-message")
 -- ```
--- | In/Out | Type        | Note              |
--- | ------ | ----------- | ----------------- |
--- | `kind` | `string`    | Same as `unsub()` |
--- | Return | `undefined` | -                 |
----@field unsub_remote fun(kind: string): undefined
+-- | In/Out | Type      | Note              |
+-- | ------ | --------- | ----------------- |
+-- | `kind` | `string`  | Same as `unsub()` |
+-- | Return | `unknown` | -                 |
+---@field unsub_remote fun(kind: string): unknown
 
 -- The following functions can only be used within an async context.
 ---@class (exact) fs
@@ -2371,6 +2371,12 @@ ya = ya
 ---@class (exact) ui
 -- 
 ---@field Constraint ui.Constraint
+-- 
+---@field Align ui.Align
+-- 
+---@field Wrap ui.Wrap
+-- 
+---@field Edge ui.Edge
 -- Make a new rect.
 -- | In/Out  | Type                                                     |
 -- | ------- | -------------------------------------------------------- |
@@ -2431,7 +2437,7 @@ ya = ya
 -- | ------ | --------------- |
 -- | `edge` | [`Edge`](#edge) |
 -- | Return | `Self`          |
----@field Border fun(edge: Edge): ui.Border
+---@field Border fun(edge: ui.Edge): ui.Border
 -- Make a new gauge.
 -- | In/Out | Type   |
 -- | ------ | ------ |
