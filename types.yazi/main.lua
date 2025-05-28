@@ -2088,6 +2088,17 @@ ya = ya
 -- | Return    | `File[]?, Error?`                                       |
 -- | Available | Async context only                                      |
 ---@field read_dir fun(url: Url, options: { glob: string?, limit: integer?, resolve: boolean? }): File[]?, Error?
+-- Get a unique name from the given `url` to ensure it's unique in the filesystem:
+-- ```lua
+-- local url, err = fs.unique_name(Url("/tmp/test.txt"))
+-- ```
+-- If the file already exists, it will append `_n` to the filename, where `n` is a number, and keep incrementing until the first available name is found.
+-- | In/Out    | Type               |
+-- | --------- | -------------------|
+-- | `url`     | `Url`              |
+-- | Return    | `Url?, Error?`     |
+-- | Available | Async context only |
+---@field unique_name fun(url: Url): Url?, Error?
 
 -- You can invoke external programs through:
 -- ```lua
