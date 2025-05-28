@@ -1157,37 +1157,37 @@ ya = ya
 
 -- Tab-specific user preferences.
 ---@class (exact) tab__Pref
--- File sorting method. See [`sort_by`](/docs/configuration/yazi#manager.sort_by) for details.
+-- File sorting method. See [`sort_by`](/docs/configuration/yazi#mgr.sort_by) for details.
 -- |      |                                                                                                                  |
 -- | ---- | ---------------------------------------------------------------------------------------------------------------- |
 -- | Type | `"none"` \| `"mtime"` \| `"btime"` \| `"extension"` \| `"alphabetical"` \| `"natural"` \| `"size"` \| `"random"` |
 ---@field sort_by "none"|"mtime"|"btime"|"extension"|"alphabetical"|"natural"|"size"|"random"
--- Sort case-sensitively. See [`sort_sensitive`](/docs/configuration/yazi#manager.sort_sensitive) for details.
+-- Sort case-sensitively. See [`sort_sensitive`](/docs/configuration/yazi#mgr.sort_sensitive) for details.
 -- |      |           |
 -- | ---- | --------- |
 -- | Type | `boolean` |
 ---@field sort_sensitive boolean
--- Display files in reverse order. See [`sort_reverse`](/docs/configuration/yazi#manager.sort_reverse) for details.
+-- Display files in reverse order. See [`sort_reverse`](/docs/configuration/yazi#mgr.sort_reverse) for details.
 -- |      |           |
 -- | ---- | --------- |
 -- | Type | `boolean` |
 ---@field sort_reverse boolean
--- Display directories first. See [`sort_dir_first`](/docs/configuration/yazi#manager.sort_dir_first) for details.
+-- Display directories first. See [`sort_dir_first`](/docs/configuration/yazi#mgr.sort_dir_first) for details.
 -- |      |           |
 -- | ---- | --------- |
 -- | Type | `boolean` |
 ---@field sort_dir_first boolean
--- Transliterate filenames for sorting. See [`sort_translit`](/docs/configuration/yazi#manager.sort_translit) for details.
+-- Transliterate filenames for sorting. See [`sort_translit`](/docs/configuration/yazi#mgr.sort_translit) for details.
 -- |      |           |
 -- | ---- | --------- |
 -- | Type | `boolean` |
 ---@field sort_translit boolean
--- Line mode. See [`linemode`](/docs/configuration/yazi#manager.linemode) for details.
+-- Line mode. See [`linemode`](/docs/configuration/yazi#mgr.linemode) for details.
 -- |      |                                                                                            |
 -- | ---- | ------------------------------------------------------------------------------------------ |
 -- | Type | `string` \| `"none"` \| `"size"` \| `"btime"` \| `"mtime"` \| `"permissions"` \| `"owner"` |
 ---@field linemode string|"none"|"size"|"btime"|"mtime"|"permissions"|"owner"
--- Show hidden files. See [`show_hidden`](/docs/configuration/yazi#manager.show_hidden) for details.
+-- Show hidden files. See [`show_hidden`](/docs/configuration/yazi#mgr.show_hidden) for details.
 -- |      |           |
 -- | ---- | --------- |
 -- | Type | `boolean` |
@@ -1341,7 +1341,7 @@ ya = ya
 -- | Return | `boolean` |
 ---@field is_selected fun(self: self): boolean
 -- File find status:
--- - `nil` if if the user not in [`find`](/docs/configuration/keymap#manager.find) mode.
+-- - `nil` if if the user not in [`find`](/docs/configuration/keymap#mgr.find) mode.
 -- - `nil` if current file is not related to the keyword entered by the user.
 -- - `integer, integer` if current file is one of the files found, where first is its index among the results and second is the total count of files found.
 -- | In/Out | Type                 |
@@ -1461,7 +1461,7 @@ ya = ya
 -- | ---- | ---------------------- |
 -- | Type | [`rt::Term`](#rt-term) |
 ---@field term rt__Term
--- User preferences under [`[manager]`](/docs/configuration/yazi#manager).
+-- User preferences under [`[mgr]`](/docs/configuration/yazi#mgr).
 -- |      |         |
 -- | ---- | ------- |
 -- | Type | `table` |
@@ -1484,7 +1484,7 @@ ya = ya
 
 -- You can access the user's theme and flavor configuration through `th`.
 ---@class (exact) th
--- See [`[manager]`](/docs/configuration/theme#manager).
+-- See [`[mgr]`](/docs/configuration/theme#mgr).
 -- |      |         |
 -- | ---- | ------- |
 -- | Type | `table` |
@@ -1609,9 +1609,9 @@ ya = ya
 -- | Return    | `unknown`         |
 -- | Available | Sync context only |
 ---@field render fun(): unknown
--- Send a command to the [`[manager]`](/docs/configuration/keymap#manager) without waiting for the executor to execute:
+-- Send a command to the [`[mgr]`](/docs/configuration/keymap#mgr) without waiting for the executor to execute:
 -- ```lua
--- ya.mgr_emit("my-cmd", { "hello", 123, foo = true, bar_baz = "world" })
+-- ya.emit("my-cmd", { "hello", 123, foo = true, bar_baz = "world" })
 -- -- Equivalent to:
 -- -- my-cmd "hello" "123" --foo --bar-baz="world"
 -- ```
@@ -1620,7 +1620,7 @@ ya = ya
 -- | `cmd`  | `string`                          | -                                                                                       |
 -- | `args` | `{ [integer\|string]: Sendable }` | Table values are [Sendable][sendable] that follow [Ownership transfer rules][ownership] |
 -- | Return | `unknown`                         | -                                                                                       |
----@field mgr_emit fun(cmd: string, args: { [integer|string]: Sendable }): unknown
+---@field emit fun(cmd: string, args: { [integer|string]: Sendable }): unknown
 -- Display the image of `url` within the `rect`, and the image will downscale to fit the area automatically:
 -- | In/Out    | Type               |
 -- | --------- | ------------------ |
@@ -1774,7 +1774,7 @@ ya = ya
 -- | Available | Async context only                                        |
 ---@field preview_code fun(opts: { area: ui.Rect, file: File, mime: string, skip: integer }): Error?, integer?
 -- ```lua
--- ya.preview_widgets({
+-- local opts = {
 --   -- Available preview area.
 --   area = area,
 --   -- File to be previewed.
@@ -1784,17 +1784,22 @@ ya = ya
 --   -- Number of units to skip. The units depend on your previewer,
 --   -- such as lines for code and percentages for videos.
 --   skip = 1,
--- }, {
---   ui.Text("Hello, World!"):area(area),
+-- }
+-- -- Preview a widget in the specified area.
+-- ya.preview_widget(opts, ui.Line("Hello world"):area(area))
+-- -- Preview multiple widgets in the specified area.
+-- ya.preview_widget(opts, {
+--   ui.Line("Hello"):area(area1),
+--   ui.Line("world"):area(area2),
 -- })
 -- ```
 -- | In/Out    | Type                                                      |
 -- | --------- | --------------------------------------------------------- |
 -- | `opts`    | `{ area: Rect, file: File, mime: string, skip: integer }` |
--- | `widgets` | `Renderable[]`                                            |
+-- | `widget`  | `Renderable` \| `Renderable[]`                            |
 -- | Return    | `unknown`                                                 |
 -- | Available | Async context only                                        |
----@field preview_widgets fun(opts: { area: ui.Rect, file: File, mime: string, skip: integer }, widgets: Renderable[]): unknown
+---@field preview_widget fun(opts: { area: ui.Rect, file: File, mime: string, skip: integer }, widget: Renderable|Renderable[]): unknown
 -- See [Async context](/docs/plugins/overview#async-context).
 -- | In/Out | Type                 |
 -- | ------ | -------------------- |
@@ -2094,26 +2099,18 @@ ya = ya
 -- Compared to Lua's `os.execute`, it provides many comprehensive and convenient methods, and the entire process is async.
 -- It takes better advantage of the benefits of concurrent scheduling. However, it can only be used in async contexts, such as preloaders, previewers, and async functional plugins.
 ---@class (exact) Command
--- Append an argument to the command:
+-- Append one or more arguments to the command:
 -- ```lua
 -- local cmd = Command("ls"):arg("-a"):arg("-l")
+-- -- Equivalent to:
+-- local cmd = Command("ls"):arg { "-a", "-l" }
 -- ```
--- | In/Out | Type     |
--- | ------ | -------- |
--- | `self` | `Self`   |
--- | `arg`  | `string` |
--- | Return | `self`   |
----@field arg fun(self: self, arg: string): self
--- Append multiple arguments to the command:
--- ```lua
--- local cmd = Command("ls"):args({ "-a", "-l" }):args({ "-h" })
--- ```
--- | In/Out | Type       |
--- | ------ | ---------- |
--- | `self` | `Self`     |
--- | `args` | `string[]` |
--- | Return | `self`     |
----@field args fun(self: self, args: string[]): self
+-- | In/Out | Type                   |
+-- | ------ | ---------------------- |
+-- | `self` | `Self`                 |
+-- | `arg`  | `string` \| `string[]` |
+-- | Return | `self`                 |
+---@field arg fun(self: self, arg: string|string[]): self
 -- Set the current working directory of the command:
 -- ```lua
 -- local cmd = Command("ls"):cwd("/root")
