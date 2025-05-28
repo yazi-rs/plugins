@@ -1,4 +1,4 @@
---- @since 25.2.26
+--- @since 25.5.28
 --- @sync entry
 
 local function entry(st, job)
