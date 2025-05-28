@@ -4,8 +4,6 @@
 ---@alias undefined any
 
 ---@alias Color string
----@alias Align integer
----@alias Wrap integer
 ---@alias Direction integer
 ---@alias Position integer
 ---@alias Stdio integer
@@ -610,15 +608,11 @@ ya = ya
 -- | Return | `integer` |
 ---@field width fun(self: self): integer
 -- Set the alignment of the line.
--- | In/Out  | Type    |
--- | ------- | ------- |
--- | `self`  | `Self`  |
--- | `align` | `Align` |
--- | Return  | `self`  |
--- The `align` accepts the following constants:
--- - `ui.Line.LEFT`
--- - `ui.Line.CENTER`
--- - `ui.Line.RIGHT`
+-- | In/Out  | Type              |
+-- | ------- | ----------------- |
+-- | `self`  | `Self`            |
+-- | `align` | [`Align`](#align) |
+-- | Return  | `self`            |
 ---@field align fun(self: self, align: Align): self
 -- Whether the line is visible, i.e. includes any printable characters.
 -- | In/Out | Type      |
@@ -665,26 +659,18 @@ ya = ya
 -- If `rect` is not specified, it returns the current area.
 ---@field area fun(self: self, rect: ui.Rect?): self|ui.Rect
 -- Set the alignment of the text.
--- | In/Out  | Type    |
--- | ------- | ------- |
--- | `self`  | `Self`  |
--- | `align` | `Align` |
--- | Return  | `self`  |
--- The `align` accepts the following constants:
--- - `ui.Text.LEFT`
--- - `ui.Text.CENTER`
--- - `ui.Text.RIGHT`
+-- | In/Out  | Type              |
+-- | ------- | ----------------- |
+-- | `self`  | `Self`            |
+-- | `align` | [`Align`](#align) |
+-- | Return  | `self`            |
 ---@field align fun(self: self, align: Align): self
 -- Set the wrap of the text.
--- | In/Out | Type   |
--- | ------ | ------ |
--- | `self` | `Self` |
--- | `wrap` | `Wrap` |
--- | Return | `self` |
--- The `wrap` accepts the following constants:
--- - `ui.Text.WRAP_NO` - No wrap
--- - `ui.Text.WRAP` - Wrap at the end of the line
--- - `ui.Text.WRAP_TRIM` - Wrap at the end of the line, and trim the leading whitespace
+-- | In/Out | Type            |
+-- | ------ | --------------- |
+-- | `self` | `Self`          |
+-- | `wrap` | [`Wrap`](#wrap) |
+-- | Return | `self`          |
 ---@field wrap fun(self: self, wrap: Wrap): self
 -- Calculate the maximum width of the text across all lines.
 -- | In/Out | Type      |
@@ -921,15 +907,9 @@ ya = ya
 
 -- Create a bar:
 -- ```lua
--- ui.Bar(direction)
+-- ui.Bar(edge)
 -- ```
--- The first attribute denotes the direction of the bar and accepts the following constants:
--- - `ui.Bar.NONE`
--- - `ui.Bar.TOP`
--- - `ui.Bar.RIGHT`
--- - `ui.Bar.BOTTOM`
--- - `ui.Bar.LEFT`
--- - `ui.Bar.ALL`
+-- The first attribute denotes the direction of the bar and accepts an [`Edge`](#edge) constant.
 ---@class (exact) ui.Bar
 -- Set the area of the bar.
 -- | In/Out | Type                      |
@@ -957,15 +937,9 @@ ya = ya
 
 -- Create a border:
 -- ```lua
--- ui.Border(position)
+-- ui.Border(edge)
 -- ```
--- The first attribute denotes the position of the border and accepts the following constants:
--- - `ui.Border.NONE`
--- - `ui.Border.TOP`
--- - `ui.Border.RIGHT`
--- - `ui.Border.BOTTOM`
--- - `ui.Border.LEFT`
--- - `ui.Border.ALL`
+-- The first attribute denotes the edge of the border and accepts an [`Edge`](#edge) constant.
 ---@class (exact) ui.Border
 -- Set the area of the border.
 -- | In/Out | Type                      |
@@ -996,7 +970,7 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field style fun(self: self, style: ui.Style): self
----@overload fun(value: Position): ui.Border
+---@overload fun(edge: Edge): ui.Border
 
 -- Create a gauge:
 -- ```lua
@@ -1066,6 +1040,75 @@ ya = ya
 -- If `rect` is not specified, it returns the current area.
 ---@field area fun(self: self, rect: ui.Rect?): self|ui.Rect
 ---@overload fun(): ui.Clear
+
+-- Align is used to set the alignment of an element, such as a [Line](#line) or [Text](#text).
+---@class (exact) Align
+-- Align to the left.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field LEFT undefined
+-- Align to the center.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field CENTER undefined
+-- Align to the right.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field RIGHT undefined
+
+-- 
+---@class (exact) Wrap
+-- Disables wrapping.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field NO undefined
+-- Enables wrapping.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field YES undefined
+-- Enables wrapping and trims the leading whitespace.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field TRIM undefined
+
+-- 
+---@class (exact) Edge
+-- No edge is applied.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field NONE undefined
+-- Applies the top edge.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field TOP undefined
+-- Applies the right edge.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field RIGHT undefined
+-- Applies the bottom edge.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field BOTTOM undefined
+-- Applies the left edge.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field LEFT undefined
+-- Applies all edges.
+-- |      |             |
+-- | ---- | ----------- |
+-- | Type | `undefined` |
+---@field ALL undefined
 
 
 -- You can access all states within [sync context](/docs/plugins/overview#sync-context) through `cx`.
@@ -2073,7 +2116,7 @@ ya = ya
 -- | `self` | `Self`     |
 -- | `args` | `string[]` |
 -- | Return | `self`     |
----@field args fun(args: string[]): self
+---@field args fun(self: self, args: string[]): self
 -- Set the current working directory of the command:
 -- ```lua
 -- local cmd = Command("ls"):cwd("/root")
@@ -2384,11 +2427,11 @@ ya = ya
 -- | Return  | `Self`      |
 ---@field Bar fun(value: Direction): ui.Bar
 -- Make a new border.
--- | In/Out  | Type       |
--- | ------- | ---------- |
--- | `value` | `Position` |
--- | Return  | `Self`     |
----@field Border fun(value: Position): ui.Border
+-- | In/Out | Type            |
+-- | ------ | --------------- |
+-- | `edge` | [`Edge`](#edge) |
+-- | Return | `Self`          |
+---@field Border fun(edge: Edge): ui.Border
 -- Make a new gauge.
 -- | In/Out | Type   |
 -- | ------ | ------ |
