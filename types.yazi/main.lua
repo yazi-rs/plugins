@@ -1,10 +1,7 @@
 
 -- luacheck: globals Command Url cx fs ps rt th ui ya
 
----@alias unknown any
-
 ---@alias Color string
----@alias Direction integer
 ---@alias Position integer
 ---@alias Stdio integer
 
@@ -933,7 +930,7 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field style fun(self: self, style: ui.Style): self
----@overload fun(value: Direction): ui.Bar
+---@overload fun(edge: ui.Edge): ui.Bar
 
 -- Create a border:
 -- ```lua
@@ -1039,76 +1036,76 @@ ya = ya
 -- | Return | `self` \| [`Rect`](#rect) |
 -- If `rect` is not specified, it returns the current area.
 ---@field area fun(self: self, rect: ui.Rect?): self|ui.Rect
----@overload fun(): ui.Clear
+---@overload fun(rect: ui.Rect): ui.Clear
 
 -- Align is used to set the alignment of an element, such as a [Line](#line) or [Text](#text).
 ---@class (exact) ui.Align
 -- Align to the left.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field LEFT unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field LEFT self
 -- Align to the center.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field CENTER unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field CENTER self
 -- Align to the right.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field RIGHT unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field RIGHT self
 
 -- 
 ---@class (exact) ui.Wrap
 -- Disables wrapping.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field NO unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field NO self
 -- Enables wrapping.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field YES unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field YES self
 -- Enables wrapping and trims the leading whitespace.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field TRIM unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field TRIM self
 
 -- 
 ---@class (exact) ui.Edge
 -- No edge is applied.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field NONE unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field NONE self
 -- Applies the top edge.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field TOP unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field TOP self
 -- Applies the right edge.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field RIGHT unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field RIGHT self
 -- Applies the bottom edge.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field BOTTOM unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field BOTTOM self
 -- Applies the left edge.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field LEFT unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field LEFT self
 -- Applies all edges.
--- |      |           |
--- | ---- | --------- |
--- | Type | `unknown` |
----@field ALL unknown
+-- |      |        |
+-- | ---- | ------ |
+-- | Type | `Self` |
+---@field ALL self
 
 
 -- You can access all states within [sync context](/docs/plugins/overview#sync-context) through `cx`.
@@ -2427,11 +2424,11 @@ ya = ya
 -- | Return  | `Self`                                                                   |
 ---@field List fun(value: string|ui.Span|ui.Line|ui.Text|(string|ui.Span|ui.Line|ui.Text)[]): ui.List
 -- Make a new bar.
--- | In/Out  | Type        |
--- | ------- | ----------- |
--- | `value` | `Direction` |
--- | Return  | `Self`      |
----@field Bar fun(value: Direction): ui.Bar
+-- | In/Out | Type            |
+-- | ------ | --------------- |
+-- | `edge` | [`Edge`](#edge) |
+-- | Return | `Self`          |
+---@field Bar fun(edge: ui.Edge): ui.Bar
 -- Make a new border.
 -- | In/Out | Type            |
 -- | ------ | --------------- |
@@ -2448,6 +2445,6 @@ ya = ya
 -- | ------ | --------------- |
 -- | `rect` | [`Rect`](#rect) |
 -- | Return | `Self`          |
----@field Clear fun(): ui.Clear
+---@field Clear fun(rect: ui.Rect): ui.Clear
 
 
