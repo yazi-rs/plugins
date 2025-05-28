@@ -1,4 +1,4 @@
---- @since 25.2.26
+--- @since 25.5.28
 
 local toggle_ui = ya.sync(function(self)
 	if self.children then
@@ -12,7 +12,7 @@ end)
 
 local subscribe = ya.sync(function(self)
 	ps.unsub("mount")
-	ps.sub("mount", function() ya.mgr_emit("plugin", { self._id, "refresh" }) end)
+	ps.sub("mount", function() ya.emit("plugin", { self._id, "refresh" }) end)
 end)
 
 local update_partitions = ya.sync(function(self, partitions)
@@ -113,7 +113,7 @@ function M:entry(job)
 			elseif run == "enter" then
 				local active = active_partition()
 				if active and active.dist then
-					ya.mgr_emit("cd", { active.dist })
+					ya.emit("cd", { active.dist })
 				end
 			else
 				tx2:send(run)
@@ -233,7 +233,7 @@ function M.fillin(tbl)
 		return tbl
 	end
 
-	local output, err = Command("lsblk"):args({ "-p", "-o", "name,fstype", "-J" }):args(sources):output()
+	local output, err = Command("lsblk"):arg({ "-p", "-o", "name,fstype", "-J" }):arg(sources):output()
 	if err then
 		ya.dbg("Failed to fetch filesystem types for unmounted partitions: " .. err)
 		return tbl
@@ -256,14 +256,14 @@ function M.operate(type)
 
 	local output, err
 	if ya.target_os() == "macos" then
-		output, err = Command("diskutil"):args({ type, active.src }):output()
+		output, err = Command("diskutil"):arg({ type, active.src }):output()
 	end
 	if ya.target_os() == "linux" then
 		if type == "eject" then
-			Command("udisksctl"):args({ "unmount", "-b", active.src }):status()
-			output, err = Command("udisksctl"):args({ "power-off", "-b", active.src }):output()
+			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
+			output, err = Command("udisksctl"):arg({ "power-off", "-b", active.src }):output()
 		else
-			output, err = Command("udisksctl"):args({ type, "-b", active.src }):output()
+			output, err = Command("udisksctl"):arg({ type, "-b", active.src }):output()
 		end
 	end
 

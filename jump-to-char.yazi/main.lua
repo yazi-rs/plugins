@@ -1,4 +1,4 @@
---- @since 25.2.26
+--- @since 25.5.28
 
 local AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789."
 
@@ -24,9 +24,9 @@ return {
 
 		local kw = escape(cands[idx].on)
 		if changed(kw) then
-			ya.mgr_emit("find_do", { "^" .. kw })
+			ya.emit("find_do", { "^" .. kw })
 		else
-			ya.mgr_emit("find_arrow", {})
+			ya.emit("find_arrow", {})
 		end
 	end,
 }

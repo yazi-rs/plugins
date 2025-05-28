@@ -1,4 +1,4 @@
---- @since 25.2.26
+--- @since 25.5.28
 
 local M = {}
 
@@ -32,9 +32,9 @@ function M:peek(job)
 
 	child:start_kill()
 	if job.skip > 0 and i < job.skip + limit then
-		ya.mgr_emit("peek", { math.max(0, i - limit), only_if = job.file.url, upper_bound = true })
+		ya.emit("peek", { math.max(0, i - limit), only_if = job.file.url, upper_bound = true })
 	else
-		ya.preview_widgets(job, { ui.Text(lines):area(job.area) })
+		ya.preview_widget(job, ui.Text(lines):area(job.area))
 	end
 end
 

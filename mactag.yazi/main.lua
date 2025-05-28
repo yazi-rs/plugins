@@ -1,4 +1,4 @@
---- @since 25.4.4
+--- @since 25.5.28
 
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
@@ -43,7 +43,7 @@ local function fetch(_, job)
 		paths[#paths + 1] = tostring(file.url)
 	end
 
-	local output, err = Command("tag"):args(paths):stdout(Command.PIPED):output()
+	local output, err = Command("tag"):arg(paths):stdout(Command.PIPED):output()
 	if not output then
 		return true, Err("Cannot spawn `tag` command, error: %s", err)
 	end
@@ -76,7 +76,7 @@ end)
 
 local function entry(self, job)
 	assert(job.args[1] == "add" or job.args[1] == "remove", "Invalid action")
-	ya.mgr_emit("escape", { visual = true })
+	ya.emit("escape", { visual = true })
 
 	local cands = cands()
 	local choice = ya.which { cands = cands }
@@ -91,7 +91,7 @@ local function entry(self, job)
 		files[#files + 1] = { url = url }
 	end
 
-	local status = Command("tag"):args(t):status()
+	local status = Command("tag"):arg(t):status()
 	if status.success then
 		fetch(self, { files = files })
 	end

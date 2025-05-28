@@ -1,8 +1,5 @@
 # mount.yazi
 
-> [!NOTE]
-> Yazi v25.2.7 or later is required for this plugin to work.
-
 A mount manager for Yazi, providing disk mount, unmount, and eject functionality.
 
 Supported platforms:

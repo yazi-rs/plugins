@@ -1,13 +1,14 @@
+--- @since 25.5.28
 --- @sync entry
 return {
 	entry = function()
 		local h = cx.active.current.hovered
 		if h and h.cha.is_dir then
-			ya.mgr_emit("enter", {})
-			ya.mgr_emit("paste", {})
-			ya.mgr_emit("leave", {})
+			ya.emit("enter", {})
+			ya.emit("paste", {})
+			ya.emit("leave", {})
 		else
-			ya.mgr_emit("paste", {})
+			ya.emit("paste", {})
 		end
 	end,
 }
