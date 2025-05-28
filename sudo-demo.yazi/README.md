@@ -5,7 +5,7 @@ Just an example showing how to use `sudo` in a Yazi plugin, and the plugin itsel
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:sudo-demo
+ya pkg add yazi-rs/plugins:sudo-demo
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ ya pack -a yazi-rs/plugins:sudo-demo
 Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on  = "<C-t>"
 run = "plugin sudo-demo"
 ```

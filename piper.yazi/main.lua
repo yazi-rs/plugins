@@ -2,11 +2,7 @@
 
 local M = {}
 
-local function fail(job, s)
-	ya.preview_widgets(job, {
-		ui.Text.parse(s):area(job.area):wrap(ui.Text.WRAP),
-	})
-end
+local function fail(job, s) ya.preview_widget(job, ui.Text.parse(s):area(job.area):wrap(ui.Wrap.YES)) end
 
 function M:peek(job)
 	local child, err = Command("sh")
@@ -43,7 +39,7 @@ function M:peek(job)
 	elseif job.skip > 0 and i < job.skip + limit then
 		ya.emit("peek", { math.max(0, i - limit), only_if = job.file.url, upper_bound = true })
 	else
-		ya.preview_widgets(job, { M.format(job, outs) })
+		ya.preview_widget(job, M.format(job, outs))
 	end
 end
 

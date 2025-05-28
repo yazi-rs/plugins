@@ -5,7 +5,7 @@ Type definitions for Yazi's Lua API, empowering an efficient plugin development 
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:types
+ya pkg add yazi-rs/plugins:types
 ```
 
 ## Usage

@@ -7,7 +7,7 @@ Remove the status bar.
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:no-status
+ya pkg add yazi-rs/plugins:no-status
 ```
 
 ## Usage

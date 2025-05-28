@@ -39,13 +39,7 @@ local function entry(st, job)
 		Tab.layout, st.old = st.old, nil
 		st.parent, st.current, st.preview = nil, nil, nil
 	end
-
-	-- TODO: remove this in the future
-	if ya.emit then
-		ya.emit("app:resize", {})
-	else
-		ya.app_emit("resize", {})
-	end
+	ya.emit("app:resize", {})
 end
 
 return { entry = entry }

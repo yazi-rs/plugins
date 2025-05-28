@@ -5,7 +5,7 @@
 
 # Plugins
 
-The following plugins can be installed using the [`ya pack` package manager](https://yazi-rs.github.io/docs/cli#package-manager) introduced in Yazi v0.3.
+The following plugins can be installed using the [`ya pkg` package manager](https://yazi-rs.github.io/docs/cli#package-manager) introduced in Yazi v25.5.28.
 
 For specific installation commands and configuration instructions, check the individual `README.md` of each plugin by clicking the link below:
 

@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/c6f780ab-458b-420f-85cf-2fc45fcfe3a2
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:mount
+ya pkg add yazi-rs/plugins:mount
 ```
 
 ## Usage
@@ -20,7 +20,7 @@ ya pack -a yazi-rs/plugins:mount
 Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on  = "M"
 run = "plugin mount"
 ```

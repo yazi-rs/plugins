@@ -7,7 +7,7 @@ https://github.com/yazi-rs/plugins/assets/17523360/eff5e949-386a-44ea-82f9-4cb4a
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:diff
+ya pkg add yazi-rs/plugins:diff
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ ya pack -a yazi-rs/plugins:diff
 Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = "<C-d>"
 run  = "plugin diff"
 desc = "Diff the selected with the hovered file"

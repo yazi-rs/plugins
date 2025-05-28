@@ -1,6 +1,6 @@
 # toggle-pane.yazi
 
-Toggle the show, hide, and maximize states for different panes: parent, current, and preview. It respects the user's [`ratio` settings](https://yazi-rs.github.io/docs/configuration/yazi#manager.ratio)!
+Toggle the show, hide, and maximize states for different panes: parent, current, and preview. It respects the user's [`ratio` settings](https://yazi-rs.github.io/docs/configuration/yazi#mgr.ratio)!
 
 Assume the user's `ratio` is $$[A, B, C]$$, that is, $$\text{parent}=A, \text{current}=B, \text{preview}=C$$:
 
@@ -15,7 +15,7 @@ Assume the user's `ratio` is $$[A, B, C]$$, that is, $$\text{parent}=A, \text{cu
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:toggle-pane
+ya pkg add yazi-rs/plugins:toggle-pane
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ Hide/Show preview:
 
 ```toml
 # keymap.toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = "T"
 run  = "plugin toggle-pane min-preview"
 desc = "Show or hide the preview pane"
@@ -34,7 +34,7 @@ Maximize/Restore preview:
 
 ```toml
 # keymap.toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = "T"
 run  = "plugin toggle-pane max-preview"
 desc = "Maximize or restore the preview pane"

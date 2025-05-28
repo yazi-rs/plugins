@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/7f26dc6d-67a5-4a85-a99e-4671ece9ae56
 Install the plugin itself, and [jdberry/tag](https://github.com/jdberry/tag) used to tag files:
 
 ```sh
-ya pack -a yazi-rs/plugins:mactag
+ya pkg add yazi-rs/plugins:mactag
 brew update && brew install tag
 ```
 
@@ -63,12 +63,12 @@ Besides displaying tags attached to files, you can also add or remove tags withi
 Add following keybindings to your `~/.config/yazi/keymap.toml` to enable it:
 
 ```toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "b", "a" ]
 run  = "plugin mactag add"
 desc = "Tag selected files"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "b", "r" ]
 run  = "plugin mactag remove"
 desc = "Untag selected files"

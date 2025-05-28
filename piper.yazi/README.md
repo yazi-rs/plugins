@@ -5,7 +5,7 @@ Pipe any shell command as a previewer.
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:piper
+ya pkg add yazi-rs/plugins:piper
 ```
 
 ## Usage

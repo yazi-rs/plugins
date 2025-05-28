@@ -155,11 +155,11 @@ function M:redraw()
 
 	return {
 		ui.Clear(self._area),
-		ui.Border(ui.Border.ALL)
+		ui.Border(ui.Edge.ALL)
 			:area(self._area)
 			:type(ui.Border.ROUNDED)
 			:style(ui.Style():fg("blue"))
-			:title(ui.Line("Mount"):align(ui.Line.CENTER)),
+			:title(ui.Line("Mount"):align(ui.Align.CENTER)),
 		ui.Table(rows)
 			:area(self._area:pad(ui.Pad(1, 2, 1, 2)))
 			:header(ui.Row({ "Src", "Label", "Dist", "FSType" }):style(ui.Style():bold()))

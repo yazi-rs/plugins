@@ -7,10 +7,10 @@ local function setup(_, opts)
 	Tab.build = function(self, ...)
 		local bar = function(c, x, y)
 			if x <= 0 or x == self._area.w - 1 or th.mgr.border_symbol ~= "│" then
-				return ui.Bar(ui.Bar.TOP)
+				return ui.Bar(ui.Edge.TOP)
 			end
 
-			return ui.Bar(ui.Bar.TOP)
+			return ui.Bar(ui.Edge.TOP)
 				:area(
 					ui.Rect { x = x, y = math.max(0, y), w = ya.clamp(0, self._area.w - x, 1), h = math.min(1, self._area.h) }
 				)
@@ -26,9 +26,9 @@ local function setup(_, opts)
 
 		local style = th.mgr.border_style
 		self._base = ya.list_merge(self._base or {}, {
-			ui.Border(ui.Border.ALL):area(self._area):type(type):style(style),
-			ui.Bar(ui.Bar.RIGHT):area(self._chunks[1]):style(style),
-			ui.Bar(ui.Bar.LEFT):area(self._chunks[3]):style(style),
+			ui.Border(ui.Edge.ALL):area(self._area):type(type):style(style),
+			ui.Bar(ui.Edge.RIGHT):area(self._chunks[1]):style(style),
+			ui.Bar(ui.Edge.LEFT):area(self._chunks[3]):style(style),
 
 			bar("┬", c[1].right - 1, c[1].y),
 			bar("┴", c[1].right - 1, c[1].bottom - 1),

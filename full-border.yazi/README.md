@@ -7,7 +7,7 @@ Add a full border to Yazi to make it look fancier.
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:full-border
+ya pkg add yazi-rs/plugins:full-border
 ```
 
 ## Usage

@@ -7,7 +7,7 @@ https://github.com/user-attachments/assets/b3f6348e-abbe-42fe-9a67-a96e68f11255
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:smart-paste
+ya pkg add yazi-rs/plugins:smart-paste
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ ya pack -a yazi-rs/plugins:smart-paste
 Add this to your `~/.config/yazi/keymap.toml`:
 
 ```toml
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = "p"
 run  = "plugin smart-paste"
 desc = "Paste into the hovered directory or CWD"

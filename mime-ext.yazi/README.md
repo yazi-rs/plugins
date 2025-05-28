@@ -7,7 +7,7 @@ See https://yazi-rs.github.io/docs/tips#make-yazi-even-faster for more informati
 ## Installation
 
 ```sh
-ya pack -a yazi-rs/plugins:mime-ext
+ya pkg add yazi-rs/plugins:mime-ext
 ```
 
 ## Usage
