@@ -1,8 +1,6 @@
-
 -- luacheck: globals Command Url cx fs ps rt th ui ya
 
 ---@alias Color string
----@alias Position integer
 ---@alias Stdio integer
 
 ---@alias Sendable nil|boolean|number|string|Url|{ [Sendable]: Sendable }
@@ -133,9 +131,14 @@ ya = ya
 -- | `another` | `string` |
 -- | Return    | `Self`   |
 ---@field __concat fun(self: self, another: string): self
+-- Make a new url.
+-- | In/Out  | Type               |
+-- | ------- | ------------------ |
+-- | `value` | `string` \| `Self` |
+-- | Return  | `Self`             |
 ---@overload fun(value: string|self): Url
 
--- Cha means one file's characteristics.
+-- One file's characteristics.
 ---@class (exact) Cha
 -- Whether the file is a directory.
 -- |      |           |
@@ -238,7 +241,7 @@ ya = ya
 -- | Available | Unix-like systems only |
 ---@field perm string?
 
--- 
+-- A bare file without any context information. See also [`fs::File`](/docs/plugins/context#fs-file).
 ---@class (exact) File
 -- Url of the file.
 -- |      |       |
@@ -261,7 +264,7 @@ ya = ya
 -- | Type | `string` |
 ---@field name string
 
--- 
+-- An icon.
 ---@class (exact) Icon
 -- Text of the icon.
 -- |      |          |
@@ -274,7 +277,7 @@ ya = ya
 -- | Type | `Style` |
 ---@field style ui.Style
 
--- 
+-- An error.
 ---@class (exact) Error
 -- Raw error code.
 -- |      |           |
@@ -379,6 +382,11 @@ ya = ya
 -- | `padding` | [`Pad`](#pad) |
 -- | Return    | `self`        |
 ---@field pad fun(self: self, padding: ui.Pad): self
+-- Make a new rect.
+-- | In/Out  | Type                                                     |
+-- | ------- | -------------------------------------------------------- |
+-- | `value` | `{ x: integer?, y: integer?, w: integer?, h: integer? }` |
+-- | Return  | `Self`                                                   |
 ---@overload fun(value: { x: integer?, y: integer?, w: integer?, h: integer? }): ui.Rect
 
 -- `Pad` represents a padding, and all of its parameters are integers:
@@ -449,6 +457,14 @@ ya = ya
 -- | `y`    | `integer` |
 -- | Return | `Self`    |
 ---@field xy fun(x: integer, y: integer): self
+-- Make a new padding.
+-- | In/Out   | Type      |
+-- | -------- | --------- |
+-- | `top`    | `integer` |
+-- | `right`  | `integer` |
+-- | `bottom` | `integer` |
+-- | `left`   | `integer` |
+-- | Return   | `Self`    |
 ---@overload fun(top: integer, right: integer, bottom: integer, left: integer): ui.Pad
 
 -- Create a style:
@@ -539,6 +555,10 @@ ya = ya
 -- | `another` | `Self` |
 -- | Return    | `self` |
 ---@field patch fun(self: self, another: self): self
+-- Make a new style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | Return | `Self` |
 ---@overload fun(): ui.Style
 
 -- `ui.Span` is the smallest unit of text, yet a component of `ui.Line`. Create a span:
@@ -572,6 +592,11 @@ ya = ya
 -- ui.Span("Hello world"):fg("white"):bg("black"):bold()
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
+-- Make a new span.
+-- | In/Out  | Type               |
+-- | ------- | ------------------ |
+-- | `value` | `string` \| `Self` |
+-- | Return  | `Self`             |
 ---@overload fun(value: string|self): ui.Span
 
 -- `ui.Line` represents a line, consisting of multiple `ui.Span`s, and it accepts a table of them:
@@ -628,6 +653,11 @@ ya = ya
 -- ui.Line("Hello world"):fg("white"):bg("black"):bold()
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
+-- Make a new line.
+-- | In/Out  | Type                                                     |
+-- | ------- | -------------------------------------------------------- |
+-- | `value` | `string` \| `Span` \| `Self` \| `(string\|Span\|Self)[]` |
+-- | Return  | `Self`                                                   |
 ---@overload fun(value: string|ui.Span|self|(string|ui.Span|self)[]): ui.Line
 
 -- `ui.Text` is used to represent multi-line text, it takes a table of `ui.Line`:
@@ -686,6 +716,11 @@ ya = ya
 -- ui.Text("Hello world"):fg("white"):bg("black"):bold()
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
+-- Make a new text.
+-- | In/Out  | Type                                                     |
+-- | ------- | -------------------------------------------------------- |
+-- | `value` | `string` \| `Span` \| `Line` \| `(string\|Span\|Line)[]` |
+-- | Return  | `Self`                                                   |
 ---@overload fun(value: string|ui.Span|ui.Line|(string|ui.Span|ui.Line)[]): ui.Text
 
 -- Create a layout:
@@ -743,6 +778,10 @@ ya = ya
 -- | `rect` | [`Rect`](#rect)   |
 -- | Return | [`Rect[]`](#rect) |
 ---@field split fun(self: self, rect: ui.Rect): ui.Rect[]
+-- Make a new layout.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | Return | `Self` |
 ---@overload fun(): ui.Layout
 
 -- A constraint that defines the size of a layout element.
@@ -900,6 +939,11 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field style fun(self: self, style: ui.Style): self
+-- Make a new list.
+-- | In/Out  | Type                                                                     |
+-- | ------- | ------------------------------------------------------------------------ |
+-- | `value` | `string` \| `Span` \| `Line` \| `Text` \| `(string\|Span\|Line\|Text)[]` |
+-- | Return  | `Self`                                                                   |
 ---@overload fun(value: string|ui.Span|ui.Line|ui.Text|(string|ui.Span|ui.Line|ui.Text)[]): ui.List
 
 -- Create a bar:
@@ -930,6 +974,11 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field style fun(self: self, style: ui.Style): self
+-- Make a new bar.
+-- | In/Out | Type            |
+-- | ------ | --------------- |
+-- | `edge` | [`Edge`](#edge) |
+-- | Return | `Self`          |
 ---@overload fun(edge: ui.Edge): ui.Bar
 
 -- Create a border:
@@ -967,6 +1016,11 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field style fun(self: self, style: ui.Style): self
+-- Make a new border.
+-- | In/Out | Type            |
+-- | ------ | --------------- |
+-- | `edge` | [`Edge`](#edge) |
+-- | Return | `Self`          |
 ---@overload fun(edge: ui.Edge): ui.Border
 
 -- Create a gauge:
@@ -1017,6 +1071,10 @@ ya = ya
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
 ---@field gauge_style fun(self: self, style: ui.Style): self
+-- Make a new gauge.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | Return | `Self` |
 ---@overload fun(): ui.Gauge
 
 -- Clear the content of a specific area, which is a [Rect](#rect). Place it followed by the component that you want to clear:
@@ -1036,9 +1094,14 @@ ya = ya
 -- | Return | `self` \| [`Rect`](#rect) |
 -- If `rect` is not specified, it returns the current area.
 ---@field area fun(self: self, rect: ui.Rect?): self|ui.Rect
+-- Make a new clear.
+-- | In/Out | Type            |
+-- | ------ | --------------- |
+-- | `rect` | [`Rect`](#rect) |
+-- | Return | `Self`          |
 ---@overload fun(rect: ui.Rect): ui.Clear
 
--- Align is used to set the alignment of an element, such as a [Line](#line) or [Text](#text).
+-- Alignment of an element such as [`Text`](#text) or [`Line`](#line).
 ---@class (exact) ui.Align
 -- Align to the left.
 -- |      |        |
@@ -1056,7 +1119,7 @@ ya = ya
 -- | Type | `Self` |
 ---@field RIGHT self
 
--- 
+-- Wrapping behavior of a [`Text`](#text).
 ---@class (exact) ui.Wrap
 -- Disables wrapping.
 -- |      |        |
@@ -1074,7 +1137,7 @@ ya = ya
 -- | Type | `Self` |
 ---@field TRIM self
 
--- 
+-- Which edges of elements such as [`Bar`](#bar) or [`Border`](#border) should be applied.
 ---@class (exact) ui.Edge
 -- No edge is applied.
 -- |      |        |
@@ -1125,7 +1188,7 @@ ya = ya
 -- | ---- | ------------------------------ |
 -- | Type | [`tasks::Tasks`](#tasks-tasks) |
 ---@field tasks tasks__Tasks
--- The yanked files.
+-- Yanked files.
 -- |      |                              |
 -- | ---- | ---------------------------- |
 -- | Type | [`mgr::Yanked`](#mgr-yanked) |
@@ -1193,7 +1256,7 @@ ya = ya
 -- | Type | `boolean` |
 ---@field show_hidden boolean
 
--- 
+-- [Url](#url)s of the selected files.
 ---@class (exact) tab__Selected
 -- Returns the number of selected [Url](#url)s.
 -- | In/Out | Type      |
@@ -1208,7 +1271,7 @@ ya = ya
 -- | Return | `fun(t: self, k: any): integer, Url` |
 ---@field __pairs fun(self: self): fun(t: self, k: any): integer, Url
 
--- 
+-- State of the preview pane.
 ---@class (exact) tab__Preview
 -- Number of units to skip. The units largely depend on your previewer, such as lines for code and percentages for videos.
 -- |      |           |
@@ -1221,7 +1284,7 @@ ya = ya
 -- | Type | [`tab::Folder?`](#tab-folder) |
 ---@field folder tab__Folder?
 
--- 
+-- A folder.
 ---@class (exact) tab__Folder
 -- Current working directory.
 -- |      |               |
@@ -1254,7 +1317,7 @@ ya = ya
 -- | Type | [`fs::File?`](#fs-file) |
 ---@field hovered fs__File?
 
--- 
+-- Files in a [`tab::Folder`](#tab-folder).
 ---@class (exact) fs__Files
 -- Returns the number of files in this folder.
 -- | In/Out | Type      |
@@ -1270,7 +1333,7 @@ ya = ya
 -- | Return | [`fs::File?`](#fs-file) |
 ---@field __index fun(self: self, idx: integer): fs__File?
 
--- 
+-- A file lives in the current context, which has many more context-specific properties and methods compared to [`File`](/docs/plugins/types#file).
 ---@class (exact) fs__File
 -- Url of the file.
 -- |      |       |
@@ -1350,7 +1413,7 @@ ya = ya
 -- | Return | `integer?, integer?` |
 ---@field found fun(self: self): integer?, integer?
 
--- 
+-- All of tabs.
 ---@class (exact) mgr__Tabs
 -- Index of the active tab.
 -- |      |           |
@@ -1371,7 +1434,7 @@ ya = ya
 -- | Return | [`tab::Tab?`](#tab-tab) |
 ---@field __index fun(self: self, idx: integer): tab__Tab?
 
--- 
+-- A tab.
 ---@class (exact) tab__Tab
 -- Name of the tab.
 -- |      |          |
@@ -1428,7 +1491,7 @@ ya = ya
 -- | Type | `{ total: integer, succ: integer, fail: integer, found: integer, processed: integer }` |
 ---@field progress { total: integer, succ: integer, fail: integer, found: integer, processed: integer }
 
--- 
+-- Yanked files.
 ---@class (exact) mgr__Yanked
 -- Whether in cut mode.
 -- |      |           |
@@ -1456,7 +1519,7 @@ ya = ya
 -- | ---- | ---------------------- |
 -- | Type | [`rt::Args`](#rt-args) |
 ---@field args rt__Args
--- User's terminal properties.
+-- User's terminal emulator properties.
 -- |      |                        |
 -- | ---- | ---------------------- |
 -- | Type | [`rt::Term`](#rt-term) |
@@ -1553,7 +1616,7 @@ ya = ya
 -- 
 ---@class (exact) rt__Args
 
--- 
+-- User's terminal emulator properties.
 ---@class (exact) rt__Term
 -- Whether the terminal is in light mode.
 -- |      |           |
@@ -2212,6 +2275,11 @@ ya = ya
 -- | `self` | `Self`            |
 -- | Return | `Status?, Error?` |
 ---@field status fun(self: self): Status?, Error?
+-- Make a new command.
+-- | In/Out  | Type     |
+-- | ------- | -------- |
+-- | `value` | `string` |
+-- | Return  | `Self`   |
 ---@overload fun(value: string): Command
 
 -- This object is created by [`Command:spawn()`](#Command.spawn) and represents a running child process.
@@ -2374,85 +2442,141 @@ ya = ya
 
 -- 
 ---@class (exact) ui
--- 
+-- A constraint that defines the size of a layout element.
+-- Constraints can be used to specify a fixed size, a percentage of the available space, a ratio of
+-- the available space, a minimum or maximum size or a fill proportional value for a layout
+-- element.
+-- Relative constraints (percentage, ratio) are calculated relative to the entire space being
+-- divided, rather than the space available after applying more fixed constraints (min, max,
+-- length).
+-- Constraints are prioritized in the following order:
+-- 1. `ui.Constraint.Min(min)`
+-- 2. `ui.Constraint.Max(max)`
+-- 3. `ui.Constraint.Length(len)`
+-- 4. `ui.Constraint.Percentage(p)`
+-- 5. `ui.Constraint.Ratio(num, den)`
+-- 6. `ui.Constraint.Fill(scale)`
 ---@field Constraint ui.Constraint
--- 
+-- Alignment of an element such as [`Text`](#text) or [`Line`](#line).
 ---@field Align ui.Align
--- 
+-- Wrapping behavior of a [`Text`](#text).
 ---@field Wrap ui.Wrap
--- 
+-- Which edges of elements such as [`Bar`](#bar) or [`Border`](#border) should be applied.
 ---@field Edge ui.Edge
--- Make a new rect.
--- | In/Out  | Type                                                     |
--- | ------- | -------------------------------------------------------- |
--- | `value` | `{ x: integer?, y: integer?, w: integer?, h: integer? }` |
--- | Return  | `Self`                                                   |
+-- A Rect is represented an area within the terminal by four attributes:
+-- ```lua
+-- ui.Rect {
+--   x = 10, -- x position
+--   y = 10, -- y position
+--   w = 20, -- width
+--   h = 30, -- height
+-- }
+-- ui.Rect.default  -- Equal to `ui.Rect { x = 0, y = 0, w = 0, h = 0 }`
+-- ```
+-- You can get a pre-computed `Rect` through [`ui.Layout()`](#layout).
+-- Note that if you intend to create a `Rect` yourself, ensure these values are calculated accurately; otherwise, it may cause Yazi to crash!
 ---@field Rect fun(value: { x: integer?, y: integer?, w: integer?, h: integer? }): ui.Rect
--- Make a new padding.
--- | In/Out   | Type      |
--- | -------- | --------- |
--- | `top`    | `integer` |
--- | `right`  | `integer` |
--- | `bottom` | `integer` |
--- | `left`   | `integer` |
--- | Return   | `Self`    |
+-- `Pad` represents a padding, and all of its parameters are integers:
+-- ```lua
+-- ui.Pad(top, right, bottom, left)
+-- ```
 ---@field Pad fun(top: integer, right: integer, bottom: integer, left: integer): ui.Pad
--- Make a new style.
--- | In/Out | Type   |
--- | ------ | ------ |
--- | Return | `Self` |
+-- Create a style:
+-- ```lua
+-- ui.Style()
+-- ```
 ---@field Style fun(): ui.Style
--- Make a new span.
--- | In/Out  | Type               |
--- | ------- | ------------------ |
--- | `value` | `string` \| `Self` |
--- | Return  | `Self`             |
+-- `ui.Span` is the smallest unit of text, yet a component of `ui.Line`. Create a span:
+-- ```lua
+-- ui.Span("foo")
+-- ```
+-- For convenience, `ui.Span` can also accept itself as a argument:
+-- ```lua
+-- ui.Span(ui.Span("bar"))
+-- ```
 ---@field Span fun(value: string|self): ui.Span
--- Make a new line.
--- | In/Out  | Type                                                     |
--- | ------- | -------------------------------------------------------- |
--- | `value` | `string` \| `Span` \| `Self` \| `(string\|Span\|Self)[]` |
--- | Return  | `Self`                                                   |
+-- `ui.Line` represents a line, consisting of multiple `ui.Span`s, and it accepts a table of them:
+-- ```lua
+-- ui.Line { ui.Span("foo"), ui.Span("bar") }
+-- ```
+-- For convenience, the following types are also supported:
+-- ```lua
+-- -- string
+-- ui.Line("foo")
+-- -- ui.Span
+-- ui.Line(ui.Span("bar"))
+-- -- ui.Line itself
+-- ui.Line(ui.Line("baz"))
+-- -- Mixed table of string, ui.Span, ui.Line
+-- ui.Line { "foo", ui.Span("bar"), ui.Line("baz") }
+-- ```
 ---@field Line fun(value: string|ui.Span|self|(string|ui.Span|self)[]): ui.Line
--- Make a new text.
--- | In/Out  | Type                                                     |
--- | ------- | -------------------------------------------------------- |
--- | `value` | `string` \| `Span` \| `Line` \| `(string\|Span\|Line)[]` |
--- | Return  | `Self`                                                   |
+-- `ui.Text` is used to represent multi-line text, it takes a table of `ui.Line`:
+-- ```lua
+-- ui.Text { ui.Line("foo"), ui.Line("bar") }
+-- ```
+-- For convenience, the following types are also supported:
+-- ```lua
+-- -- string
+-- ui.Text("foo\nbar")
+-- -- ui.Line
+-- ui.Text(ui.Line("foo"))
+-- -- ui.Span
+-- ui.Text(ui.Span("bar"))
+-- -- Mixed table of string, ui.Line, ui.Span
+-- ui.Text { "foo", ui.Line("bar"), ui.Span("baz") }
+-- ```
+-- You can also use `ui.Text.parse(code)` to parse an [ANSI escape sequence](https://en.wikipedia.org/wiki/ANSI_escape_code) string into a text.
 ---@field Text fun(value: string|ui.Span|ui.Line|(string|ui.Span|ui.Line)[]): ui.Text
--- Make a new layout.
--- | In/Out | Type   |
--- | ------ | ------ |
--- | Return | `Self` |
+-- Create a layout:
+-- ```lua
+-- local areas = ui.Layout()
+--   :direction(ui.Layout.HORIZONTAL)
+--   :constraints({ ui.Constraint.Percentage(50), ui.Constraint.Percentage(50) })
+--   :split(area)
+-- local left = areas[1] -- The first rect
+-- local right = areas[2] -- The second rect
+-- ```
 ---@field Layout fun(): ui.Layout
--- Make a new list.
--- | In/Out  | Type                                                                     |
--- | ------- | ------------------------------------------------------------------------ |
--- | `value` | `string` \| `Span` \| `Line` \| `Text` \| `(string\|Span\|Line\|Text)[]` |
--- | Return  | `Self`                                                                   |
+-- Create a `List` that takes a table of `ui.Text`:
+-- ```lua
+-- ui.List { ui.Text("foo"), ui.Text("bar") }
+-- ```
+-- For convenience, the following types are also supported:
+-- ```lua
+-- -- Table of string
+-- ui.List { "foo", "bar" }
+-- -- Table of ui.Line
+-- ui.List { ui.Line("foo"), ui.Line("bar") }
+-- -- Table of ui.Span
+-- ui.List { ui.Span("foo"), ui.Span("bar") }
+-- -- Mixed table of string, ui.Line, ui.Span
+-- ui.List { "foo", ui.Line("bar"), ui.Span("baz") }
+-- ```
 ---@field List fun(value: string|ui.Span|ui.Line|ui.Text|(string|ui.Span|ui.Line|ui.Text)[]): ui.List
--- Make a new bar.
--- | In/Out | Type            |
--- | ------ | --------------- |
--- | `edge` | [`Edge`](#edge) |
--- | Return | `Self`          |
+-- Create a bar:
+-- ```lua
+-- ui.Bar(edge)
+-- ```
+-- The first attribute denotes the direction of the bar and accepts an [`Edge`](#edge) constant.
 ---@field Bar fun(edge: ui.Edge): ui.Bar
--- Make a new border.
--- | In/Out | Type            |
--- | ------ | --------------- |
--- | `edge` | [`Edge`](#edge) |
--- | Return | `Self`          |
+-- Create a border:
+-- ```lua
+-- ui.Border(edge)
+-- ```
+-- The first attribute denotes the edge of the border and accepts an [`Edge`](#edge) constant.
 ---@field Border fun(edge: ui.Edge): ui.Border
--- Make a new gauge.
--- | In/Out | Type   |
--- | ------ | ------ |
--- | Return | `Self` |
+-- Create a gauge:
+-- ```lua
+-- ui.Gauge()
+-- ```
 ---@field Gauge fun(): ui.Gauge
--- Make a new clear.
--- | In/Out | Type            |
--- | ------ | --------------- |
--- | `rect` | [`Rect`](#rect) |
--- | Return | `Self`          |
+-- Clear the content of a specific area, which is a [Rect](#rect). Place it followed by the component that you want to clear:
+-- ```lua
+-- local components = {
+--   ui.Text("..."):area(rect),
+--   -- ...
+--   ui.Clear(rect),
+-- }
+-- ```
 ---@field Clear fun(rect: ui.Rect): ui.Clear
-
-
