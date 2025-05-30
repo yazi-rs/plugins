@@ -25,3 +25,4 @@ For specific installation commands and configuration instructions, check the ind
 - [diff.yazi](diff.yazi) - Diff the selected file with the hovered file, create a living patch, and copy it to the clipboard.
 - [no-status.yazi](no-status.yazi) - Remove the status bar.
 - [mactag.yazi](mactag.yazi) - Bring macOS's awesome tagging feature to Yazi! The plugin is only available for macOS just like the name says.
+- [dir-rules.yazi](dir-rules.yazi) - Directory-specific rules for yazi.
