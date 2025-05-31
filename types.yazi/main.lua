@@ -1,6 +1,6 @@
 -- luacheck: globals Command Url cx fs ps rt th ui ya
 
----@alias Color string
+---@alias Color string|"reset"|"black"|"white"|"red"|"lightred"|"green"|"lightgreen"|"yellow"|"lightyellow"|"blue"|"lightblue"|"magenta"|"lightmagenta"|"cyan"|"lightcyan"|"gray"|"darkgray"
 ---@alias Stdio integer
 
 ---@alias Sendable nil|boolean|number|string|Url|{ [Sendable]: Sendable }
@@ -549,11 +549,12 @@ ya = ya
 -- | Return | `self` |
 ---@field reset fun(self: self): self
 -- Patch the style with `another`.
--- | In/Out    | Type   |
--- | --------- | ------ |
--- | `self`    | `Self` |
--- | `another` | `Self` |
--- | Return    | `self` |
+-- | In/Out    | Type                            |
+-- | --------- | ------------------------------- |
+-- | `self`    | `Self`                          |
+-- | `another` | `Self`                          |
+-- | Return    | `self`                          |
+-- | Private   | This method can't be inherited. |
 ---@field patch fun(self: self, another: self): self
 -- Make a new style.
 -- | In/Out | Type   |
@@ -569,6 +570,9 @@ ya = ya
 -- ```lua
 -- ui.Span(ui.Span("bar"))
 -- ```
+-- |         |                   |                                                  |
+-- | ------- | ----------------- | ------------------------------------------------ |
+-- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
 ---@class (exact) ui.Span
 -- Whether the span is visible, i.e. includes any printable characters.
 -- | In/Out | Type      |
@@ -582,7 +586,7 @@ ya = ya
 -- | `self`  | `Self`            |
 -- | `style` | [`Style`](#style) |
 -- | Return  | `self`            |
--- Besides applying the whole `Style`, you can also call those methods of `Style` directly on it, which means:
+-- Span inherits from `Style`, besides applying a whole `Style`, you can also call those methods of `Style` directly on it, which means:
 -- ```lua
 -- local style = ui.Style():fg("white"):bg("black"):bold()
 -- ui.Span("Hello world"):style(style)
@@ -592,6 +596,82 @@ ya = ya
 -- ui.Span("Hello world"):fg("white"):bg("black"):bold()
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
+-- Apply a foreground color.
+-- | In/Out  | Type                                             |
+-- | ------- | ------------------------------------------------ |
+-- | `self`  | `Self`                                           |
+-- | `color` | [`Color`](/docs/configuration/theme#types.color) |
+-- | Return  | `self`                                           |
+---@field fg fun(self: self, color: Color): self
+-- Apply a background color.
+-- | In/Out  | Type                                             |
+-- | ------- | ------------------------------------------------ |
+-- | `self`  | `Self`                                           |
+-- | `color` | [`Color`](/docs/configuration/theme#types.color) |
+-- | Return  | `self`                                           |
+---@field bg fun(self: self, color: Color): self
+-- Apply a bold style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field bold fun(self: self): self
+-- Apply a dim style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field dim fun(self: self): self
+-- Apply an italic style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field italic fun(self: self): self
+-- Apply an underline style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field underline fun(self: self): self
+-- Apply a blink style.
+-- Note that this style may not be supported by all terminals.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field blink fun(self: self): self
+-- Apply a rapid blink style.
+-- Note that this style may not be supported by all terminals.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field blink_rapid fun(self: self): self
+-- Apply a reverse style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field reverse fun(self: self): self
+-- Apply a hidden style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field hidden fun(self: self): self
+-- Apply a crossed style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field crossed fun(self: self): self
+-- Apply a reset style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field reset fun(self: self): self
 -- Make a new span.
 -- | In/Out  | Type               |
 -- | ------- | ------------------ |
@@ -614,6 +694,9 @@ ya = ya
 -- -- Mixed table of string, ui.Span, ui.Line
 -- ui.Line { "foo", ui.Span("bar"), ui.Line("baz") }
 -- ```
+-- |         |                   |                                                  |
+-- | ------- | ----------------- | ------------------------------------------------ |
+-- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
 ---@class (exact) ui.Line
 -- Set the area of the line.
 -- | In/Out | Type                      |
@@ -653,6 +736,82 @@ ya = ya
 -- ui.Line("Hello world"):fg("white"):bg("black"):bold()
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
+-- Apply a foreground color.
+-- | In/Out  | Type                                             |
+-- | ------- | ------------------------------------------------ |
+-- | `self`  | `Self`                                           |
+-- | `color` | [`Color`](/docs/configuration/theme#types.color) |
+-- | Return  | `self`                                           |
+---@field fg fun(self: self, color: Color): self
+-- Apply a background color.
+-- | In/Out  | Type                                             |
+-- | ------- | ------------------------------------------------ |
+-- | `self`  | `Self`                                           |
+-- | `color` | [`Color`](/docs/configuration/theme#types.color) |
+-- | Return  | `self`                                           |
+---@field bg fun(self: self, color: Color): self
+-- Apply a bold style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field bold fun(self: self): self
+-- Apply a dim style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field dim fun(self: self): self
+-- Apply an italic style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field italic fun(self: self): self
+-- Apply an underline style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field underline fun(self: self): self
+-- Apply a blink style.
+-- Note that this style may not be supported by all terminals.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field blink fun(self: self): self
+-- Apply a rapid blink style.
+-- Note that this style may not be supported by all terminals.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field blink_rapid fun(self: self): self
+-- Apply a reverse style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field reverse fun(self: self): self
+-- Apply a hidden style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field hidden fun(self: self): self
+-- Apply a crossed style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field crossed fun(self: self): self
+-- Apply a reset style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field reset fun(self: self): self
 -- Make a new line.
 -- | In/Out  | Type                                                     |
 -- | ------- | -------------------------------------------------------- |
@@ -676,6 +835,9 @@ ya = ya
 -- ui.Text { "foo", ui.Line("bar"), ui.Span("baz") }
 -- ```
 -- You can also use `ui.Text.parse(code)` to parse an [ANSI escape sequence](https://en.wikipedia.org/wiki/ANSI_escape_code) string into a text.
+-- |         |                   |                                                  |
+-- | ------- | ----------------- | ------------------------------------------------ |
+-- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
 ---@class (exact) ui.Text
 -- Set the area of the text.
 -- | In/Out | Type                      |
@@ -716,6 +878,82 @@ ya = ya
 -- ui.Text("Hello world"):fg("white"):bg("black"):bold()
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
+-- Apply a foreground color.
+-- | In/Out  | Type                                             |
+-- | ------- | ------------------------------------------------ |
+-- | `self`  | `Self`                                           |
+-- | `color` | [`Color`](/docs/configuration/theme#types.color) |
+-- | Return  | `self`                                           |
+---@field fg fun(self: self, color: Color): self
+-- Apply a background color.
+-- | In/Out  | Type                                             |
+-- | ------- | ------------------------------------------------ |
+-- | `self`  | `Self`                                           |
+-- | `color` | [`Color`](/docs/configuration/theme#types.color) |
+-- | Return  | `self`                                           |
+---@field bg fun(self: self, color: Color): self
+-- Apply a bold style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field bold fun(self: self): self
+-- Apply a dim style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field dim fun(self: self): self
+-- Apply an italic style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field italic fun(self: self): self
+-- Apply an underline style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field underline fun(self: self): self
+-- Apply a blink style.
+-- Note that this style may not be supported by all terminals.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field blink fun(self: self): self
+-- Apply a rapid blink style.
+-- Note that this style may not be supported by all terminals.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field blink_rapid fun(self: self): self
+-- Apply a reverse style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field reverse fun(self: self): self
+-- Apply a hidden style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field hidden fun(self: self): self
+-- Apply a crossed style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field crossed fun(self: self): self
+-- Apply a reset style.
+-- | In/Out | Type   |
+-- | ------ | ------ |
+-- | `self` | `Self` |
+-- | Return | `self` |
+---@field reset fun(self: self): self
 -- Make a new text.
 -- | In/Out  | Type                                                     |
 -- | ------- | -------------------------------------------------------- |
@@ -1333,8 +1571,16 @@ ya = ya
 -- | Return | [`fs::File?`](#fs-file) |
 ---@field __index fun(self: self, idx: integer): fs__File?
 
--- A file lives in the current context, which has many more context-specific properties and methods compared to [`File`](/docs/plugins/types#file).
+-- A file lives in the current context, which inherits from [`File`](/docs/plugins/types#file) but has many more context-specific properties and methods.
+-- |         |                                    |                                  |
+-- | ------- | ---------------------------------- | -------------------------------- |
+-- | Inherit | [`File`](/docs/plugins/types#file) | To access basic file attributes. |
 ---@class (exact) fs__File
+-- Whether the file is hovered.
+-- |      |           |
+-- | ---- | --------- |
+-- | Type | `boolean` |
+---@field is_hovered boolean
 -- Url of the file.
 -- |      |       |
 -- | ---- | ----- |
@@ -1355,11 +1601,6 @@ ya = ya
 -- | ---- | -------- |
 -- | Type | `string` |
 ---@field name string
--- Whether the file is hovered.
--- |      |           |
--- | ---- | --------- |
--- | Type | `boolean` |
----@field is_hovered boolean
 -- Size of the file in bytes, or `nil` if it's a directory yet not been evaluated.
 -- | In/Out | Type       |
 -- | ------ | ---------- |
@@ -2494,6 +2735,9 @@ ya = ya
 -- ```lua
 -- ui.Span(ui.Span("bar"))
 -- ```
+-- |         |                   |                                                  |
+-- | ------- | ----------------- | ------------------------------------------------ |
+-- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
 ---@field Span fun(value: string|self): ui.Span
 -- `ui.Line` represents a line, consisting of multiple `ui.Span`s, and it accepts a table of them:
 -- ```lua
@@ -2510,6 +2754,9 @@ ya = ya
 -- -- Mixed table of string, ui.Span, ui.Line
 -- ui.Line { "foo", ui.Span("bar"), ui.Line("baz") }
 -- ```
+-- |         |                   |                                                  |
+-- | ------- | ----------------- | ------------------------------------------------ |
+-- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
 ---@field Line fun(value: string|ui.Span|self|(string|ui.Span|self)[]): ui.Line
 -- `ui.Text` is used to represent multi-line text, it takes a table of `ui.Line`:
 -- ```lua
@@ -2527,6 +2774,9 @@ ya = ya
 -- ui.Text { "foo", ui.Line("bar"), ui.Span("baz") }
 -- ```
 -- You can also use `ui.Text.parse(code)` to parse an [ANSI escape sequence](https://en.wikipedia.org/wiki/ANSI_escape_code) string into a text.
+-- |         |                   |                                                  |
+-- | ------- | ----------------- | ------------------------------------------------ |
+-- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
 ---@field Text fun(value: string|ui.Span|ui.Line|(string|ui.Span|ui.Line)[]): ui.Text
 -- Create a layout:
 -- ```lua
