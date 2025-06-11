@@ -18,6 +18,7 @@ For specific installation commands and configuration instructions, check the ind
 - [vcs-files.yazi](vcs-files.yazi) - Show Git file changes in Yazi.
 - [piper.yazi](piper.yazi) - Pipe any shell command as a previewer.
 - [types.yazi](types.yazi) - Type definitions for Yazi's Lua API, empowering an efficient plugin development experience.
+- [zoom.yazi](zoom.yazi) - Zoom in or out of the preview image.
 - [smart-filter.yazi](smart-filter.yazi) - Makes filters smarter: continuous filtering, automatically enter unique directory, open file on submitting.
 - [chmod.yazi](chmod.yazi) - Execute `chmod` on the selected files to change their mode.
 - [mime-ext.yazi](mime-ext.yazi) - A mime-type provider based on a file extension database, replacing the builtin `file(1)` to speed up mime-type retrieval at the expense of accuracy.

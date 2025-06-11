@@ -274,7 +274,7 @@ function M.operate(type)
 	end
 end
 
-function M.fail(s, ...) ya.notify { title = "Mount", content = string.format(s, ...), timeout = 10, level = "error" } end
+function M.fail(...) ya.notify { title = "Mount", content = string.format(...), timeout = 10, level = "error" } end
 
 function M:click() end
 
