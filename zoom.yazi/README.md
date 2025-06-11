@@ -11,6 +11,8 @@ Supported formats:
 
 Note that, the maximum size of enlarged images is limited by the [`max_width`][max_width] and [`max_height`][max_height] configuration options, so you may need to increase them as needed.
 
+https://github.com/user-attachments/assets/b28912b1-da63-43d3-a21f-b9e6767ed4a9
+
 [max_width]: https://yazi-rs.github.io/docs/configuration/yazi#preview.max_width
 [max_height]: https://yazi-rs.github.io/docs/configuration/yazi#preview.max_height
 
