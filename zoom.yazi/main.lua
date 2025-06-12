@@ -17,7 +17,12 @@ local get = ya.sync(function(st)
 	}
 end)
 
-local save = ya.sync(function(st, level) st.level = level end)
+local save = ya.sync(function(st, before, after)
+	if st.level == before then
+		st.level = after
+		return true
+	end
+end)
 
 local function fail(...) return ya.notify { title = "Zoom", content = string.format(...), timeout = 5, level = "error" } end
 
@@ -44,12 +49,12 @@ local function entry(_, job)
 	end
 
 	local motion = tonumber(job.args[1]) or 0
-	st.level = ya.clamp(-10, st.level + motion, 10)
+	local level = ya.clamp(-10, st.level + motion, 10)
 
 	local max_w, max_h = canvas()
 	local min_w, min_h = math.min(max_w, info.w), math.min(max_h, info.h)
-	local new_w = min_w + math.floor(min_w * st.level * 0.1)
-	local new_h = min_h + math.floor(min_h * st.level * 0.1)
+	local new_w = min_w + math.floor(min_w * level * 0.1)
+	local new_h = min_h + math.floor(min_h * level * 0.1)
 	if new_w > max_w or new_h > max_h then
 		return -- Image larger than available preview area after zooming
 	end
@@ -59,19 +64,18 @@ local function entry(_, job)
 	local status, err = Command("magick"):arg {
 		tostring(st.url),
 		"-auto-orient", "-strip",
-		"-resize", string.format("%dx%d", new_w, new_h),
+		"-sample", string.format("%dx%d", new_w, new_h),
 		"-quality", rt.preview.image_quality,
 		string.format("JPG:%s", tmp),
 	}:status()
 
 	if not status then
-		return fail("Failed to run `magick` command: %s", err)
+		fail("Failed to run `magick` command: %s", err)
 	elseif not status.success then
-		return fail("`magick` command exited with error code %d", status.code)
+		fail("`magick` command exited with error code %d", status.code)
+	elseif save(st.level, level) then
+		ya.image_show(Url(tmp), ui.area("preview"))
 	end
-
-	save(st.level)
-	ya.image_show(Url(tmp), ui.area("preview"))
 end
 
 return { entry = entry }
