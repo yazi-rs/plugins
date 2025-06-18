@@ -1,4 +1,4 @@
---- @since 25.5.28
+--- @since 25.5.31
 
 local selected_or_hovered = ya.sync(function()
 	local tab, paths = cx.active, {}

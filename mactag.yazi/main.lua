@@ -1,4 +1,4 @@
---- @since 25.5.28
+--- @since 25.5.31
 
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do

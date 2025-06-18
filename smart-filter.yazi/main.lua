@@ -1,4 +1,4 @@
---- @since 25.5.28
+--- @since 25.5.31
 
 local hovered = ya.sync(function()
 	local h = cx.active.current.hovered

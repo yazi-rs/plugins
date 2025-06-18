@@ -1,4 +1,4 @@
---- @since 25.5.28
+--- @since 25.5.31
 --- @sync entry
 
 local function setup(self, opts) self.open_multi = opts.open_multi end
