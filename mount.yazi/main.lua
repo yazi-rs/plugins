@@ -1,6 +1,8 @@
 --- @since 25.5.31
 
+---@type fun(): nil
 local toggle_ui = ya.sync(function(self)
+	---@cast self PluginState
 	if self.children then
 		Modal:children_remove(self.children)
 		self.children = nil
@@ -10,24 +12,34 @@ local toggle_ui = ya.sync(function(self)
 	ya.render()
 end)
 
+---@type fun(): nil
 local subscribe = ya.sync(function(self)
+	---@cast self PluginState
 	ps.unsub("mount")
 	ps.sub("mount", function() ya.emit("plugin", { self._id, "refresh" }) end)
 end)
 
-local update_partitions = ya.sync(function(self, partitions)
-	self.partitions = partitions
-	self.cursor = math.max(0, math.min(self.cursor or 0, #self.partitions - 1))
+---@type fun(entries: table<number, MountDescription>): nil
+local update_partitions = ya.sync(function(self, entries)
+	---@cast self PluginState
+	self.entries = entries
+	self.cursor = math.max(0, math.min(self.cursor or 0, #self.entries - 1))
 	ya.render()
 end)
 
-local active_partition = ya.sync(function(self) return self.partitions[self.cursor + 1] end)
+---@type fun(): MountDescription
+local active_partition = ya.sync(function(self)
+	---@cast self PluginState
+	return self.entries[self.cursor + 1]
+end)
 
+---@type fun(cursor: number): nil
 local update_cursor = ya.sync(function(self, cursor)
-	if #self.partitions == 0 then
+	---@cast self PluginState
+	if #self.entries == 0 then
 		self.cursor = 0
 	else
-		self.cursor = ya.clamp(0, self.cursor + cursor, #self.partitions - 1)
+		self.cursor = ya.clamp(0, self.cursor + cursor, #self.entries - 1)
 	end
 	ya.render()
 end)
@@ -143,7 +155,7 @@ function M:reflow() return { self } end
 
 function M:redraw()
 	local rows = {}
-	for _, p in ipairs(self.partitions or {}) do
+	for _, p in ipairs(self.entries or {}) do
 		if not p.sub then
 			rows[#rows + 1] = ui.Row { p.main }
 		elseif p.sub == "" then
