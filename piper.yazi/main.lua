@@ -48,7 +48,7 @@ function M:seek(job) require("code"):seek(job) end
 function M.format(job, lines)
 	local format = job.args.format
 	if format ~= "url" then
-		local s = table.concat(lines, ""):gsub("\t", string.rep(" ", rt.preview.tab_size))
+		local s = table.concat(lines, ""):gsub("\r", ""):gsub("\t", string.rep(" ", rt.preview.tab_size))
 		return ui.Text.parse(s):area(job.area)
 	end
 
