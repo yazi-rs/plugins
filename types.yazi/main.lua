@@ -2738,7 +2738,7 @@ ya = ya
 -- |         |                   |                                                  |
 -- | ------- | ----------------- | ------------------------------------------------ |
 -- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
----@field Span fun(value: string|self): ui.Span
+---@field Span fun(value: string|ui.Span): ui.Span
 -- `ui.Line` represents a line, consisting of multiple `ui.Span`s, and it accepts a table of them:
 -- ```lua
 -- ui.Line { ui.Span("foo"), ui.Span("bar") }
@@ -2757,7 +2757,7 @@ ya = ya
 -- |         |                   |                                                  |
 -- | ------- | ----------------- | ------------------------------------------------ |
 -- | Inherit | [`Style`](#style) | To call [`Style`](#style) methods on it directly |
----@field Line fun(value: string|ui.Span|self|(string|ui.Span|self)[]): ui.Line
+---@field Line fun(value: string|ui.Span|ui.Line|(string|ui.Span|ui.Line)[]): ui.Line
 -- `ui.Text` is used to represent multi-line text, it takes a table of `ui.Line`:
 -- ```lua
 -- ui.Text { ui.Line("foo"), ui.Line("bar") }
