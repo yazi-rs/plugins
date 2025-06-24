@@ -2027,11 +2027,11 @@ ya = ya
 --   level = "info",
 -- }
 -- ```
--- | In/Out | Type                                                                   |
--- | ------ | ---------------------------------------------------------------------- |
--- | `opts` | `{ title: string, content: string, timeout: number?, level: string? }` |
--- | Return | `unknown`                                                              |
----@field notify fun(opts: { title: string, content: string, timeout: number?, level: string? }): unknown
+-- | In/Out | Type                                                                                       |
+-- | ------ | ------------------------------------------------------------------------------------------ |
+-- | `opts` | `{ title: string, content: string, timeout: number, level: "info"\|"warn"\|"error"\|nil }` |
+-- | Return | `unknown`                                                                                  |
+---@field notify fun(opts: { title: string, content: string, timeout: number, level: "info"|"warn"|"error"|nil }): unknown
 -- Append messages to [the log file](/docs/plugins/overview#logging) at the debug level:
 -- ```lua
 -- ya.dbg("Hello", "World!")                       -- Multiple arguments are supported
