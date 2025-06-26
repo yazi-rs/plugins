@@ -482,9 +482,9 @@ ya = ya
 -- | Return   | `Self`    |
 ---@overload fun(top: integer, right: integer, bottom: integer, left: integer): ui.Pad
 
--- `Pod` represents a position, which is composed of an origin and an offset relative to that origin:
+-- `Pos` represents a position, which is composed of an origin and an offset relative to that origin:
 -- ```lua
--- ui.Pod { "center", x = 5, y = 3, w = 20, h = 10 }
+-- ui.Pos { "center", x = 5, y = 3, w = 20, h = 10 }
 -- ```
 -- Its only parameter is a table containing the following keys:
 -- - `[1]`: [Origin](/docs/plugins/aliases#origin) of the position.
@@ -2786,9 +2786,9 @@ ya = ya
 -- ui.Pad(top, right, bottom, left)
 -- ```
 ---@field Pad fun(top: integer, right: integer, bottom: integer, left: integer): ui.Pad
--- `Pod` represents a position, which is composed of an origin and an offset relative to that origin:
+-- `Pos` represents a position, which is composed of an origin and an offset relative to that origin:
 -- ```lua
--- ui.Pod { "center", x = 5, y = 3, w = 20, h = 10 }
+-- ui.Pos { "center", x = 5, y = 3, w = 20, h = 10 }
 -- ```
 -- Its only parameter is a table containing the following keys:
 -- - `[1]`: [Origin](/docs/plugins/aliases#origin) of the position.
