@@ -16,7 +16,8 @@ end)
 local function prompt()
 	return ya.input {
 		title = "Smart filter:",
-		position = { "center", w = 50 },
+		pos = { "center", w = 50 },
+		position = { "center", w = 50 }, -- TODO: remove
 		realtime = true,
 		debounce = 0.1,
 	}
