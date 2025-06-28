@@ -491,7 +491,7 @@ ya = ya
 -- - `x`: X-offset relative to the origin, default is 0.
 -- - `y`: Y-offset relative to the origin, default is 0.
 -- - `w`: Width, default is 0.
--- - `h`: Weight, default is 0.
+-- - `h`: Height, default is 0.
 ---@class (exact) ui.Pos
 -- X-offset relative to the origin.
 -- |      |           |
@@ -2025,6 +2025,8 @@ ya = ya
 --   title = "Archive name:",
 --   -- Default value
 --   value = "",
+--   -- Whether to obscure the input.
+--   obscure = false,
 --   -- Position
 --   position = { "top-center", y = 3, w = 40 },
 --   -- Whether to report user input in real time.
@@ -2055,12 +2057,12 @@ ya = ya
 --   ya.dbg(value)
 -- end
 -- ```
--- | In/Out    | Type                                                                                        |
--- | --------- | ------------------------------------------------------------------------------------------- |
--- | `opts`    | `{ title: string, value: string?, position: AsPos, realtime: boolean?, debounce: number? }` |
--- | Return    | `(string?, integer)` \| `Recv`                                                              |
--- | Available | Async context only                                                                          |
----@field input fun(opts: { title: string, value: string?, position: AsPos, realtime: boolean?, debounce: number? }): (string?, integer)|Recv
+-- | In/Out    | Type                                                                                                           |
+-- | --------- | -------------------------------------------------------------------------------------------------------------- |
+-- | `opts`    | `{ title: string, value: string?, obscure: boolean?, position: AsPos, realtime: boolean?, debounce: number? }` |
+-- | Return    | `(string?, integer)` \| `Recv`                                                                                 |
+-- | Available | Async context only                                                                                             |
+---@field input fun(opts: { title: string, value: string?, obscure: boolean?, position: AsPos, realtime: boolean?, debounce: number? }): (string?, integer)|Recv
 -- Send a foreground notification to the user:
 -- ```lua
 -- ya.notify {
@@ -2795,7 +2797,7 @@ ya = ya
 -- - `x`: X-offset relative to the origin, default is 0.
 -- - `y`: Y-offset relative to the origin, default is 0.
 -- - `w`: Width, default is 0.
--- - `h`: Weight, default is 0.
+-- - `h`: Height, default is 0.
 ---@field Pos fun(value: { [1]: Origin, x?: integer, y?: integer, w?: integer, h?: integer }): ui.Pos
 -- Create a style:
 -- ```lua
