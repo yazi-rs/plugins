@@ -1,10 +1,6 @@
 -- luacheck: globals Command Url cx fs ps rt th ui ya
 
----@alias Color string|"reset"|"black"|"white"|"red"|"lightred"|"green"|"lightgreen"|"yellow"|"lightyellow"|"blue"|"lightblue"|"magenta"|"lightmagenta"|"cyan"|"lightcyan"|"gray"|"darkgray"
 ---@alias Stdio integer
-
----@alias Sendable nil|boolean|number|string|Url|{ [Sendable]: Sendable }
----@alias Renderable ui.Bar|ui.Border|ui.Clear|ui.Gauge|ui.Line|ui.List|ui.Text
 
 ---@class (exact) Recv
 ---@field recv fun(self: self): string
@@ -28,6 +24,21 @@ ui = ui
 ---@type ya
 ya = ya
 
+-- A set of constants representing the origin of a position.
+-- |       |                                                                                                                                          |
+-- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+-- | Alias | `"top-left"` \| `"top-center"` \| `"top-right"` \| `"bottom-left"` \| `"bottom-center"` \| `"bottom-right"` \| `"center"` \| `"hovered"` |
+---@alias Origin "top-left"|"top-center"|"top-right"|"bottom-left"|"bottom-center"|"bottom-right"|"center"|"hovered"
+-- A value that can be sent across threads. See [Sendable value](/docs/plugins/overview#sendable) for more details.
+-- |       |                                                                                   |
+-- | ----- | --------------------------------------------------------------------------------- |
+-- | Alias | `nil` \| `boolean` \| `number` \| `string` \| `Url` \| `{ [Sendable]: Sendable }` |
+---@alias Sendable nil|boolean|number|string|Url|{ [Sendable]: Sendable }
+-- An element that can be rendered.
+-- |       |                                                                       |
+-- | ----- | --------------------------------------------------------------------- |
+-- | Alias | `Bar` \| `Border` \| `Clear` \| `Gauge` \| `Line` \| `List` \| `Text` |
+---@alias Renderable ui.Bar|ui.Border|ui.Clear|ui.Gauge|ui.Line|ui.List|ui.Text
 -- A value that can be covariantly treated as a [`Pos`](/docs/plugins/layout#pos).
 -- |       |                                                                                |
 -- | ----- | ------------------------------------------------------------------------------ |
@@ -48,11 +59,11 @@ ya = ya
 -- | ----- | -------------------------------------------------------- |
 -- | Alias | `string` \| `Span` \| `Line` \| `(string\|Span\|Line)[]` |
 ---@alias AsText string|ui.Span|ui.Line|(string|ui.Span|ui.Line)[]
--- Origin is a set of constants representing the origin of a position.
--- |       |                                                                                                                                          |
--- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------- |
--- | Alias | `"top-left"` \| `"top-center"` \| `"top-right"` \| `"bottom-left"` \| `"bottom-center"` \| `"bottom-right"` \| `"center"` \| `"hovered"` |
----@alias Origin "top-left"|"top-center"|"top-right"|"bottom-left"|"bottom-center"|"bottom-right"|"center"|"hovered"
+-- A set of constants representing colors.
+-- |       |                                                                                                                                                                                                                                                                     |
+-- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-- | Alias | `"black"` \| `"white"` \| `"red"` \| `"lightred"` \| `"green"` \| `"lightgreen"` \| `"yellow"` \| `"lightyellow"` \| `"blue"` \| `"lightblue"` \| `"magenta"` \| `"lightmagenta"` \| `"cyan"` \| `"lightcyan"` \| `"gray"` \| `"darkgray"` \| `"reset"` \| `string` |
+---@alias AsColor "black"|"white"|"red"|"lightred"|"green"|"lightgreen"|"yellow"|"lightyellow"|"blue"|"lightblue"|"magenta"|"lightmagenta"|"cyan"|"lightcyan"|"gray"|"darkgray"|"reset"|string
 
 -- Create a Url:
 -- ```lua
@@ -526,19 +537,19 @@ ya = ya
 -- ```
 ---@class (exact) ui.Style
 -- Apply a foreground color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field fg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field fg fun(self: self, color: AsColor): self
 -- Apply a background color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field bg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field bg fun(self: self, color: AsColor): self
 -- Apply a bold style.
 -- | In/Out | Type   |
 -- | ------ | ------ |
@@ -650,19 +661,19 @@ ya = ya
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
 -- Apply a foreground color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field fg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field fg fun(self: self, color: AsColor): self
 -- Apply a background color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field bg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field bg fun(self: self, color: AsColor): self
 -- Apply a bold style.
 -- | In/Out | Type   |
 -- | ------ | ------ |
@@ -790,19 +801,19 @@ ya = ya
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
 -- Apply a foreground color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field fg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field fg fun(self: self, color: AsColor): self
 -- Apply a background color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field bg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field bg fun(self: self, color: AsColor): self
 -- Apply a bold style.
 -- | In/Out | Type   |
 -- | ------ | ------ |
@@ -932,19 +943,19 @@ ya = ya
 -- ```
 ---@field style fun(self: self, style: ui.Style): self
 -- Apply a foreground color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field fg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field fg fun(self: self, color: AsColor): self
 -- Apply a background color.
--- | In/Out  | Type                                             |
--- | ------- | ------------------------------------------------ |
--- | `self`  | `Self`                                           |
--- | `color` | [`Color`](/docs/configuration/theme#types.color) |
--- | Return  | `self`                                           |
----@field bg fun(self: self, color: Color): self
+-- | In/Out  | Type                                        |
+-- | ------- | ------------------------------------------- |
+-- | `self`  | `Self`                                      |
+-- | `color` | [`AsColor`](/docs/plugins/aliases#as-color) |
+-- | Return  | `self`                                      |
+---@field bg fun(self: self, color: AsColor): self
 -- Apply a bold style.
 -- | In/Out | Type   |
 -- | ------ | ------ |

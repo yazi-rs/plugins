@@ -21,7 +21,7 @@ local function run_with_sudo(program, args)
 		return cmd:output()
 	end
 
-	local permit = ya.hide()
+	local permit = ui.hide and ui.hide() or ya.hide() -- TODO: remove this
 	print(string.format("Sudo password required to run: `%s %s`", program, table.concat(args)))
 	local output = cmd:output()
 	permit:drop()
