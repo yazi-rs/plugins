@@ -206,9 +206,9 @@ local function setup(st, opts)
 	end, opts.order)
 end
 
+---@type UnstableFetcher
 local function fetch(_, job)
-	local files = job.files ---@type File[]
-	local cwd = files[1].url.base
+	local cwd = job.files[1].url.base
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
@@ -241,7 +241,7 @@ local function fetch(_, job)
 		end
 	end
 
-	if files[1].cha.is_dir then
+	if job.files[1].cha.is_dir then
 		ya.dict_merge(changed, bubble_up(changed))
 	end
 	ya.dict_merge(changed, propagate_down(excluded, cwd, Url(repo)))
