@@ -216,7 +216,7 @@ local function fetch(_, job)
 	end
 
 	local paths = {}
-	for _, file in ipairs(files) do
+	for _, file in ipairs(job.files) do
 		paths[#paths + 1] = tostring(file.url)
 	end
 
