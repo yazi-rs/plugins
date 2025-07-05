@@ -239,13 +239,13 @@ local function fetch(_, job)
 
 	-- stylua: ignore
 	local cmd = Command("git")
-		:args({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--ignored=matching" })
+		:arg({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--ignored=matching" })
 		:stdout(Command.PIPED)
 
 	if get_opts().renamed then
 		cmd = cmd:cwd(repo)
 	else
-		cmd = cmd:cwd(tostring(cwd)):args({ "--no-renames" }):args(paths)
+		cmd = cmd:cwd(tostring(cwd)):arg({ "--no-renames" }):arg(paths)
 	end
 
 	local output, err = cmd:output()
