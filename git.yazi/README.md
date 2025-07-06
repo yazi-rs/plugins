@@ -34,6 +34,9 @@ run  = "git"
 
 ## Advanced
 
+> [!NOTE]  
+> The following configuration must be put before `require("git"):setup()`
+
 You can customize the [Style](https://yazi-rs.github.io/docs/plugins/layout#style) of the status sign with:
 
 - `th.git.modified`
