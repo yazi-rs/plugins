@@ -33,6 +33,7 @@ run  = "git"
 ```
 
 ## Advanced
+**Attention: You should put your configurations above the `require('modelname'):setup()`!**
 
 You can customize the [Style](https://yazi-rs.github.io/docs/plugins/layout#style) of the status sign with:
 
