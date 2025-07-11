@@ -306,10 +306,12 @@ function M.fillin(tbl)
 		end
 		if entry.can_unmount and entry.can_unmount == "1" then
 			local dist = entry.default_location
-			dist = dist:gsub("//", "host=")
-			dist = dist:gsub("/", "")
-			dist = "/run/user/" .. ya.uid() .. "/gvfs/" .. dist
-			tbl[#tbl].dist = dist
+			if dist:match("^mtp://") then
+				dist = dist:gsub("//", "host=")
+				dist = dist:gsub("/", "")
+				dist = "/run/user/" .. ya.uid() .. "/gvfs/" .. dist
+				tbl[#tbl].dist = dist
+			end
 		end
 	end
 	return tbl
