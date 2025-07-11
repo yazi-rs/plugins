@@ -258,6 +258,60 @@ function M.fillin(tbl)
 	for _, p in ipairs(t and t.blockdevices or {}) do
 		tbl[indices[p.name]].fstype = p.fstype
 	end
+
+	local result = {}
+	local currentEntry
+
+	local gioOutput, err = Command("gio"):arg({ "mount", "-li" }):output()
+	if err then
+		M.fail("Failed to %s `%s`: %s", "get mounts", gioOutput.stdout, err)
+	end
+	for line in gioOutput.stdout:gmatch("[^\r\n]+") do
+		local driveVolumeMount, descriptor = line:match("^%s*(%w+%(%d+%)): (.+)$")
+		if driveVolumeMount then
+			--M.fail("parsed %s `%s`", driveVolumeMount, descriptor)
+			-- Start of a new Drive/Volume/Mount entry
+			currentEntry = { id = driveVolumeMount, name = descriptor }
+			table.insert(result, currentEntry)
+		else
+			local key, value = line:match("^%s+(.+)=(.*)$")
+			if not key then
+				key, value = line:match("^%s+(.+):%s*(.*)$")
+			end
+			if key then
+				value = value:gsub("^%s+", "") -- remove leading whitespace from value
+				value = value:gsub("^'", "")
+				value = value:gsub("'$", "")
+				-- Add detail to the current main entry (Drive/Volume)
+				currentEntry[key] = value
+			end
+		end
+	end
+
+	for _, entry in ipairs(result) do
+		if entry.can_mount and entry.can_mount == "1" then
+			M.fail("got %s `%s`: %s", entry.id, entry.name, entry.can_mount or "n/a")
+			tbl[#tbl + 1] = {
+				main = entry.name,
+				label = entry.name,
+				fstype = "mtp",
+			}
+			tbl[#tbl + 1] = {
+				main = entry.name,
+				src = entry.activation_root,
+				sub = entry.id,
+				label = entry.name,
+				fstype = "mtp",
+			}
+		end
+		if entry.can_unmount and entry.can_unmount == "1" then
+			local dist = entry.default_location
+			dist = dist:gsub("//", "host=")
+			dist = dist:gsub("/", "")
+			dist = "/run/user/" .. ya.uid() .. "/gvfs/" .. dist
+			tbl[#tbl].dist = dist
+		end
+	end
 	return tbl
 end
 
@@ -274,7 +328,13 @@ function M.operate(type)
 		output, err = Command("diskutil"):arg({ type, active.src }):output()
 	end
 	if ya.target_os() == "linux" then
-		if type == "eject" then
+		if active.fstype == "mtp" then
+			if type == "mount" then
+				output, err = Command("gio"):arg({ "mount", active.src }):output()
+			elseif type == "unmount" then
+				output, err = Command("gio"):arg({ "mount", "--unmount", active.src }):output()
+			end
+		elseif type == "eject" then
 			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
 			output, err = Command("udisksctl"):arg({ "power-off", "-b", active.src }):output()
 		else
