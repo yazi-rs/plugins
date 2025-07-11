@@ -4,7 +4,7 @@ A mount manager for Yazi, providing disk mount, unmount, and eject functionality
 
 Supported platforms:
 
-- Linux with [`udisksctl`](https://github.com/storaged-project/udisks) and [`lsblk`](https://github.com/util-linux/util-linux) and [`gio`](https://developer.gnome.org/gio/stable/) to handle MTP devices
+- Linux with [`udisksctl`](https://github.com/storaged-project/udisks) and [`lsblk`](https://github.com/util-linux/util-linux) and [GVFS's `gio`](https://wiki.gnome.org/Projects/gvfs) to handle MTP devices
 - macOS with `diskutil`
 
 https://github.com/user-attachments/assets/c6f780ab-458b-420f-85cf-2fc45fcfe3a2
