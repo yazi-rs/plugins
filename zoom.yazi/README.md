@@ -37,6 +37,16 @@ run  = "plugin zoom -1"
 desc = "Zoom out hovered file"
 ```
 
+## Advanced
+
+If you want to apply a default zoom parameter to image previews, you can specify it while setting this plugin up as a custom previewer, for example:
+
+```toml
+[[plugin.prepend_previewers]]
+mime = "image/{jpeg,png,webp}"
+run  = "zoom 5"
+```
+
 ## TODO
 
 - [ ] Support more file types (e.g., videos, PDFs), PRs welcome!
