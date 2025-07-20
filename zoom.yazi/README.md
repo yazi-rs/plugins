@@ -7,7 +7,7 @@ Enlarge or shrink the preview image of a file, which is useful for magnifying sm
 
 Supported formats:
 
-- Images - [ImageMagick](https://imagemagick.org/) is required
+- Images - requires [ImageMagick](https://imagemagick.org/) (>= 7.1.1)
 
 Note that, the maximum size of enlarged images is limited by the [`max_width`][max_width] and [`max_height`][max_height] configuration options, so you may need to increase them as needed.
 
