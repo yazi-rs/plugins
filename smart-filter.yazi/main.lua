@@ -43,6 +43,7 @@ local function entry()
 		elseif event == 1 then
 			ya.emit("escape", { filter = true })
 			ya.emit(h.is_dir and "enter" or "open", { h.url })
+			break
 		end
 	end
 end
