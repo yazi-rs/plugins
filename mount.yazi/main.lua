@@ -275,13 +275,12 @@ function M.operate(type)
 		output, err = Command("diskutil"):arg({ type, active.src }):output()
 	end
 	if ya.target_os() == "linux" then
-		if type == "eject" then
+		if type == "eject" and active.src:match("^/dev/sr%d+") then
 			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
-			if active.src:match("^/dev/sr%d+") then
-				output, err = Command("eject"):arg({ "--traytoggle",  active.src }):output()
-			else
-				output, err = Command("udisksctl"):arg({ "power-off", "-b", active.src }):output()
-			end
+			output, err = Command("eject"):arg({ "--traytoggle", active.src }):output()
+		elseif type == "eject" then
+			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
+			output, err = Command("udisksctl"):arg({ "power-off", "-b", active.src }):output()
 		else
 			output, err = Command("udisksctl"):arg({ type, "-b", active.src }):output()
 		end

@@ -4,8 +4,8 @@ A mount manager for Yazi, providing disk mount, unmount, and eject functionality
 
 Supported platforms:
 
-- Linux with [`udisksctl`](https://github.com/storaged-project/udisks) and [`lsblk`](https://github.com/util-linux/util-linux)
-- macOS with `diskutil`
+- Linux with [`udisksctl`](https://github.com/storaged-project/udisks), `lsblk` and `eject` both provided by [`util-linux`](https://github.com/util-linux/util-linux)
+- macOS with `diskutil`, which is pre-installed
 
 https://github.com/user-attachments/assets/c6f780ab-458b-420f-85cf-2fc45fcfe3a2
 
@@ -40,7 +40,7 @@ Available keybindings:
 ## TODO
 
 - Custom keybindings
-- Windows support (I don't have an Windows machine for testing, PRs welcome!)
+- Windows support (I don't use Windows myself, PRs welcome!)
 - Support mount, unmount, and eject the entire disk
 
 ## License
