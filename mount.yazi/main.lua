@@ -224,6 +224,7 @@ function M.split(src)
 		{ "^/dev/nvme%d+n%d+", "p%d+$" }, -- /dev/nvme0n1p1
 		{ "^/dev/mmcblk%d+", "p%d+$" }, -- /dev/mmcblk0p1
 		{ "^/dev/disk%d+", ".+$" }, -- /dev/disk1s1
+		{ "^/dev/sr%d+", ".+$" }, -- /dev/sr0
 	}
 	for _, p in ipairs(pats) do
 		local main = src:match(p[1])
@@ -274,7 +275,10 @@ function M.operate(type)
 		output, err = Command("diskutil"):arg({ type, active.src }):output()
 	end
 	if ya.target_os() == "linux" then
-		if type == "eject" then
+		if type == "eject" and active.src:match("^/dev/sr%d+") then
+			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
+			output, err = Command("eject"):arg({ "--traytoggle", active.src }):output()
+		elseif type == "eject" then
 			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
 			output, err = Command("udisksctl"):arg({ "power-off", "-b", active.src }):output()
 		else
