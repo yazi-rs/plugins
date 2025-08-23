@@ -7,6 +7,6 @@
 ---@field renamed boolean Whether to include renamed files in the status (or treat them as modified)
 
 -- TODO: move this to `types.yazi` once it's get stable
----@alias UnstableFetcher fun(self: unknown, job: { files: File[] })
+---@alias UnstableFetcher fun(self: unknown, job: { files: File[] }): boolean, Error?
 
 ---@alias Changes table<string, CODES>
