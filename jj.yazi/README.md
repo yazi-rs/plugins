@@ -2,6 +2,8 @@
 
 Show the status of Jujutsu (jj) file changes as linemode in the file list.
 
+[demo_jj_yazi.webm](https://github.com/user-attachments/assets/866ce531-50fa-4ddc-8195-7bf00209166a)
+
 ## Installation
 
 ```sh
