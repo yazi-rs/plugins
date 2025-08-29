@@ -31,10 +31,13 @@ local function parse_diff_summary(line)
 
 	local path = rest
 	if kind == "R" then
-		local new = rest:gsub("%{%s*(.-)%s*=>%s*(.-)%s*%}/?", "%2", 1)
-		if new and #new > 0 then
-			path = new
-		end
+	  local new = rest
+	    :gsub("%{%s*(.-)%s*=>%s*(.-)%s*%}", "%2", 1)  -- Handles: {file.txt => inner/file.txt}
+	    :gsub("/+", "/")                              -- collapse accidental `//` to handle src/{inner => }/file.txt
+	  																								-- and {src => inner/src}/path/file.txt
+	  if new and #new > 0 then
+	    path = new
+	  end
 	end
 
 	if WINDOWS then
