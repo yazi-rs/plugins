@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 25.9.15
 
 local root = ya.sync(function() return cx.active.current.cwd end)
 
@@ -27,7 +27,7 @@ local function entry()
 		end
 	end
 	ya.emit("update_files", { op = fs.op("part", { id = id, url = Url(cwd), files = files }) })
-	ya.emit("update_files", { op = fs.op("done", { id = id, url = cwd, cha = Cha { kind = 16 } }) })
+	ya.emit("update_files", { op = fs.op("done", { id = id, url = cwd, cha = Cha { mode = tonumber("100644", 8) } }) })
 end
 
 return { entry = entry }

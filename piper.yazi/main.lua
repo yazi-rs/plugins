@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 25.9.15
 
 local M = {}
 
@@ -57,7 +57,7 @@ function M.format(job, lines)
 
 		local icon = File({
 			url = Url(lines[i]),
-			cha = Cha { kind = lines[i]:sub(-1) == "/" and 1 or 0 },
+			cha = Cha { mode = tonumber(lines[i]:sub(-1) == "/" and "40700" or "100644", 8) },
 		}):icon()
 
 		if icon then
