@@ -4,12 +4,12 @@ local M = {}
 
 local function fail(job, s) ya.preview_widget(job, ui.Text.parse(s):area(job.area):wrap(ui.Wrap.YES)) end
 
-function M:setup(_, opts)
-	self.shell = opts and opts.shell
-end
+local options = ya.sync(function(st) return { shell = st.shell } end)
+
+function M:setup(opts) self.shell = opts and opts.shell end
 
 function M:peek(job)
-	local shell = self.shell or (ya.target_family() == "windows" and "powershell" or "sh")
+	local shell = options().shell or (ya.target_family() == "windows" and "powershell" or "sh")
 	local url = tostring(job.file.url)
 	local cmd, args
 
