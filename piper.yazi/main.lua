@@ -4,9 +4,30 @@ local M = {}
 
 local function fail(job, s) ya.preview_widget(job, ui.Text.parse(s):area(job.area):wrap(ui.Wrap.YES)) end
 
+function M:setup(_, opts)
+	self.shell = opts and opts.shell
+end
+
 function M:peek(job)
-	local child, err = Command("sh")
-		:arg({ "-c", job.args[1], "sh", tostring(job.file.url) })
+	local shell = self.shell or (ya.target_family() == "windows" and "powershell" or "sh")
+	local url = tostring(job.file.url)
+	local cmd, args
+
+	if shell == "powershell" or shell == "pwsh" then
+		cmd = shell
+		local script = "& { " .. string.gsub(job.args[1], "$1", "$args[0]") .. " }"
+		args = { "-Command", script, url }
+	elseif shell == "nushell" or shell == "nu" then
+		cmd = "nu"
+		local script = string.gsub(job.args[1], "$1", "$env.NU_ARGV[0]")
+		args = { "-c", script, url }
+	else
+		cmd = "sh"
+		args = { "-c", job.args[1], "sh", url }
+	end
+
+	local child, err = Command(cmd)
+		:arg(args)
 		:env("w", job.area.w)
 		:env("h", job.area.h)
 		:stdout(Command.PIPED)
@@ -14,7 +35,7 @@ function M:peek(job)
 		:spawn()
 
 	if not child then
-		return fail(job, "sh: " .. err)
+		return fail(job, cmd .. ": " .. err)
 	end
 
 	local limit = job.area.h
