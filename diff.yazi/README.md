@@ -21,7 +21,7 @@ run  = "plugin diff"
 desc = "Diff the selected with the hovered file"
 ```
 
-Make sure the <kbd>C</kbd> + <kbd>d</kbd> key is not used elsewhere.
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
 
 ## License
 

@@ -74,6 +74,8 @@ run  = "plugin mactag remove"
 desc = "Untag selected files"
 ```
 
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
+
 ## License
 
 This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.

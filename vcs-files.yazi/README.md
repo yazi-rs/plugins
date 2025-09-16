@@ -20,6 +20,8 @@ run  = "plugin vcs-files"
 desc = "Show Git file changes"
 ```
 
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
+
 ## TODO
 
 - [ ] Add support for other VCS (e.g. Mercurial, Subversion)

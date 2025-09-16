@@ -37,6 +37,8 @@ run  = "plugin zoom -1"
 desc = "Zoom out hovered file"
 ```
 
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
+
 ## Advanced
 
 If you want to apply a default zoom parameter to image previews, you can specify it while setting this plugin up as a custom previewer, for example:

@@ -25,7 +25,9 @@ on  = "M"
 run = "plugin mount"
 ```
 
-Available keybindings:
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
+
+## Actions
 
 | Key binding  | Alternate key | Action                |
 | ------------ | ------------- | --------------------- |
