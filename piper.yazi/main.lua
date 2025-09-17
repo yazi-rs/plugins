@@ -13,17 +13,20 @@ function M:peek(job)
 	local url = tostring(job.file.url)
 	local cmd, args
 
-	-- FIXME error when quote in url
 	if shell == "powershell" or shell == "pwsh" then
-		-- e.g. echo $args
+		-- e.g. "echo $_"
 		cmd = shell
-		args = { "-Command", "& { " .. job.args[1] .. " }", url }
+		args = {
+			"-NoProfile",
+			"-Command",
+			string.format("'%s' | ForEach-Object { %s }", url:gsub("'", "''"), job.args[1]),
+		}
 	elseif shell == "nushell" or shell == "nu" then
-		-- e.g. echo $args.0
+		-- e.g. "echo $in"
 		cmd = "nu"
-		args = { "-c", string.format("def main [...args] { %s }; main r#'%s'#", job.args[1], url) }
+		args = { "-c", string.format("r#'%s'# | %s", url, job.args[1]) }
 	else
-		-- e.g. echo $1
+		-- e.g. "echo $1"
 		cmd = "sh"
 		args = { "-c", job.args[1], "sh", url }
 	end
