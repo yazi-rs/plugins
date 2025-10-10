@@ -50,6 +50,8 @@ end)
 local M = {
 	keys = {
 		{ on = "q", run = "quit" },
+		{ on = "<Esc>", run = "quit" },
+		{ on = "<Enter>", run = { "enter", "quit" } },
 
 		{ on = "k", run = "up" },
 		{ on = "j", run = "down" },
