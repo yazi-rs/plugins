@@ -23,12 +23,12 @@ And register it as fetchers in your `~/.config/yazi/yazi.toml`:
 ```toml
 [[plugin.prepend_fetchers]]
 id   = "git"
-name = "*"
+url  = "*"
 run  = "git"
 
 [[plugin.prepend_fetchers]]
 id   = "git"
-name = "*/"
+url  = "*/"
 run  = "git"
 ```
 
