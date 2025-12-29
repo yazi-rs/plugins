@@ -8,10 +8,11 @@ local WINDOWS = ya.target_family() == "windows"
 ---@enum CODES
 local CODES = {
 	excluded = 100, -- ignored directory
-	ignored = 6, -- ignored file
-	untracked = 5,
-	modified = 4,
-	added = 3,
+	ignored = 7, -- ignored file
+	untracked = 6,
+	modified = 5,
+	added = 4,
+	renamed = 3,
 	deleted = 2,
 	updated = 1,
 	unknown = 0,
@@ -22,6 +23,7 @@ local PATTERNS = {
 	{ "?$", CODES.untracked },
 	{ "[MT]", CODES.modified },
 	{ "[AC]", CODES.added },
+	{ "R", CODES.renamed },
 	{ "D", CODES.deleted },
 	{ "U", CODES.updated },
 	{ "[AD][AD]", CODES.updated },
@@ -34,7 +36,12 @@ local function match(line)
 	for _, p in ipairs(PATTERNS) do
 		local path, pattern, code = nil, p[1], p[2]
 		if signs:find(pattern) then
-			path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
+			if code == CODES.renamed then
+				path = line:match("^.+-> (.+)$")
+				path = path:sub(1, 1) == '"' and path:sub(2, -2) or path
+			else
+				path = line:sub(4, 4) == '"' and line:sub(5, -2) or line:sub(4)
+			end
 			path = WINDOWS and path:gsub("/", "\\") or path
 		end
 		if not path then
@@ -161,14 +168,22 @@ local remove = ya.sync(function(st, cwd)
 	st.repos[repo] = nil
 end)
 
+---@return Options
+local get_opts = ya.sync(function(st)
+	---@cast st State
+	return st.opts
+end)
+
 ---@param st State
 ---@param opts Options
 local function setup(st, opts)
-	st.dirs = {}
-	st.repos = {}
-
 	opts = opts or {}
 	opts.order = opts.order or 1500
+	opts.renamed = opts.renamed or false
+
+	st.opts = opts
+	st.dirs = {}
+	st.repos = {}
 
 	local t = th.git or {}
 	local styles = {
@@ -176,6 +191,7 @@ local function setup(st, opts)
 		[CODES.untracked] = t.untracked and ui.Style(t.untracked) or ui.Style():fg("magenta"),
 		[CODES.modified] = t.modified and ui.Style(t.modified) or ui.Style():fg("yellow"),
 		[CODES.added] = t.added and ui.Style(t.added) or ui.Style():fg("green"),
+		[CODES.renamed] = t.renamed and ui.Style(t.renamed) or ui.Style():fg("yellow"),
 		[CODES.deleted] = t.deleted and ui.Style(t.deleted) or ui.Style():fg("red"),
 		[CODES.updated] = t.updated and ui.Style(t.updated) or ui.Style():fg("yellow"),
 	}
@@ -184,6 +200,7 @@ local function setup(st, opts)
 		[CODES.untracked] = t.untracked_sign or "?",
 		[CODES.modified] = t.modified_sign or "",
 		[CODES.added] = t.added_sign or "",
+		[CODES.renamed] = t.renamed_sign or "",
 		[CODES.deleted] = t.deleted_sign or "",
 		[CODES.updated] = t.updated_sign or "",
 	}
@@ -226,12 +243,17 @@ local function fetch(_, job)
 	end
 
 	-- stylua: ignore
-	local output, err = Command("git")
-		:cwd(tostring(cwd))
-		:arg({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--no-renames", "--ignored=matching" })
-		:arg(paths)
+	local cmd = Command("git")
+		:arg({ "--no-optional-locks", "-c", "core.quotePath=", "status", "--porcelain", "-unormal", "--ignored=matching" })
 		:stdout(Command.PIPED)
-		:output()
+
+	if get_opts().renamed then
+		cmd = cmd:cwd(repo)
+	else
+		cmd = cmd:cwd(tostring(cwd)):arg({ "--no-renames" }):arg(paths)
+	end
+
+	local output, err = cmd:output()
 	if not output then
 		return true, Err("Cannot spawn `git` command, error: %s", err)
 	end
