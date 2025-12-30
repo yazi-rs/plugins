@@ -171,7 +171,7 @@ function M:redraw()
 				ui.Constraint.Length(20),
 				ui.Constraint.Length(20),
 				ui.Constraint.Percentage(70),
-				ui.Constraint.Length(10),
+				ui.Constraint.Length(20),
 			},
 	}
 end
