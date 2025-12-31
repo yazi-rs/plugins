@@ -79,7 +79,7 @@ local function peek(_, job)
 	local tmp = os.tmpname()
 	-- stylua: ignore
 	local status, err = Command("magick"):arg {
-		tostring(url),
+		tostring(job.file.path or url), -- TODO: remove `or url`
 		"-auto-orient", "-strip",
 		"-sample", string.format("%dx%d", new_w, new_h),
 		"-quality", rt.preview.image_quality,

@@ -8,20 +8,20 @@ local function info(content)
 	}
 end
 
-local selected_url = ya.sync(function()
+local selected_path = ya.sync(function()
 	for _, u in pairs(cx.active.selected) do
-		return u
+		return u.cache or u
 	end
 end)
 
-local hovered_url = ya.sync(function()
+local hovered_path = ya.sync(function()
 	local h = cx.active.current.hovered
-	return h and h.url
+	return h and (h.path or h.url) -- TODO: remove "or h.url"
 end)
 
 return {
 	entry = function()
-		local a, b = selected_url(), hovered_url()
+		local a, b = selected_path(), hovered_path()
 		if not a then
 			return info("No file selected")
 		elseif not b then

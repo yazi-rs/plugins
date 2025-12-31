@@ -3,7 +3,8 @@
 local M = {}
 
 function M:peek(job)
-	local child, err = Command("lsar"):arg(tostring(job.file.url)):stdout(Command.PIPED):spawn()
+	-- TODO: remove "or job.file.url"
+	local child, err = Command("lsar"):arg(tostring(job.file.path or job.file.url)):stdout(Command.PIPED):spawn()
 	if not child then
 		return ya.err("spawn `lsar` command failed: " .. err)
 	end
