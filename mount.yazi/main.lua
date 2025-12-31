@@ -212,6 +212,11 @@ function M.split(src)
 		{ "^/dev/mmcblk%d+", "p%d+$" }, -- /dev/mmcblk0p1
 		{ "^/dev/disk%d+", ".+$" }, -- /dev/disk1s1
 		{ "^/dev/sr%d+", ".+$" }, -- /dev/sr0
+		{ "^/dev/fd%d+", ".+$" }, -- /dev/fd0
+		{ "^/dev/md%d+", "p%d+$" }, -- /dev/md0p1
+		{ "^/dev/nbd%d+", "p%d+$" }, -- /dev/nbd0p1
+		{ "^/dev/bcache%d+", "p%d+$" }, -- /dev/bcache0p1
+		{ "^/dev/mapper/", ".+$" }, -- /dev/mapper/<name>
 	}
 	for _, p in ipairs(pats) do
 		local main = src:match(p[1])
