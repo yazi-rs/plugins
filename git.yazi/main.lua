@@ -225,6 +225,10 @@ end
 ---@type UnstableFetcher
 local function fetch(_, job)
 	local cwd = job.files[1].url.base or job.files[1].url.parent
+	if not cwd then
+		return true
+	end
+
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
