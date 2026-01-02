@@ -171,7 +171,7 @@ local function setup(st, opts)
 	}
 	local signs = {
 		[CODES.ignored] = t.ignored_sign or " ",
-		[CODES.untracked] = t.untracked_sign or "?",
+		[CODES.untracked] = t.untracked_sign or "? ",
 		[CODES.modified] = t.modified_sign or " ",
 		[CODES.added] = t.added_sign or " ",
 		[CODES.deleted] = t.deleted_sign or " ",
