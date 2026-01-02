@@ -10,6 +10,7 @@ function M:setup(opts) self.shell = opts and opts.shell end
 
 function M:peek(job)
 	local shell = options().shell or (ya.target_family() == "windows" and "powershell" or "sh")
+	-- TODO: use `job.file.path` instead
 	local url = tostring(job.file.cache or job.file.url)
 	local cmd, args
 

@@ -1,4 +1,4 @@
---- @since 25.5.31
+--- @since 25.12.29
 
 local WINDOWS = ya.target_family() == "windows"
 
@@ -125,12 +125,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 			st.repos[repo][path] = code
 		end
 	end
-	-- TODO: remove this
-	if ui.render then
-		ui.render()
-	else
-		ya.render()
-	end
+	ui.render()
 end)
 
 ---@param cwd string
@@ -142,12 +137,7 @@ local remove = ya.sync(function(st, cwd)
 		return
 	end
 
-	-- TODO: remove this
-	if ui.render then
-		ui.render()
-	else
-		ya.render()
-	end
+	ui.render()
 	st.dirs[cwd] = nil
 	if not st.repos[repo] then
 		return
@@ -180,17 +170,21 @@ local function setup(st, opts)
 		[CODES.updated] = t.updated and ui.Style(t.updated) or ui.Style():fg("yellow"),
 	}
 	local signs = {
-		[CODES.ignored] = t.ignored_sign or "",
+		[CODES.ignored] = t.ignored_sign or " ",
 		[CODES.untracked] = t.untracked_sign or "?",
-		[CODES.modified] = t.modified_sign or "",
-		[CODES.added] = t.added_sign or "",
-		[CODES.deleted] = t.deleted_sign or "",
-		[CODES.updated] = t.updated_sign or "",
+		[CODES.modified] = t.modified_sign or " ",
+		[CODES.added] = t.added_sign or " ",
+		[CODES.deleted] = t.deleted_sign or " ",
+		[CODES.updated] = t.updated_sign or " ",
 	}
 
 	Linemode:children_add(function(self)
+		if not self._file.in_current then
+			return ""
+		end
+
 		local url = self._file.url
-		local repo = st.dirs[tostring(url.base)]
+		local repo = st.dirs[tostring(url.base or url.parent)]
 		local code
 		if repo then
 			code = repo == CODES.excluded and CODES.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
@@ -208,7 +202,7 @@ end
 
 ---@type UnstableFetcher
 local function fetch(_, job)
-	local cwd = job.files[1].url.base
+	local cwd = job.files[1].url.base or job.files[1].url.parent
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))

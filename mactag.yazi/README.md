@@ -46,14 +46,14 @@ And register it as fetchers in your `~/.config/yazi/yazi.toml`:
 
 ```toml
 [[plugin.prepend_fetchers]]
-id   = "mactag"
-name = "*"
-run  = "mactag"
+id  = "mactag"
+url = "*"
+run = "mactag"
 
 [[plugin.prepend_fetchers]]
-id   = "mactag"
-name = "*/"
-run  = "mactag"
+id  = "mactag"
+url = "*/"
+run = "mactag"
 ```
 
 ## Usage
