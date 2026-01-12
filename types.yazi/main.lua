@@ -1,4 +1,4 @@
--- luacheck: globals Command Url cx fs ps rt th ui ya
+-- luacheck: globals Command Url Path cx fs ps rt th ui ya
 
 ---@alias Stdio integer
 
@@ -9,6 +9,8 @@
 Command = Command
 ---@type Url
 Url = Url
+---@type Path
+Path = Path
 ---@type cx
 cx = cx
 ---@type fs
@@ -2593,8 +2595,8 @@ ya = ya
 -- - `err`: [`Error`][error] of the failure.
 -- Note that:
 -- - This function will overwrite the destination file.
--- - If `from` and `to` are the same file, the file will likely be truncated by this function.
--- - This function follows symlinks for both `from` and `to`.
+-- - This function follows symbolic links for both `from` and `to`.
+-- - If `from` and `to` are the same file, the file will likely be truncated by this operation.
 -- | In/Out    | Type               |
 -- | --------- | ------------------ |
 -- | `from`    | `Url`              |
@@ -2612,7 +2614,7 @@ ya = ya
 -- Note that:
 -- - This function will overwrite the destination file.
 -- - This function does not work if `from` and `to` are on different file systems.
---   To move files across file systems, use a combination of [`fs.copy()`](#fs.copy) and [`fs.remove()`](#fs.remove):
+-- To move files across file systems, use a combination of [`fs.copy()`](#fs.copy) and [`fs.remove()`](#fs.remove):
 -- ```lua
 -- local from = Url("/mnt/dev1/a")
 -- local to = Url("/mnt/dev2/b")
@@ -2620,7 +2622,7 @@ ya = ya
 -- if not ok and err.kind == "CrossesDevices" then
 --   local len, err = fs.copy(from, to)
 --   if len and not err then
---   fs.remove("file", from)
+--     fs.remove("file", from)
 --   end
 -- end
 -- ```
@@ -2793,21 +2795,21 @@ ya = ya
 -- - Data comes from stdout, if event is 0.
 -- - Data comes from stderr, if event is 1.
 -- - No data to read from both stdout and stderr, if event is 2.
--- | In/Out | Type              |
--- | ------ | ----------------- |
--- | `self` | `Self`            |
--- | `len`  | `integer`         |
--- | Return | `string, integer` |
----@field read fun(self: self, len: integer): string, integer
+-- | In/Out | Type               |
+-- | ------ | ------------------ |
+-- | `self` | `Self`             |
+-- | `len`  | `integer`          |
+-- | Return | `string?, integer` |
+---@field read fun(self: self, len: integer): string?, integer
 -- Same as [`read()`](#Child.read), except it reads data line by line:
 -- ```lua
 -- local line, event = child:read_line()
 -- ```
--- | In/Out | Type              |
--- | ------ | ----------------- |
--- | `self` | `Self`            |
--- | Return | `string, integer` |
----@field read_line fun(self: self): string, integer
+-- | In/Out | Type               |
+-- | ------ | ------------------ |
+-- | `self` | `Self`             |
+-- | Return | `string?, integer` |
+---@field read_line fun(self: self): string?, integer
 -- Same as [`read_line()`](#Child.read_line), except it accepts a table of options:
 -- ```lua
 -- local line, event = child:read_line_with {
@@ -2821,8 +2823,8 @@ ya = ya
 -- | ------ | ---------------------- |
 -- | `self` | `Self`                 |
 -- | `opts` | `{ timeout: integer }` |
--- | Return | `string, integer`      |
----@field read_line_with fun(self: self, opts: { timeout: integer }): string, integer
+-- | Return | `string?, integer`     |
+---@field read_line_with fun(self: self, opts: { timeout: integer }): string?, integer
 -- Writes all `src` to the stdin of the child process:
 -- ```lua
 -- local ok, err = child:write_all(src)
