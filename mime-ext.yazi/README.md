@@ -33,7 +33,7 @@ prio = "high"
 You can also customize it in your `~/.config/yazi/init.lua` with:
 
 ```lua
-require("mime-ext"):setup {
+require("mime-ext.local"):setup {
 	-- Expand the existing filename database (lowercase), for example:
 	with_files = {
 		makefile = "text/makefile",
