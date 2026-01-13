@@ -1,3 +1,4 @@
+--- @since 25.12.29
 local M = {}
 
 local function stale_cache(file)
