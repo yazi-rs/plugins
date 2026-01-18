@@ -2020,20 +2020,6 @@ ya = ya
 
 -- 
 ---@class (exact) ya
--- Hide Yazi to the secondary screen by returning to the terminal, completely controlled by the requested plugin.
--- ```lua
--- local permit = ya.hide()
--- ```
--- This method returns a `permit` for this resource. When it's necessary to restore the TUI display, call its `drop()` method:
--- ```lua
--- permit:drop()
--- ```
--- Note that since there's always only one available terminal control resource, `ya.hide()` cannot be called again before the previous `permit` is dropped, otherwise an error will be thrown, effectively avoiding deadlocks.
--- | In/Out    | Type               |
--- | --------- | ------------------ |
--- | Return    | `Permit`           |
--- | Available | Async context only |
----@field hide fun(): Permit
 -- Calculate the cached [Url](/docs/plugins/types#url) corresponding to the given file.
 -- ```lua
 -- ya.file_cache {
@@ -2050,18 +2036,6 @@ ya = ya
 -- | `opts` | `{ file: File, skip: integer }` |
 -- | Return | `Url?`                          |
 ---@field file_cache fun(opts: { file: File, skip: integer }): Url?
--- Re-render the UI:
--- ```lua
--- local update_state = ya.sync(function(self, new_state)
---   self.state = new_state
---   ya.render()
--- end)
--- ```
--- | In/Out    | Type              |
--- | --------- | ----------------- |
--- | Return    | `unknown`         |
--- | Available | Sync context only |
----@field render fun(): unknown
 -- Send a command to the [`[mgr]`](/docs/configuration/keymap#mgr) without waiting for the executor to execute:
 -- ```lua
 -- ya.emit("my-cmd", { "hello", 123, foo = true, bar_baz = "world" })
@@ -2326,21 +2300,6 @@ ya = ya
 -- | `str`  | `string` |
 -- | Return | `string` |
 ---@field quote fun(str: string): string
--- Truncate the `text` to the specified width and return the truncated result:
--- ```lua
--- ya.truncate("Hello, World!", {
---   -- Maximum width of the text.
---   max = 5,
---   -- Whether to truncate the text from right-to-left.
---   rtl = false
--- })
--- ```
--- | In/Out | Type                              |
--- | ------ | --------------------------------- |
--- | `text` | `string`                          |
--- | `opts` | `{ max: integer, rtl: boolean? }` |
--- | Return | `string`                          |
----@field truncate fun(text: string, opts: { max: integer, rtl: boolean? }): string
 -- Get or set the content of the system clipboard:
 -- ```lua
 -- -- Get contents from the clipboard if no argument is provided
@@ -2413,77 +2372,6 @@ ya = ya
 -- | Return    | `string?`              |
 -- | Available | Unix-like systems only |
 ---@field host_name fun(): string?
-
--- Yazi's DDS (Data Distribution Service) uses a Lua-based publish-subscribe model as its carrier. That is, you can achieve cross-instance communication and state persistence through the `ps` API. See [DDS](/docs/dds) for details.
--- The following functions can only be used within a sync context.
----@class (exact) ps
--- Publish a message to the current instance, and all plugins subscribed through `sub()` for this `kind` will receive it, achieving internal communication within the instance:
--- ```lua
--- ps.pub("greeting", "Hello, World!")
--- ```
--- Since the `kind` is used globally, to add the plugin name as the prefix is a best practice.
--- For example, the combination of the plugin `my-plugin` and the kind `event1` would be `my-plugin-event1`.
--- | In/Out  | Type       | Note                                                                            |
--- | ------- | ---------- | ------------------------------------------------------------------------------- |
--- | `kind`  | `string`   | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
--- | `value` | `Sendable` | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
--- | Return  | `unknown`  | -                                                                               |
----@field pub fun(kind: string, value: Sendable): unknown
--- Publish a message to a specific instance with `receiver` as the ID:
--- ```lua
--- ps.pub_to(1711957283332834, "greeting", "Hello, World!")
--- ```
--- Where:
--- - Local - `receiver` is the current instance, and is subscribed to this `kind` via `sub()`, it will receive the message.
--- - Remote - `receiver` isn't the current instance, and is subscribed to this `kind` via `sub_remote()`, it will receive the message.
--- - Broadcast - `receiver` is `0`, all remote instances subscribed to this `kind` via `sub_remote()` will receive the message.
--- | In/Out     | Type       | Note                                                                            |
--- | ---------- | ---------- | ------------------------------------------------------------------------------- |
--- | `receiver` | `integer`  | -                                                                               |
--- | `kind`     | `string`   | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
--- | `value`    | `Sendable` | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
--- | Return     | `unknown`  | -                                                                               |
----@field pub_to fun(receiver: integer, kind: string, value: Sendable): unknown
--- Subscribe to local messages of `kind` and call the `callback` handler for it:
--- ```lua
--- -- The same `kind` from the same plugin can only be subscribed once,
--- -- re-subscribing (`sub()`) before unsubscribing (`unsub()`) will throw an error.
--- ps.sub("cd", function(body)
---   ya.dbg("New cwd", cx.active.current.cwd)
--- end)
--- ```
--- It runs in a sync context, so you can access all states via `cx` for the data of interest.
--- | In/Out     | Type                  | Note                                                                  |
--- | ---------- | --------------------- | --------------------------------------------------------------------- |
--- | `kind`     | `string`              | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
--- | `callback` | `fun(body: Sendable)` | No time-consuming work should be done in the callback                 |
--- | Return     | `unknown`             | -                                                                     |
----@field sub fun(kind: string, callback: fun(body: Sendable)): unknown
--- Same as `sub()`, except it subscribes to remote messages of this `kind` instead of local.
--- | In/Out     | Type                  | Note            |
--- | ---------- | --------------------- | --------------- |
--- | `kind`     | `string`              | Same as `sub()` |
--- | `callback` | `fun(body: Sendable)` | Same as `sub()` |
--- | Return     | `unknown`             | -               |
----@field sub_remote fun(kind: string, callback: fun(body: Sendable)): unknown
--- Unsubscribe from local messages of this `kind`:
--- ```lua
--- ps.unsub("my-message")
--- ```
--- | In/Out | Type      | Note                                                                  |
--- | ------ | --------- | --------------------------------------------------------------------- |
--- | `kind` | `string`  | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
--- | Return | `unknown` | -                                                                     |
----@field unsub fun(kind: string): unknown
--- Unsubscribe from remote messages of this `kind`:
--- ```lua
--- ps.unsub_remote("my-message")
--- ```
--- | In/Out | Type      | Note              |
--- | ------ | --------- | ----------------- |
--- | `kind` | `string`  | Same as `unsub()` |
--- | Return | `unknown` | -                 |
----@field unsub_remote fun(kind: string): unknown
 
 -- The following functions can only be used within an async context.
 ---@class (exact) fs
@@ -2647,6 +2535,121 @@ ya = ya
 -- | Return    | `Url?, Error?`     |
 -- | Available | Async context only |
 ---@field unique_name fun(url: Url): Url?, Error?
+
+-- APIs related to the user interface.
+---@class (exact) ui
+-- Hide Yazi to the secondary screen by returning to the terminal, completely controlled by the requested plugin.
+-- ```lua
+-- local permit = ui.hide()
+-- ```
+-- This method returns a `permit` for this resource. When it's necessary to restore the TUI display, call its `drop()` method:
+-- ```lua
+-- permit:drop()
+-- ```
+-- Note that since there's always only one available terminal control resource, `ui.hide()` cannot be called again before the previous `permit` is dropped, otherwise an error will be thrown, effectively avoiding deadlocks.
+-- | In/Out    | Type               |
+-- | --------- | ------------------ |
+-- | Return    | `Permit`           |
+-- | Available | Async context only |
+---@field hide fun(): Permit
+-- Re-render the UI:
+-- ```lua
+-- local update_state = ya.sync(function(self, new_state)
+--   self.state = new_state
+--   ui.render()
+-- end)
+-- ```
+-- | In/Out    | Type              |
+-- | --------- | ----------------- |
+-- | Return    | `unknown`         |
+-- | Available | Sync context only |
+---@field render fun(): unknown
+-- Truncate the `text` to the specified width and return the truncated result:
+-- ```lua
+-- ui.truncate("Hello, World!", {
+--   -- Maximum width of the text.
+--   max = 5,
+--   -- Whether to truncate the text from right-to-left.
+--   rtl = false
+-- })
+-- ```
+-- | In/Out | Type                              |
+-- | ------ | --------------------------------- |
+-- | `text` | `string`                          |
+-- | `opts` | `{ max: integer, rtl: boolean? }` |
+-- | Return | `string`                          |
+---@field truncate fun(text: string, opts: { max: integer, rtl: boolean? }): string
+
+-- Yazi's DDS (Data Distribution Service) uses a Lua-based publish-subscribe model as its carrier. That is, you can achieve cross-instance communication and state persistence through the `ps` API. See [DDS](/docs/dds) for details.
+-- The following functions can only be used within a sync context.
+---@class (exact) ps
+-- Publish a message to the current instance, and all plugins subscribed through `sub()` for this `kind` will receive it, achieving internal communication within the instance:
+-- ```lua
+-- ps.pub("greeting", "Hello, World!")
+-- ```
+-- Since the `kind` is used globally, to add the plugin name as the prefix is a best practice.
+-- For example, the combination of the plugin `my-plugin` and the kind `event1` would be `my-plugin-event1`.
+-- | In/Out  | Type       | Note                                                                            |
+-- | ------- | ---------- | ------------------------------------------------------------------------------- |
+-- | `kind`  | `string`   | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
+-- | `value` | `Sendable` | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
+-- | Return  | `unknown`  | -                                                                               |
+---@field pub fun(kind: string, value: Sendable): unknown
+-- Publish a message to a specific instance with `receiver` as the ID:
+-- ```lua
+-- ps.pub_to(1711957283332834, "greeting", "Hello, World!")
+-- ```
+-- Where:
+-- - Local - `receiver` is the current instance, and is subscribed to this `kind` via `sub()`, it will receive the message.
+-- - Remote - `receiver` isn't the current instance, and is subscribed to this `kind` via `sub_remote()`, it will receive the message.
+-- - Broadcast - `receiver` is `0`, all remote instances subscribed to this `kind` via `sub_remote()` will receive the message.
+-- | In/Out     | Type       | Note                                                                            |
+-- | ---------- | ---------- | ------------------------------------------------------------------------------- |
+-- | `receiver` | `integer`  | -                                                                               |
+-- | `kind`     | `string`   | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds)           |
+-- | `value`    | `Sendable` | A [Sendable value][sendable] that follows [Ownership transfer rules][ownership] |
+-- | Return     | `unknown`  | -                                                                               |
+---@field pub_to fun(receiver: integer, kind: string, value: Sendable): unknown
+-- Subscribe to local messages of `kind` and call the `callback` handler for it:
+-- ```lua
+-- -- The same `kind` from the same plugin can only be subscribed once,
+-- -- re-subscribing (`sub()`) before unsubscribing (`unsub()`) will throw an error.
+-- ps.sub("cd", function(body)
+--   ya.dbg("New cwd", cx.active.current.cwd)
+-- end)
+-- ```
+-- It runs in a sync context, so you can access all states via `cx` for the data of interest.
+-- | In/Out     | Type                  | Note                                                                  |
+-- | ---------- | --------------------- | --------------------------------------------------------------------- |
+-- | `kind`     | `string`              | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
+-- | `callback` | `fun(body: Sendable)` | No time-consuming work should be done in the callback                 |
+-- | Return     | `unknown`             | -                                                                     |
+---@field sub fun(kind: string, callback: fun(body: Sendable)): unknown
+-- Same as `sub()`, except it subscribes to remote messages of this `kind` instead of local.
+-- | In/Out     | Type                  | Note            |
+-- | ---------- | --------------------- | --------------- |
+-- | `kind`     | `string`              | Same as `sub()` |
+-- | `callback` | `fun(body: Sendable)` | Same as `sub()` |
+-- | Return     | `unknown`             | -               |
+---@field sub_remote fun(kind: string, callback: fun(body: Sendable)): unknown
+-- Unsubscribe from local messages of this `kind`:
+-- ```lua
+-- ps.unsub("my-message")
+-- ```
+-- | In/Out | Type      | Note                                                                  |
+-- | ------ | --------- | --------------------------------------------------------------------- |
+-- | `kind` | `string`  | Alphanumeric with dashes, cannot be [built-in kinds](/docs/dds#kinds) |
+-- | Return | `unknown` | -                                                                     |
+---@field unsub fun(kind: string): unknown
+-- Unsubscribe from remote messages of this `kind`:
+-- ```lua
+-- ps.unsub_remote("my-message")
+-- ```
+-- | In/Out | Type      | Note              |
+-- | ------ | --------- | ----------------- |
+-- | `kind` | `string`  | Same as `unsub()` |
+-- | Return | `unknown` | -                 |
+---@field unsub_remote fun(kind: string): unknown
 
 -- You can invoke external programs through:
 -- ```lua
