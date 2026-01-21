@@ -178,6 +178,15 @@ local function setup(st, opts)
 		[CODES.updated] = t.updated_sign or " ",
 	}
 
+	local width = 0
+	for _, sign in pairs(signs) do
+		local w = (ya.string_width and ya.string_width(sign)) or utf8.len(sign)
+		if w > width then
+			width = w
+		end
+	end
+	local placeholder = string.rep(" ", width)
+
 	Linemode:children_add(function(self)
 		if not self._file.in_current then
 			return ""
@@ -185,17 +194,26 @@ local function setup(st, opts)
 
 		local url = self._file.url
 		local repo = st.dirs[tostring(url.base or url.parent)]
-		local code
-		if repo then
-			code = repo == CODES.excluded and CODES.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
+		if not repo then
+			return ""
 		end
 
+		local code = repo == CODES.excluded and CODES.ignored or st.repos[repo][tostring(url):sub(#repo + 2)]
 		if not code or signs[code] == "" then
-			return ""
-		elseif self._file.is_hovered then
-			return ui.Line { " ", signs[code] }
+			return ui.Line { " ", placeholder }
+		end
+
+		local sign = signs[code]
+		local w = (ya.string_width and ya.string_width(sign)) or utf8.len(sign)
+		local padding = width - w
+		if padding > 0 then
+			sign = sign .. string.rep(" ", padding)
+		end
+
+		if self._file.is_hovered then
+			return ui.Line { " ", sign }
 		else
-			return ui.Line { " ", ui.Span(signs[code]):style(styles[code]) }
+			return ui.Line { " ", ui.Span(sign):style(styles[code]) }
 		end
 	end, opts.order)
 end
