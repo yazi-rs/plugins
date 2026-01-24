@@ -1,4 +1,4 @@
---- @since 25.12.29
+--- @since 26.1.22
 
 local root = ya.sync(function() return cx.active.current.cwd end)
 
@@ -20,7 +20,7 @@ local function entry()
 
 	local files = {}
 	for line in output.stdout:gmatch("[^\r\n]+") do
-		local url = cwd:join("search://Git changes/" .. line) -- TODO: remove "search://Git changes/"
+		local url = cwd:join(line)
 		local cha = fs.cha(url, true)
 		if cha then
 			files[#files + 1] = File { url = url, cha = cha }

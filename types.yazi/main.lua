@@ -2518,9 +2518,9 @@ ya = ya
 -- | --------- | ------------------ |
 -- | `from`    | `Url`              |
 -- | `to`      | `Url`              |
--- | Return    | `integer?, Error?` |
+-- | Return    | `boolean, Error?`  |
 -- | Available | Async context only |
----@field rename fun(from: Url, to: Url): integer?, Error?
+---@field rename fun(from: Url, to: Url): boolean, Error?
 -- Get a unique name from the given `url` to ensure it's unique in the file system:
 -- ```lua
 -- local url, err = fs.unique_name(Url("/tmp/test.txt"))

@@ -95,8 +95,7 @@ run = 'piper -- hexyl --border=none --terminal-width=$w "$1"'
 
 ## Related projects
 
-[`faster-piper.yazi`](https://github.com/alberti42/faster-piper.yazi):
-a cache-based, scrolling-optimized rewrite compatible with `piper.yazi`.
+[`faster-piper.yazi`](https://github.com/alberti42/faster-piper.yazi): a cache-based, scrolling-optimized rewrite compatible with `piper.yazi`.
 
 ## License
 
