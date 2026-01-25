@@ -74,30 +74,53 @@ local M = {
 	},
 }
 
-local function build_keymap()
-	local keys = {}
-	for action, default in pairs(DEFAULT_KEYS) do
-		keys[action] = (M and M.user_keys and M.user_keys[action]) or default
+-- Helper to get keys for an action (supports single key or array of keys)
+local function get_action_keys(action)
+	local user_key = M and M.user_keys and M.user_keys[action]
+	local default_key = DEFAULT_KEYS[action]
+	
+	if user_key then
+		-- User provided key(s)
+		if type(user_key) == "table" then
+			return user_key
+		else
+			return { user_key }
+		end
+	else
+		-- Default key
+		return { default_key }
 	end
+end
 
-	return {
-		{ on = keys.quit, run = "quit" },
-		{ on = "<Esc>", run = "quit" },
-		{ on = "<Left>", run = "quit" },
-		{ on = "<Enter>", run = { "enter", "quit" } },
-
-		{ on = keys.up, run = "up" },
-		{ on = keys.down, run = "down" },
-		{ on = keys.enter, run = { "enter", "quit" } },
-
-		{ on = "<Up>", run = "up" },
-		{ on = "<Down>", run = "down" },
-		{ on = "<Right>", run = { "enter", "quit" } },
-
-		{ on = keys.mount, run = "mount" },
-		{ on = keys.unmount, run = "unmount" },
-		{ on = keys.eject, run = "eject" },
-	}
+local function build_keymap()
+	local keymap = {}
+	
+	-- Helper to add key(s) for an action
+	local function add_keys(action, run)
+		local keys = get_action_keys(action)
+		for _, key in ipairs(keys) do
+			keymap[#keymap + 1] = { on = key, run = run }
+		end
+	end
+	
+	-- Add user-configurable keys
+	add_keys("quit", "quit")
+	add_keys("up", "up")
+	add_keys("down", "down")
+	add_keys("enter", { "enter", "quit" })
+	add_keys("mount", "mount")
+	add_keys("unmount", "unmount")
+	add_keys("eject", "eject")
+	
+	-- Add hardcoded alternate keys
+	keymap[#keymap + 1] = { on = "<Esc>", run = "quit" }
+	keymap[#keymap + 1] = { on = "<Left>", run = "quit" }
+	keymap[#keymap + 1] = { on = "<Enter>", run = { "enter", "quit" } }
+	keymap[#keymap + 1] = { on = "<Up>", run = "up" }
+	keymap[#keymap + 1] = { on = "<Down>", run = "down" }
+	keymap[#keymap + 1] = { on = "<Right>", run = { "enter", "quit" } }
+	
+	return keymap
 end
 
 -- Set M.keys now that build_keymap is defined
@@ -147,6 +170,40 @@ local function get_symlink_path(partition)
 		return nil
 	end
 	return get_symlink_dir() .. "/" .. name
+end
+
+-- Helper to get navigation path before unmounting (to release drive)
+local function get_unmount_nav_path(active)
+	local config = get_config()
+	local nav_path = nil
+	
+	if not active.sub then
+		-- It's a disk - find first mounted partition
+		local partitions = M.get_disk_partitions(active.src)
+		for _, p in ipairs(partitions) do
+			if p.dist then
+				local symlink_path = get_symlink_path(p)
+				if config.symlink_opts.enabled and symlink_path then
+					nav_path = config.symlink_opts.dir or os.getenv("HOME")
+				else
+					-- Navigate to parent of mount point
+					nav_path = p.dist:match("(.+)/[^/]*$") or "/"
+				end
+				break
+			end
+		end
+	else
+		-- It's a partition
+		local symlink_path = get_symlink_path(active)
+		if config.symlink_opts.enabled and symlink_path then
+			nav_path = config.symlink_opts.dir or os.getenv("HOME")
+		elseif active.dist then
+			-- Navigate to parent of mount point
+			nav_path = active.dist:match("(.+)/[^/]*$") or "/"
+		end
+	end
+	
+	return nav_path
 end
 
 local function create_symlink(partition)
@@ -240,7 +297,15 @@ function M:setup(opts)
 end
 
 local function get_key(action)
-	return (M.user_keys and M.user_keys[action]) or DEFAULT_KEYS[action]
+	local user_key = M.user_keys and M.user_keys[action]
+	if user_key then
+		if type(user_key) == "table" then
+			return table.concat(user_key, "/")
+		else
+			return user_key
+		end
+	end
+	return DEFAULT_KEYS[action]
 end
 
 local function build_help_line()
@@ -362,12 +427,11 @@ function M:entry(job)
 					end
 					
 					if is_mounted then
-						-- Mounted: unmount and eject
-						tx2:send("unmount")
-						tx2:send("eject")
+						-- Mounted: navigate away, unmount and eject
+						tx2:send("unmount_and_cd")
 					else
-						-- Unmounted: mount
-						tx2:send("mount")
+						-- Unmounted: mount and navigate to it
+						tx2:send("mount_and_cd")
 					end
 				end
 			else
@@ -383,8 +447,34 @@ function M:entry(job)
 				break
 			elseif run == "mount" then
 				self.operate("mount")
+			elseif run == "mount_and_cd" then
+				local nav_path = self.operate("mount")
+				if nav_path then
+					ya.emit("cd", { nav_path })
+				end
 			elseif run == "unmount" then
+				-- Navigate away first to release the drive if needed
+				local active = active_partition()
+				if active then
+					local nav_path = get_unmount_nav_path(active)
+					if nav_path then
+						ya.emit("cd", { nav_path })
+					end
+				end
 				self.operate("unmount")
+			elseif run == "unmount_and_cd" then
+				local active = active_partition()
+				if active then
+					-- Navigate away first to release the drive
+					local nav_path = get_unmount_nav_path(active)
+					if nav_path then
+						ya.emit("cd", { nav_path })
+					end
+					
+					-- Unmount and eject
+					self.operate("unmount")
+					self.operate("eject")
+				end
 			elseif run == "eject" then
 				self.operate("eject")
 			end
@@ -695,15 +785,28 @@ function M.operate_disk(type, disk)
 			end
 
 			-- Create symlinks for all mounted partitions
+			local nav_path = nil
 			if next(mounted_sources) then
 				-- Fetch fresh partition info to get mount points
 				for _, p in ipairs(fs.partitions()) do
 					if mounted_sources[p.src] and p.dist then
 						create_symlink(p)
+						-- Set navigation path (prefer symlink if created)
+						if not nav_path then
+							local symlink_path = get_symlink_path(p)
+							local config = get_config()
+							if config.symlink_opts.enabled and symlink_path then
+								nav_path = symlink_path
+							else
+								nav_path = p.dist
+							end
+						end
 					end
 				end
+				return nav_path
 			else
 				ya.notify { title = "Mount", content = "No mountable partitions found on `" .. disk.src .. "`", timeout = 5, level = "warn" }
+				return nil
 			end
 		elseif type == "unmount" then
 			-- Check if all partitions are already unmounted
@@ -756,7 +859,7 @@ end
 function M.operate(type)
 	local active = active_partition()
 	if not active then
-		return
+		return nil
 	elseif not active.sub then
 		-- Operating on entire disk
 		return M.operate_disk(type, active)
@@ -765,10 +868,10 @@ function M.operate(type)
 	-- Check if partition is already in the desired state
 	if type == "mount" and active.dist then
 		ya.notify { title = "Mount", content = "Partition `" .. active.src .. "` is already mounted", timeout = 5, level = "warn" }
-		return
+		return nil
 	elseif type == "unmount" and not active.dist then
 		ya.notify { title = "Mount", content = "Partition `" .. active.src .. "` is already unmounted", timeout = 5, level = "warn" }
-		return
+		return nil
 	end
 
 	-- For unmount/eject, remove symlink before the operation
@@ -795,8 +898,10 @@ function M.operate(type)
 
 	if not output then
 		M.fail("Failed to %s `%s`: %s", type, active.src, err)
+		return nil
 	elseif not output.status.success then
 		M.fail("Failed to %s `%s`: %s", type, active.src, output.stderr)
+		return nil
 	elseif type == "mount" then
 		-- On successful mount, create symlink
 		-- Re-fetch partition info to get the mount point
@@ -804,10 +909,18 @@ function M.operate(type)
 		for _, p in ipairs(partitions) do
 			if p.src == active.src and p.dist then
 				create_symlink(p)
-				break
+				-- Return navigation path (prefer symlink if created)
+				local symlink_path = get_symlink_path(p)
+				local config = get_config()
+				if config.symlink_opts.enabled and symlink_path then
+					return symlink_path
+				else
+					return p.dist
+				end
 			end
 		end
 	end
+	return nil
 end
 
 function M.fail(...) ya.notify { title = "Mount", content = string.format(...), timeout = 10, level = "error" } end

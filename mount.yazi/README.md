@@ -34,8 +34,10 @@ You can customize the plugin by adding the following to your `~/.config/yazi/ini
 ```lua
 require("mount"):setup({
     -- Customizable keybindings (all optional, showing defaults)
+    -- Each action can have a single key or an array of keys
     keys = {
-        quit = "q",
+        quit = "q",           -- single key
+        -- quit = { "q", "n" },  -- multiple keys
         up = "k",
         down = "j",
         enter = "l",
