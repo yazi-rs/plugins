@@ -21,6 +21,13 @@ run  = "plugin jump-to-char"
 desc = "Jump to char"
 ```
 
+By default, this is case sensitive. If you want it to be case insensitive, you
+can use `plugin jump-to-char -- --ignorecase`. Similarly, if you want smart
+case, i.e. typing a lowercase letter will result in both lowercase and
+uppercase characters to be matched, but not the other way around, then you can
+use `plugin jump-to-char -- --smartcase`.
+
+
 Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
 
 ## License
