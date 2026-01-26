@@ -1,4 +1,4 @@
---- @since 25.9.15
+--- @since 26.1.22
 
 local M = {}
 
@@ -10,8 +10,7 @@ function M:setup(opts) self.shell = opts and opts.shell end
 
 function M:peek(job)
 	local shell = options().shell or (ya.target_family() == "windows" and "powershell" or "sh")
-	-- TODO: use `job.file.path` instead
-	local url = tostring(job.file.cache or job.file.url)
+	local url = tostring(job.file.path)
 	local cmd, args
 
 	if shell == "powershell" or shell == "pwsh" then
@@ -75,7 +74,7 @@ function M:seek(job) require("code"):seek(job) end
 function M.format(job, lines)
 	local format = job.args.format
 	if format ~= "url" then
-		local s = table.concat(lines, ""):gsub("\r", ""):gsub("\t", string.rep(" ", rt.preview.tab_size))
+		local s = table.concat(lines, ""):gsub("\t", string.rep(" ", rt.preview.tab_size))
 		return ui.Text.parse(s):area(job.area)
 	end
 

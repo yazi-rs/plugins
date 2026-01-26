@@ -257,24 +257,33 @@ function M.operate(type)
 		return -- TODO: mount/unmount main disk
 	end
 
-	local output, err
+	local cmd
 	if ya.target_os() == "macos" then
-		output, err = Command("diskutil"):arg({ type, active.src }):output()
+		cmd = Command("diskutil"):arg { type, active.src }
 	end
 	if ya.target_os() == "linux" then
 		if type == "eject" and active.src:match("^/dev/sr%d+") then
 			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
-			output, err = Command("eject"):arg({ "--traytoggle", active.src }):output()
+			cmd = Command("eject"):arg { "--traytoggle", active.src }
 		elseif type == "eject" then
 			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
-			output, err = Command("udisksctl"):arg({ "power-off", "-b", active.src }):output()
+			cmd = Command("udisksctl"):arg { "power-off", "-b", active.src }
 		else
-			output, err = Command("udisksctl"):arg({ type, "-b", active.src }):output()
+			cmd = Command("udisksctl"):arg { type, "-b", active.src }
 		end
 	end
 
+	if not cmd then
+		return M.fail("mount.yazi is not currently supported on your platform")
+	end
+
+	local output, err = cmd:output()
 	if not output then
-		M.fail("Failed to %s `%s`: %s", type, active.src, err)
+		if cmd.program then
+			M.fail("Failed to spawn `%s`: %s", cmd.program, err)
+		else
+			M.fail("Failed to spawn `udisksctl`: %s", err) -- TODO: remove
+		end
 	elseif not output.status.success then
 		M.fail("Failed to %s `%s`: %s", type, active.src, output.stderr)
 	end

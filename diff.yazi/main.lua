@@ -1,4 +1,4 @@
---- @since 25.2.7
+--- @since 26.1.22
 
 local function info(content)
 	return ya.notify {
@@ -16,7 +16,7 @@ end)
 
 local hovered_path = ya.sync(function()
 	local h = cx.active.current.hovered
-	return h and (h.path or h.url) -- TODO: remove "or h.url"
+	return h and h.path
 end)
 
 return {
