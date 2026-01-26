@@ -21,6 +21,7 @@ return {
 		if not idx then
 			return
 		end
+
 		local kw = escape(cands[idx].on)
 		if changed(kw) then
 			if job.args.ignorecase and kw:match("%a") then
