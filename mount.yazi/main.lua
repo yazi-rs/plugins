@@ -263,13 +263,13 @@ function M.operate(type)
 	end
 	if ya.target_os() == "linux" then
 		if type == "eject" and active.src:match("^/dev/sr%d+") then
-			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
+			Command("udisksctl"):arg({ "unmount", "-b", active.src, "--no-user-interaction" }):status()
 			cmd = Command("eject"):arg { "--traytoggle", active.src }
 		elseif type == "eject" then
-			Command("udisksctl"):arg({ "unmount", "-b", active.src }):status()
-			cmd = Command("udisksctl"):arg { "power-off", "-b", active.src }
+			Command("udisksctl"):arg({ "unmount", "-b", active.src, "--no-user-interaction" }):status()
+			cmd = Command("udisksctl"):arg { "power-off", "-b", active.src, "--no-user-interaction" }
 		else
-			cmd = Command("udisksctl"):arg { type, "-b", active.src }
+			cmd = Command("udisksctl"):arg { type, "-b", active.src, "--no-user-interaction" }
 		end
 	end
 
