@@ -2,44 +2,63 @@
 
 --- Verify if `sudo` is already authenticated
 --- @return boolean
+--- @return Error?
 local function sudo_already()
-	local status = Command("sudo"):arg({ "--validate", "--non-interactive" }):status()
-	assert(status, "Failed to run `sudo --validate --non-interactive`")
-	return status.success
+	local status, err = Command("sudo"):arg({ "--validate", "--non-interactive" }):status()
+	return status and status.success or false, err
 end
 
 --- Run a program with `sudo` privilege
 --- @param program string
 --- @param args table
---- @return Output|nil output
---- @return integer|nil err
----  nil: no error
----  1: sudo failed
+--- @return Output? output
+--- @return Error? err
 local function run_with_sudo(program, args)
-	local cmd = Command("sudo"):arg(program):arg(args)
+	local cmd = Command("sudo")
+		:arg({ "--stdin", "--", program })
+		:arg(args)
+		:stdin(Command.PIPED)
+		:stdout(Command.PIPED)
+		:stderr(Command.PIPED)
+
 	if sudo_already() then
 		return cmd:output()
 	end
 
-	local permit = ui.hide()
-	print(string.format("Sudo password required to run: `%s %s`", program, table.concat(args)))
-	local output = cmd:output()
-	permit:drop()
-
-	if output.status.success or sudo_already() then
-		return output
+	local value, event = ya.input {
+		pos = { "top-center", y = 3, w = 40 },
+		title = string.format("Password for `sudo %s`:", program),
+		obscure = true,
+	}
+	if not value or event ~= 1 then
+		return nil, Err("Sudo password input cancelled")
 	end
-	return nil, 1
+
+	local child, err = cmd:spawn()
+	if not child or err then
+		return nil, err
+	end
+
+	child:write_all(value .. "\n")
+	child:flush()
+	local output, err = child:wait_with_output()
+	if not output or err then
+		return nil, err
+	elseif output.status.success or sudo_already() then
+		return output
+	else
+		return nil, Err("Incorrect sudo password")
+	end
 end
 
 return {
 	entry = function()
-		local output = run_with_sudo("ls", { "-l" })
+		local output, err = run_with_sudo("ls", { "-l" })
 		if not output then
-			return ya.err("Failed to run `sudo ls -l`")
+			return ya.dbg("Failed to run `sudo ls -l`: " .. err)
 		end
 
-		ya.err("stdout", output.stdout)
-		ya.err("status.code", output.status.code)
+		ya.dbg("stdout", output.stdout)
+		ya.dbg("status.code", output.status.code)
 	end,
 }
