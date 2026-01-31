@@ -1,9 +1,11 @@
 --- @since 25.12.29
 
+local M = {}
+
 --- Verify if `sudo` is already authenticated
 --- @return boolean
 --- @return Error?
-local function sudo_already()
+function M.sudo_already()
 	local status, err = Command("sudo"):arg({ "--validate", "--non-interactive" }):status()
 	return status and status.success or false, err
 end
@@ -13,7 +15,7 @@ end
 --- @param args table
 --- @return Output? output
 --- @return Error? err
-local function run_with_sudo(program, args)
+function M.run_with_sudo(program, args)
 	local cmd = Command("sudo")
 		:arg({ "--stdin", "--", program })
 		:arg(args)
@@ -21,7 +23,7 @@ local function run_with_sudo(program, args)
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
 
-	if sudo_already() then
+	if M.sudo_already() then
 		return cmd:output()
 	end
 
@@ -44,21 +46,11 @@ local function run_with_sudo(program, args)
 	local output, err = child:wait_with_output()
 	if not output or err then
 		return nil, err
-	elseif output.status.success or sudo_already() then
+	elseif output.status.success or M.sudo_already() then
 		return output
 	else
 		return nil, Err("Incorrect sudo password")
 	end
 end
 
-return {
-	entry = function()
-		local output, err = run_with_sudo("ls", { "-l" })
-		if not output then
-			return ya.dbg("Failed to run `sudo ls -l`: " .. err)
-		end
-
-		ya.dbg("stdout", output.stdout)
-		ya.dbg("status.code", output.status.code)
-	end,
-}
+return M
