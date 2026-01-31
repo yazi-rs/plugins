@@ -1,5 +1,3 @@
---- @since 25.12.29
-
 local M = {}
 
 --- Verify if `sudo` is already authenticated
