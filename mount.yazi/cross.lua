@@ -22,11 +22,11 @@ function M.operate(type, partition)
 		else
 			cmd, output, err = "udisksctl", M.udisksctl(type, partition.src)
 		end
-	else
-		return M.fail("mount.yazi is not currently supported on your platform")
 	end
 
-	if not output then
+	if not cmd then
+		M.fail("mount.yazi is not currently supported on your platform")
+	elseif not output then
 		M.fail("Failed to spawn `%s`: %s", cmd, err)
 	elseif not output.status.success then
 		M.fail("Failed to %s `%s`: %s", type, partition.src, output.stderr)
