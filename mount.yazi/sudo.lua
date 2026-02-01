@@ -15,7 +15,7 @@ end
 --- @return Error? err
 function M.run_with_sudo(program, args)
 	local cmd = Command("sudo")
-		:arg({ "--stdin", "--", program })
+		:arg({ "--stdin", "--user", "#" .. ya.uid(), "--", program })
 		:arg(args)
 		:stdin(Command.PIPED)
 		:stdout(Command.PIPED)
