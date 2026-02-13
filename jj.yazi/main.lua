@@ -145,6 +145,9 @@ local function run_jj_conflicts(repo)
 	if err then
 		return nil, ("Cannot spawn `jj resolve`, stderr output: %s"):format(err)
 	end
+	if not out then
+		return nil, ("'jj resove' did not return stdout")
+	end
 
 	local conflicts = {}
 	for line in out.stdout:gmatch("[^\r\n]+") do
@@ -171,8 +174,6 @@ local add = ya.sync(function(st, cwd, repo, changed)
 	for path, code in pairs(changed) do
 		if code == DiffType.unknown then
 			st.repos[repo][path] = nil
-		elseif code == DiffType.excluded then
-			st.dirs[path] = DiffType.excluded
 		else
 			st.repos[repo][path] = code
 		end
