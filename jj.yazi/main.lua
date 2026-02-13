@@ -177,7 +177,7 @@ local add = ya.sync(function(st, cwd, repo, changed)
 			st.repos[repo][path] = code
 		end
 	end
-	ya.render()
+	ui.render()
 end)
 
 ---@param cwd string
@@ -188,7 +188,7 @@ local remove = ya.sync(function(st, cwd)
 		return
 	end
 
-	ya.render()
+	ui.render()
 	st.dirs[cwd] = nil
 	if not st.repos[repo] then
 		return
