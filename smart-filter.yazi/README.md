@@ -21,7 +21,7 @@ run  = "plugin smart-filter"
 desc = "Smart filter"
 ```
 
-Make sure the <kbd>F</kbd> key is not used elsewhere.
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
 
 ## License
 

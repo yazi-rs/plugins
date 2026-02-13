@@ -46,14 +46,14 @@ And register it as fetchers in your `~/.config/yazi/yazi.toml`:
 
 ```toml
 [[plugin.prepend_fetchers]]
-id   = "mactag"
-name = "*"
-run  = "mactag"
+id  = "mactag"
+url = "*"
+run = "mactag"
 
 [[plugin.prepend_fetchers]]
-id   = "mactag"
-name = "*/"
-run  = "mactag"
+id  = "mactag"
+url = "*/"
+run = "mactag"
 ```
 
 ## Usage
@@ -73,6 +73,8 @@ on   = [ "b", "r" ]
 run  = "plugin mactag remove"
 desc = "Untag selected files"
 ```
+
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
 
 ## License
 

@@ -1,6 +1,3 @@
-> [!NOTE]
-> The latest Yazi nightly build is required to use this plugin at the moment.
-
 # zoom.yazi
 
 Enlarge or shrink the preview image of a file, which is useful for magnifying small files for viewing.
@@ -36,6 +33,8 @@ on   = "-"
 run  = "plugin zoom -1"
 desc = "Zoom out hovered file"
 ```
+
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
 
 ## Advanced
 

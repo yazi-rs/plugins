@@ -21,7 +21,7 @@ run  = "plugin jump-to-char"
 desc = "Jump to char"
 ```
 
-Make sure the <kbd>f</kbd> key is not used elsewhere.
+Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other commands/plugins.
 
 ## License
 
