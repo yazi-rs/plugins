@@ -22,7 +22,6 @@ local function setup(st, opts)
 	st.tags = {}
 	st.keys = opts.keys
 	st.colors = opts.colors
-  opts.order = opts.order or 500
 
 	Linemode:children_add(function(self)
 		local url = tostring(self._file.url)
