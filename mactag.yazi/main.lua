@@ -22,6 +22,7 @@ local function setup(st, opts)
 	st.tags = {}
 	st.keys = opts.keys
 	st.colors = opts.colors
+  opts.order = opts.order or 500
 
 	Linemode:children_add(function(self)
 		local url = tostring(self._file.url)
@@ -35,7 +36,7 @@ local function setup(st, opts)
 			end
 		end
 		return ui.Line(spans)
-	end, 500)
+	end, opts.order)
 end
 
 local function fetch(_, job)
@@ -99,3 +100,4 @@ local function entry(self, job)
 end
 
 return { setup = setup, fetch = fetch, entry = entry }
+
