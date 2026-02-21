@@ -39,9 +39,8 @@ require("mactag"):setup {
 		Blue   = "#5fa3f8",
 		Purple = "#cb88f8",
 	},
-    -- Optional: Set the order of the color circle showing in the line mode
-    -- (default is 500)
-    order = 1500,
+	-- Order of the color circle showing in the line mode
+	order = 500,
 }
 ```
 
