@@ -35,7 +35,7 @@ local function setup(st, opts)
 			end
 		end
 		return ui.Line(spans)
-	end, 500)
+	end, opts.order or 500)
 end
 
 local function fetch(_, job)
@@ -99,3 +99,4 @@ local function entry(self, job)
 end
 
 return { setup = setup, fetch = fetch, entry = entry }
+
