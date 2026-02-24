@@ -12,6 +12,9 @@ Assume the user's `ratio` is $$[A, B, C]$$, that is, $$\text{parent}=A, \text{cu
 - `max-preview`: Toggles between $$C$$ and $$\infty$$ - the preview is either showed with width $$C$$ or fills the entire screen.
 - `reset`: Resets to the user's configured `ratio`.
 
+> [!NOTE]
+> The commands containing `max-*` argument restore to previous state before maximization
+
 ## Installation
 
 ```sh
