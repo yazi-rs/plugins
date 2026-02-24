@@ -87,6 +87,8 @@ function M:entry(job)
 	update_partitions(self.obtain())
 	subscribe()
 
+	M.show_help()
+
 	local tx1, rx1 = ya.chan("mpsc")
 	local tx2, rx2 = ya.chan("mpsc")
 	function producer()
@@ -254,5 +256,29 @@ function M:click() end
 function M:scroll() end
 
 function M:touch() end
+
+function M.show_help()
+    local shortcuts = {
+        { "q", "Quit" },
+        { "k / ↑", "Move up" },
+        { "j / ↓", "Move down" },
+        { "l / →", "Enter and quit" },
+        { "m", "Mount partition" },
+        { "u", "Unmount partition" },
+        { "e", "Eject partition" },
+    }
+    local lines = {}
+    for _, pair in ipairs(shortcuts) do
+        lines[#lines + 1] = string.format("%-10s : %s", pair[1], pair[2])
+    end
+
+    ya.notify {
+        title = "Keyboard Shortcuts",
+        content = table.concat(lines, "\n"),
+        timeout = 10,
+        level = "info"
+    }
+end
+
 
 return M
