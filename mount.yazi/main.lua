@@ -171,7 +171,7 @@ function M:redraw()
 				ui.Constraint.Length(20),
 				ui.Constraint.Length(20),
 				ui.Constraint.Percentage(70),
-				ui.Constraint.Length(10),
+				ui.Constraint.Length(20),
 			},
 	}
 end
@@ -208,10 +208,20 @@ end
 function M.split(src)
 	local pats = {
 		{ "^/dev/sd[a-z]", "%d+$" }, -- /dev/sda1
+		{ "^/dev/vd[a-z]", "%d+$" }, -- /dev/vda1
+		{ "^/dev/xvd[a-z]", "%d+$" }, -- /dev/xvda1
 		{ "^/dev/nvme%d+n%d+", "p%d+$" }, -- /dev/nvme0n1p1
 		{ "^/dev/mmcblk%d+", "p%d+$" }, -- /dev/mmcblk0p1
 		{ "^/dev/disk%d+", ".+$" }, -- /dev/disk1s1
 		{ "^/dev/sr%d+", ".+$" }, -- /dev/sr0
+		{ "^/dev/fd%d+", ".+$" }, -- /dev/fd0
+		{ "^/dev/loop%d+", "p%d+$" }, -- /dev/loop0p1
+		{ "^/dev/md%d+", "p%d+$" }, -- /dev/md0p1
+		{ "^/dev/nbd%d+", "p%d+$" }, -- /dev/nbd0p1
+		{ "^/dev/bcache%d+", "p%d+$" }, -- /dev/bcache0p1
+		{ "^/dev/ram%d+", ".+$" }, -- /dev/ram0
+		{ "^/dev/zram%d+", ".+$" }, -- /dev/zram0
+		{ "^/dev/mapper/", ".+$" }, -- /dev/mapper/<name>
 	}
 	for _, p in ipairs(pats) do
 		local main = src:match(p[1])
