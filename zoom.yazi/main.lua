@@ -78,18 +78,18 @@ local function peek(_, job)
 
 	local tmp = os.tmpname()
 	-- stylua: ignore
-	local status, err = Command("magick"):arg {
+	local output, err = Command("magick"):arg {
 		tostring(job.file.path),
 		"-auto-orient", "-strip",
 		"-sample", string.format("%dx%d", new_w, new_h),
 		"-quality", rt.preview.image_quality,
 		string.format("JPG:%s", tmp),
-	}:status()
+	}:output()
 
-	if not status then
-		end_(job, Err("Failed to run `magick` command: %s", err))
-	elseif not status.success then
-		end_(job, Err("`magick` command exited with error code %d", status.code))
+	if not output then
+		end_(job, Err("Failed to start `magick`, error: %s", err))
+	elseif not output.status.success then
+		end_(job, Err("`magick` exited with error code %s: %s", output.status.code, output.stderr))
 	elseif sync() then
 		ya.image_show(Url(tmp), job.area)
 	end
