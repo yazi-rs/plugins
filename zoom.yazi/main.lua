@@ -108,7 +108,7 @@ local function entry(self, job)
 		peek(self, {
 			area = ui.area("preview"),
 			args = {},
-			file = { url = st.url }, -- FIXME: use `File` instead of a dummy file
+			file = File { url = st.url, cha = Cha { mode = tonumber("100644", 8) } },
 			skip = 0,
 			new_level = new,
 			old_level = st.level,
