@@ -1,4 +1,4 @@
---- @since 25.12.29
+--- @since 26.1.22
 
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
@@ -44,7 +44,7 @@ local function fetch(_, job)
 		paths[#paths + 1] = tostring(file.url)
 	end
 
-	local output, err = Command("tag"):arg(paths):stdout(Command.PIPED):output()
+	local output, err = Command("tag"):arg(paths):output()
 	if not output then
 		return true, Err("Cannot spawn `tag` command, error: %s", err)
 	end
