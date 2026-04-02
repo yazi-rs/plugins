@@ -328,6 +328,7 @@ local EXTS = {
 	gv = "text/graphviz",
 	gxf = "application/gxf",
 	gxt = "application/geonext",
+	gz = "application/gzip",
 	h = "text/c",
 	h261 = "video/h261",
 	h263 = "video/h263",
