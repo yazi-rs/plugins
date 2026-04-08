@@ -435,11 +435,16 @@ local EXTS = {
 	lostxml = "application/lost+xml",
 	lrf = "application/octet-stream",
 	lrm = "application/ms-lrm",
+	lrz = "application/lrzip",
 	ltf = "application/frogans.ltf",
 	lua = "text/lua",
 	lvp = "audio/lucent.voice",
 	lwp = "application/lotus-wordpro",
+	lz = "application/lzip",
+	lz4 = "application/lz4",
 	lzh = "application/lzh-compressed",
+	lzma = "application/lzma",
+	lzo = "application/lzop",
 	m13 = "application/msmediaview",
 	m14 = "application/msmediaview",
 	m1v = "video/mpeg",
@@ -1053,6 +1058,7 @@ local EXTS = {
 	zirz = "application/zul",
 	zmm = "application/handheld-entertainment+xml",
 	zsh = "text/shellscript",
+	zst = "application/zstd",
 }
 
 local options = ya.sync(
