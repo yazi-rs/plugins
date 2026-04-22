@@ -860,6 +860,7 @@ local EXTS = {
 	tif = "image/tiff",
 	tiff = "image/tiff",
 	tmo = "application/tmobile-livetv",
+	tofu = "text/hcl",
 	toml = "text/toml",
 	torrent = "application/bittorrent",
 	tpl = "application/groove-tool-template",
