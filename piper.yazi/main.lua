@@ -4,9 +4,35 @@ local M = {}
 
 local function fail(job, s) ya.preview_widget(job, ui.Text.parse(s):area(job.area):wrap(ui.Wrap.YES)) end
 
+local options = ya.sync(function(st) return { shell = st.shell } end)
+
+function M:setup(opts) self.shell = opts and opts.shell end
+
 function M:peek(job)
-	local child, err = Command("sh")
-		:arg({ "-c", job.args[1], "sh", tostring(job.file.path) })
+	local shell = options().shell or (ya.target_family() == "windows" and "powershell" or "sh")
+	local url = tostring(job.file.path)
+	local cmd, args
+
+	if shell == "powershell" or shell == "pwsh" then
+		-- e.g. "echo $_"
+		cmd = shell
+		args = {
+			"-NoProfile",
+			"-Command",
+			string.format("'%s' | ForEach-Object { %s }", url:gsub("'", "''"), job.args[1]),
+		}
+	elseif shell == "nushell" or shell == "nu" then
+		-- e.g. "echo $in"
+		cmd = "nu"
+		args = { "-c", string.format("r#'%s'# | %s", url, job.args[1]) }
+	else
+		-- e.g. "echo $1"
+		cmd = "sh"
+		args = { "-c", job.args[1], "sh", url }
+	end
+
+	local child, err = Command(cmd)
+		:arg(args)
 		:env("w", job.area.w)
 		:env("h", job.area.h)
 		:stdout(Command.PIPED)
@@ -14,7 +40,7 @@ function M:peek(job)
 		:spawn()
 
 	if not child then
-		return fail(job, "sh: " .. err)
+		return fail(job, cmd .. ": " .. err)
 	end
 
 	local limit = job.area.h
