@@ -2296,6 +2296,17 @@ ya = ya
 -- | `str`  | `string` |
 -- | Return | `string` |
 ---@field quote fun(str: string): string
+-- Convert a byte count into a human-readable string (e.g. `1.2 KB`, `3.4 MB`):
+-- ```lua
+-- ya.readable_size(1536) -- "1.5 KB"
+-- ```
+-- Used by the built-in `size` linemode and the `status.lua` preset component
+-- (`yazi-plugin/preset/components/status.lua`).
+-- | In/Out  | Type      |
+-- | ------- | --------- |
+-- | `bytes` | `integer` |
+-- | Return  | `string`  |
+---@field readable_size fun(bytes: integer): string
 -- Get or set the content of the system clipboard:
 -- ```lua
 -- -- Get contents from the clipboard if no argument is provided
