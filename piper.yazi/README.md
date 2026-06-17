@@ -50,8 +50,22 @@ In this example, `--format=url` tells `piper` to parse the `tar` output as file 
 ```toml
 [[plugin.prepend_previewers]]
 url = "*.csv"
-run = 'piper -- bat -p --color=always "$1"'
+run = 'piper -- bat -p "$1"'
 ```
+
+To have bat use the appropriate theme (dark vs light) for syntax highlighting, you can do this:
+
+```toml
+run = 'piper -- bat -p --color=always --theme="$(gsettings get org.gnome.desktop.interface color-scheme | grep -q dark && echo "Dracula" || echo "Catppuccin Latte")" "$1"'
+```
+
+You can replace the `gsettings` command with any command that queries your system's current theme mode.
+For example, if you use noctalia:
+
+```toml
+run = 'piper -- bat -p --color=always --theme="$(noctalia msg theme-mode-get | grep -q dark && echo "Dracula" || echo "Catppuccin Latte")" "$1"'
+```
+
 
 Note that certain distributions might use a different name than `bat`, like Debian and Ubuntu use `batcat`, so please adjust accordingly.
 
