@@ -41,6 +41,7 @@ You can customize the [Style](https://yazi-rs.github.io/docs/configuration/theme
 
 - `[git].unknown` - status cannot/not yet determined
 - `[git].modified` - modified file
+- `[git].staged` - staged file
 - `[git].added` - added file
 - `[git].untracked` - untracked file
 - `[git].ignored` - ignored file
@@ -61,6 +62,7 @@ You can also customize the text of the status sign with:
 
 - `[git].unknown_sign` - status cannot/not yet determined
 - `[git].modified_sign` - modified file
+- `[git].staged_sign` - staged file
 - `[git].added_sign` - added file
 - `[git].untracked_sign` - untracked file
 - `[git].ignored_sign` - ignored file
