@@ -5,6 +5,7 @@
 ---@class Options
 ---@field order number The order in which the status is displayed
 ---@field renamed boolean Whether to include renamed files in the status (or treat them as modified)
+---@field style_filename boolean Whether to style filenames based on Git status
 
 -- TODO: move this to `types.yazi` once it's get stable
 ---@alias UnstableFetcher fun(self: unknown, job: { files: File[] }): boolean, Error?
