@@ -40,8 +40,10 @@ local function entry()
 			ya.emit("enter", {})
 			input = prompt()
 		elseif event == 1 then
-			ya.emit("escape", { filter = true })
-			ya.emit(h.is_dir and "enter" or "open", { h.url })
+			if h.unique then
+				ya.emit("escape", { filter = true })
+				ya.emit(h.is_dir and "enter" or "open", { h.url })
+			end
 			break
 		end
 	end
