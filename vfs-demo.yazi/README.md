@@ -17,10 +17,9 @@ ya pkg add yazi-rs/plugins:vfs-demo
 
 ```toml
 # vfs.toml
-[services.test]
-kind   = "scope"
-scheme = "demo"
-run    = "vfs-demo"
+[demo.test]
+kind = "scope"
+run  = "vfs-demo"
 ```
 
 And run:
