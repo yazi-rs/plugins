@@ -183,17 +183,41 @@ local function setup(st, opts)
 		[CODES.clean] = t.clean_sign or "",
 	}
 
+	local function file_code(file)
+		local url = file.url
+		local repo = st.dirs[tostring(url.base or url.parent)]
+		if not repo then
+			return CODES.unknown
+		elseif repo == CODES.excluded then
+			return CODES.ignored
+		end
+
+		return st.repos[repo][tostring(url):sub(#repo + 2)] or CODES.clean
+	end
+
+	if opts.style_filename and Entity then
+		local style = Entity.style
+		Entity.style = function(self)
+			local base = style(self) or ui.Style()
+			local file = self._file
+			if not file then
+				return base
+			end
+
+			local code = file_code(file)
+			if code == CODES.clean then
+				return base
+			end
+			return base:patch(styles[code])
+		end
+	end
+
 	Linemode:children_add(function(self)
 		if not self._file.in_current then
 			return ""
 		end
 
-		local url = self._file.url
-		local repo = st.dirs[tostring(url.base or url.parent)]
-		local code = CODES.unknown
-		if repo then
-			code = repo == CODES.excluded and CODES.ignored or st.repos[repo][tostring(url):sub(#repo + 2)] or CODES.clean
-		end
+		local code = file_code(self._file)
 
 		if signs[code] == "" then
 			return ""

@@ -18,6 +18,9 @@ Add the following to your `~/.config/yazi/init.lua`:
 require("git"):setup {
 	-- Order of status signs showing in the linemode
 	order = 1500,
+
+	-- Whether to style filenames based on Git status
+	style_filename = false,
 }
 ```
 
@@ -58,6 +61,16 @@ For example:
 modified = { fg = "blue" }
 deleted  = { fg = "red", bold = true }
 ```
+
+You can also apply Git status styles to filenames:
+
+```lua
+require("git"):setup {
+	style_filename = true,
+}
+```
+
+It reuses the corresponding `[git]` styles from your theme. This is disabled by default, and clean files keep their regular filename style.
 
 You can also customize the text of the status sign with:
 
