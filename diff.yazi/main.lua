@@ -10,8 +10,11 @@ end
 
 local selected_path = ya.sync(function()
 	for _, f in pairs(cx.active.selected) do
-		local u = f.url or f -- TODO: remove
-		return u.cache or u
+		if f.url then
+			return f.cache or f.url
+		else
+			return f.cache or f -- TODO: remove
+		end
 	end
 end)
 

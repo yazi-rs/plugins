@@ -3,7 +3,7 @@ local M = {}
 
 local function stale_cache(file)
 	local url = file.url
-	local cache = url.spec and url.spec.cache or url.scheme.cache -- TODO: remove
+	local cache = url.spec and (url.spec.stamp or url.spec.cache) or url.scheme.cache -- TODO: remove
 	local lock = cache:join(string.format("%%lock/%s", url:hash(true)))
 
 	local f = io.open(tostring(lock), "r")
