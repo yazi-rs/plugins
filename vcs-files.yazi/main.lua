@@ -68,8 +68,14 @@ local function entry()
 			files[#files + 1] = File { url = url, cha = cha }
 		end
 	end
+
 	ya.emit("update_files", { op = fs.op("part", { id = id, url = Url(cwd), files = files }) })
-	ya.emit("update_files", { op = fs.op("done", { id = id, url = cwd, cha = Cha { mode = tonumber("100644", 8) } }) })
+	if fs.trash then -- TODO: remove
+		local file = File { cwd = cwd, cha = Cha { mode = tonumber("100644", 8) } }
+		ya.emit("update_files", { op = fs.op("done", { id = id, file = file }) })
+	else
+		ya.emit("update_files", { op = fs.op("done", { id = id, url = cwd, cha = Cha { mode = tonumber("100644", 8) } }) })
+	end
 end
 
 return { entry = entry }
