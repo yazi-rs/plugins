@@ -5,11 +5,16 @@ local M = {}
 local function fail(job, s) ya.preview_widget(job, ui.Text.parse(s):area(job.area):wrap(ui.Wrap.YES)) end
 
 function M:peek(job)
+	local light = rt.term.light
+	if type(light) == "function" then -- TODO: remove
+		light = light()
+	end
+
 	local child, err = Command("sh")
 		:arg({ "-c", job.args[1], "sh", tostring(job.file.path) })
 		:env("w", job.area.w)
 		:env("h", job.area.h)
-		:env("t", rt.term.light and "light" or "dark")
+		:env("t", light and "light" or "dark")
 		:env("CYGWIN", "noupcaseenv")
 		:stdout(Command.PIPED)
 		:stderr(Command.PIPED)
