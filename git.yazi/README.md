@@ -25,13 +25,11 @@ And register it as fetchers in your `~/.config/yazi/yazi.toml`:
 
 ```toml
 [[plugin.prepend_fetchers]]
-id    = "git" # Remove if Yazi > v26.1.22
 url   = "*"
 run   = "git"
 group = "git"
 
 [[plugin.prepend_fetchers]]
-id    = "git" # Remove if Yazi > v26.1.22
 url   = "*/"
 run   = "git"
 group = "git"

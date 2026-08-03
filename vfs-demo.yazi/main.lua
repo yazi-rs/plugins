@@ -60,7 +60,7 @@ function M:ReadDir(job)
 		files[i] = {
 			cha = cha,
 			file = File {
-				url = job.url:join(Path.os(file.name)),
+				url = job.url:join(file.name),
 				cha = file.cha,
 				link_to = file.link_to,
 			},
