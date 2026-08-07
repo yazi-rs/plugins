@@ -1,4 +1,4 @@
---- @since 26.1.22
+--- @since 26.5.6
 
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
@@ -98,4 +98,14 @@ local function entry(self, job)
 	end
 end
 
-return { setup = setup, fetch = fetch, entry = entry }
+-- TODO: remove
+local function fetch_compact(self, job)
+	if ya.throttle then
+		fetch(self, job)
+		return require("noop"):fetch(job)
+	else
+		return fetch(self, job)
+	end
+end
+
+return { setup = setup, fetch = fetch_compact, entry = entry }

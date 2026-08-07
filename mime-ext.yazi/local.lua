@@ -1,4 +1,4 @@
---- @since 25.12.29
+--- @since 26.5.6
 --- See https://www.iana.org/assignments/media-types/media-types.xhtml
 
 local FILES = {
@@ -1141,6 +1141,23 @@ function M.fallback_builtin(job, unknown, state)
 		end
 	end
 	return state
+end
+
+-- TODO: remove
+if ya.throttle then
+	local old_fetch = M.fetch
+	M.fetch = function(self, job)
+		old_fetch(self, job)
+		return require("noop"):fetch(job)
+	end
+
+	M.fallback_builtin = function(job, unknown)
+		local next = require("mime.local"):fetch(ya.dict_merge(job, { files = unknown }))
+		local file, value = next()
+		while file do
+			file, value = next(coroutine.yield(file, value))
+		end
+	end
 end
 
 return M

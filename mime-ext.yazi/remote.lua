@@ -1,4 +1,4 @@
---- @since 25.12.29
+--- @since 26.5.6
 local M = {}
 
 local function stale_cache(file)
@@ -58,6 +58,23 @@ function M.fallback_local(job, unknown, state)
 		end
 	end
 	return state
+end
+
+-- TODO: remove
+if ya.throttle then
+	local old_fetch = M.fetch
+	M.fetch = function(self, job)
+		old_fetch(self, job)
+		return require("noop"):fetch(job)
+	end
+
+	M.fallback_local = function(job, unknown)
+		local next = require(".local"):fetch(ya.dict_merge(job, { files = unknown }))
+		local file, value = next()
+		while file do
+			file, value = next(coroutine.yield(file, value))
+		end
+	end
 end
 
 return M

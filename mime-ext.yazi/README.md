@@ -16,14 +16,12 @@ Add this to your `~/.config/yazi/yazi.toml`:
 
 ```toml
 [[plugin.prepend_fetchers]]
-id    = "mime" # Remove if Yazi > v26.1.22
 url   = "local://*"
 run   = "mime-ext.local"
 prio  = "high"
 group = "mime"
 
 [[plugin.prepend_fetchers]]
-id    = "mime" # Remove if Yazi > v26.1.22
 url   = "remote://*"
 run   = "mime-ext.remote"
 prio  = "high"

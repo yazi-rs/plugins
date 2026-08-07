@@ -262,4 +262,14 @@ local function fetch(_, job)
 	return false
 end
 
-return { setup = setup, fetch = fetch }
+-- TODO: remove
+local function fetch_compact(self, job)
+	if ya.throttle then
+		fetch(self, job)
+		return require("noop"):fetch(job)
+	else
+		return fetch(self, job)
+	end
+end
+
+return { setup = setup, fetch = fetch_compact }
