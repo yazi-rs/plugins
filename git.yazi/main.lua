@@ -266,7 +266,11 @@ end
 local function fetch_compact(self, job)
 	if ya.throttle then
 		fetch(self, job)
-		return require("noop"):fetch(job)
+		return ya.co(function()
+			for _, file in ipairs(job.files) do
+				coroutine.yield(file, { retry = true })
+			end
+		end)
 	else
 		return fetch(self, job)
 	end
