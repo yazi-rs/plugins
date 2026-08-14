@@ -8,13 +8,10 @@ local function setup(_, opts)
     local writers = {
         -- Recommended for unix
         OSC7 = function(cwd)
-            -- Convert and percent-encode the path to a valid file URI for OSC 7.
+            -- Add starting slash on windows to separate the drive letter from hostname
             if target == "windows" then
-                cwd = "/" .. cwd:gsub("\\", "/")
+                cwd = "/" .. cwd
             end
-            cwd = cwd:gsub("([^%w%-%._~/])", function(char)
-                return string.format("%%%02X", char:byte())
-            end)
             io.write("\x1b]7;file://localhost" .. cwd .. "\x1b\\")
         end,
         -- Recommended for windows
