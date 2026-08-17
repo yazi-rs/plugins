@@ -71,7 +71,7 @@ local function entry()
 
 	ya.emit("update_files", { op = fs.op("part", { id = id, url = Url(cwd), files = files }) })
 	if fs.trash then -- TODO: remove
-		local file = File { cwd = cwd, cha = Cha { mode = tonumber("100644", 8) } }
+		local file = File { url = cwd, cha = Cha { mode = tonumber("100644", 8) } }
 		ya.emit("update_files", { op = fs.op("done", { id = id, file = file }) })
 	else
 		ya.emit("update_files", { op = fs.op("done", { id = id, url = cwd, cha = Cha { mode = tonumber("100644", 8) } }) })
