@@ -45,7 +45,7 @@ end
 local function entry()
 	local root = root()
 
-	local tracked, err = output(root, { "diff", "--name-only", "HEAD" })
+	local tracked, err = output(root, { "diff", "--name-only", "--relative", "HEAD" })
 	if err then
 		return fail(err)
 	end
