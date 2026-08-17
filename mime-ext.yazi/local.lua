@@ -1077,6 +1077,11 @@ local options = ya.sync(
 
 local M = {}
 
+M.defaults = {
+	FILES = FILES,
+	EXTS = EXTS,
+}
+
 function M:setup(opts)
 	opts = opts or {}
 
