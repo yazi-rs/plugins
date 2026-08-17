@@ -1087,8 +1087,8 @@ end
 
 function M:fetch(job)
 	local opts = options()
-	local merged_files = ya.dict_merge(FILES, opts.with_files or {})
-	local merged_exts = ya.dict_merge(EXTS, opts.with_exts or {})
+	local files = opts.with_files or FILES
+	local exts = opts.with_exts or EXTS
 
 	local updates, unknown, state = {}, {}, {}
 	for i, file in ipairs(job.files) do
@@ -1101,8 +1101,8 @@ function M:fetch(job)
 		if file.cha.len == 0 then
 			mime = "inode/empty"
 		else
-			mime = merged_files[(file.url.name or ""):lower()]
-			mime = mime or merged_exts[(file.url.ext or ""):lower()]
+			mime = files[(file.url.name or ""):lower()]
+			mime = mime or exts[(file.url.ext or ""):lower()]
 		end
 
 		if mime then
