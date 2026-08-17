@@ -1068,8 +1068,8 @@ local EXTS = {
 local options = ya.sync(
 	function(st)
 		return {
-			with_files = st.with_files,
-			with_exts = st.with_exts,
+			files = st.files,
+			exts = st.exts,
 			fallback_file1 = st.fallback_file1,
 		}
 	end
@@ -1080,15 +1080,15 @@ local M = {}
 function M:setup(opts)
 	opts = opts or {}
 
-	self.with_files = opts.with_files
-	self.with_exts = opts.with_exts
+	self.files = opts.files
+	self.exts = opts.exts
 	self.fallback_file1 = opts.fallback_file1
 end
 
 function M:fetch(job)
 	local opts = options()
-	local files = opts.with_files or FILES
-	local exts = opts.with_exts or EXTS
+	local files = opts.files or FILES
+	local exts = opts.exts or EXTS
 
 	local updates, unknown, state = {}, {}, {}
 	for i, file in ipairs(job.files) do
