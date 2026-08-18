@@ -1,4 +1,4 @@
---- @since 26.5.6
+--- @since 26.8.15
 
 local update = ya.sync(function(st, tags)
 	for path, tag in pairs(tags) do
@@ -10,7 +10,7 @@ end)
 local selected_or_hovered = ya.sync(function()
 	local tab, urls = cx.active, {}
 	for _, f in pairs(tab.selected) do
-		urls[#urls + 1] = f.url or f -- TODO: remove
+		urls[#urls + 1] = f.url
 	end
 	if #urls == 0 and tab.current.hovered then
 		urls[1] = tab.current.hovered.url

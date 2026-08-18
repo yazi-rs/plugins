@@ -1,9 +1,9 @@
---- @since 26.1.22
+--- @since 26.8.15
 
 local selected_or_hovered = ya.sync(function()
 	local tab, paths = cx.active, {}
 	for _, f in pairs(tab.selected) do
-		paths[#paths + 1] = tostring(f.url or f) -- TODO: remove
+		paths[#paths + 1] = tostring(f.url)
 	end
 	if #paths == 0 and tab.current.hovered then
 		paths[1] = tostring(tab.current.hovered.url)
