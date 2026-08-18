@@ -1,4 +1,4 @@
---- @since 26.5.6
+--- @since 26.8.15
 
 local WINDOWS = ya.target_family() == "windows"
 
@@ -92,6 +92,15 @@ local function root(cwd)
 		end
 		cwd = cwd.parent
 	until not cwd
+end
+
+---@type UnstableFetcher
+local function retry(job)
+	return ya.co(function()
+		for _, file in ipairs(job.files) do
+			coroutine.yield(file, { retry = true })
+		end
+	end)
 end
 
 ---@param changed Changes
@@ -217,7 +226,7 @@ local function fetch(_, job)
 	local repo = root(cwd)
 	if not repo then
 		remove(tostring(cwd))
-		return true
+		return require("noop"):fetch(job)
 	end
 
 	local paths = {}
@@ -232,7 +241,8 @@ local function fetch(_, job)
 		:arg(paths)
 		:output()
 	if not output then
-		return true, Err("Cannot spawn `git` command, error: %s", err)
+		ya.err("Cannot spawn `git` command, error: " .. err)
+		return require("noop"):fetch(job)
 	end
 
 	local changed, excluded = {}, {}
@@ -259,21 +269,7 @@ local function fetch(_, job)
 
 	add(tostring(cwd), repo, changed)
 
-	return false
+	return retry(job)
 end
 
--- TODO: remove
-local function fetch_compact(self, job)
-	if ya.throttle then
-		fetch(self, job)
-		return ya.co(function()
-			for _, file in ipairs(job.files) do
-				coroutine.yield(file, { retry = true })
-			end
-		end)
-	else
-		return fetch(self, job)
-	end
-end
-
-return { setup = setup, fetch = fetch_compact }
+return { setup = setup, fetch = fetch }
