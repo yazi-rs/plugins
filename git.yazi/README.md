@@ -40,11 +40,11 @@ group = "git"
 You can customize the [Style](https://yazi-rs.github.io/docs/configuration/theme#types.style) of the status sign with:
 
 - `[git].unknown` - status cannot/not yet determined
+- `[git].ignored` - ignored file
+- `[git].untracked` - untracked file
 - `[git].unstaged` - unstaged file
 - `[git].staged` - staged file
 - `[git].added` - staged new file
-- `[git].untracked` - untracked file
-- `[git].ignored` - ignored file
 - `[git].deleted` - deleted file
 - `[git].updated` - updated file
 - `[git].clean` - clean file
@@ -61,11 +61,11 @@ deleted  = { fg = "red", bold = true }
 You can also customize the text of the status sign with:
 
 - `[git].unknown_sign` - status cannot/not yet determined
+- `[git].ignored_sign` - ignored file
+- `[git].untracked_sign` - untracked file
 - `[git].unstaged_sign` - unstaged file
 - `[git].staged_sign` - staged file
 - `[git].added_sign` - staged new file
-- `[git].untracked_sign` - untracked file
-- `[git].ignored_sign` - ignored file
 - `[git].deleted_sign` - deleted file
 - `[git].updated_sign` - updated file
 - `[git].clean_sign` - clean file
