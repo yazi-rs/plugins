@@ -11,7 +11,7 @@ local CODES = {
 	excluded = 99, -- ignored directory
 	ignored = 7, -- ignored file
 	untracked = 6,
-	modified = 5,
+	unstaged = 5,
 	staged = 4,
 	added = 3,
 	deleted = 2,
@@ -22,8 +22,8 @@ local CODES = {
 local PATTERNS = {
 	{ "!$", CODES.ignored },
 	{ "?$", CODES.untracked },
-	{ "^[MT] ", CODES.staged },
-	{ "[MT]", CODES.modified },
+	{ ".[MT]", CODES.unstaged },
+	{ "[MT] ", CODES.staged },
 	{ "[AC]", CODES.added },
 	{ "D", CODES.deleted },
 	{ "U", CODES.updated },
@@ -36,7 +36,7 @@ local function theme()
 		[CODES.unknown] = t.unknown or ui.Style(),
 		[CODES.ignored] = t.ignored or ui.Style():fg("darkgray"),
 		[CODES.untracked] = t.untracked or ui.Style():fg("magenta"),
-		[CODES.modified] = t.modified or ui.Style():fg("yellow"),
+		[CODES.unstaged] = t.unstaged or ui.Style():fg("yellow"),
 		[CODES.staged] = t.staged or ui.Style():fg("green"),
 		[CODES.added] = t.added or ui.Style():fg("green"),
 		[CODES.deleted] = t.deleted or ui.Style():fg("red"),
@@ -46,7 +46,7 @@ local function theme()
 		[CODES.unknown] = t.unknown_sign or "",
 		[CODES.ignored] = t.ignored_sign or " ",
 		[CODES.untracked] = t.untracked_sign or "? ",
-		[CODES.modified] = t.modified_sign or " ",
+		[CODES.unstaged] = t.unstaged_sign or " ",
 		[CODES.staged] = t.staged_sign or " ",
 		[CODES.added] = t.added_sign or " ",
 		[CODES.deleted] = t.deleted_sign or " ",

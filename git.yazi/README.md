@@ -40,9 +40,9 @@ group = "git"
 You can customize the [Style](https://yazi-rs.github.io/docs/configuration/theme#types.style) of the status sign with:
 
 - `[git].unknown` - status cannot/not yet determined
-- `[git].modified` - modified file
+- `[git].unstaged` - unstaged file
 - `[git].staged` - staged file
-- `[git].added` - added file
+- `[git].added` - staged new file
 - `[git].untracked` - untracked file
 - `[git].ignored` - ignored file
 - `[git].deleted` - deleted file
@@ -54,16 +54,16 @@ For example:
 ```toml
 # theme.toml / flavor.toml
 [git]
-modified = { fg = "blue" }
+unstaged = { fg = "blue" }
 deleted  = { fg = "red", bold = true }
 ```
 
 You can also customize the text of the status sign with:
 
 - `[git].unknown_sign` - status cannot/not yet determined
-- `[git].modified_sign` - modified file
+- `[git].unstaged_sign` - unstaged file
 - `[git].staged_sign` - staged file
-- `[git].added_sign` - added file
+- `[git].added_sign` - staged new file
 - `[git].untracked_sign` - untracked file
 - `[git].ignored_sign` - ignored file
 - `[git].deleted_sign` - deleted file
@@ -76,7 +76,7 @@ For example:
 # theme.toml / flavor.toml
 [git]
 unknown_sign  = " "
-modified_sign = "M"
+unstaged_sign = "M"
 deleted_sign  = "D"
 clean_sign    = "✔"
 ```
