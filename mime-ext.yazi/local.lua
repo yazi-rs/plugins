@@ -1070,6 +1070,7 @@ local options = ya.sync(
 		return {
 			with_files = st.with_files,
 			with_exts = st.with_exts,
+			custom_only = st.custom_only,
 			fallback_file1 = st.fallback_file1,
 		}
 	end
@@ -1082,13 +1083,19 @@ function M:setup(opts)
 
 	self.with_files = opts.with_files
 	self.with_exts = opts.with_exts
+	self.custom_only = opts.custom_only
 	self.fallback_file1 = opts.fallback_file1
 end
 
 function M:fetch(job)
 	local opts = options()
-	local merged_files = ya.dict_merge(FILES, opts.with_files or {})
-	local merged_exts = ya.dict_merge(EXTS, opts.with_exts or {})
+	local merged_files = opts.with_files or {}
+	local merged_exts = opts.with_exts or {}
+
+	if not opts.custom_only then
+		merged_files = ya.dict_merge(FILES, merged_files)
+		merged_exts = ya.dict_merge(EXTS, merged_exts)
+	end
 
 	return ya.co(function()
 		local updates, unknown = {}, {}
