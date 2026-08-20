@@ -37,13 +37,13 @@ local mimeExt = require("mime-ext.local")
 
 mimeExt:setup {
     -- Expand the existing filename database (lowercase), for example:
-    files = {
+    with_files = {
         makefile = "text/makefile",
         -- ...
     },
 
     -- Expand the existing extension database (lowercase), for example:
-    exts = {
+    with_exts = {
         mk = "text/makefile",
         -- ...
     },

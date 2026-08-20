@@ -1068,8 +1068,8 @@ local EXTS = {
 local options = ya.sync(
 	function(st)
 		return {
-			files = st.files or {},
-			exts = st.exts or {},
+			with_files = st.with_files or {},
+			with_exts = st.with_exts or {},
 			useDefaults = st.useDefaults,
 			fallback_file1 = st.fallback_file1,
 		}
@@ -1086,8 +1086,8 @@ M.defaults = {
 function M:setup(opts)
 	opts = opts or {}
 
-	self.files = opts.files
-	self.exts = opts.exts
+	self.with_files = opts.with_files
+	self.with_exts = opts.with_exts
 	self.useDefaults = opts.useDefaults
 	self.fallback_file1 = opts.fallback_file1
 end
@@ -1096,11 +1096,11 @@ function M:fetch(job)
 	local opts = options()
 	local files, exts
 	if opts.useDefaults ~= false then -- If nil, also take this path
-		files = ya.dict_merge(FILES, opts.files)
-		exts = ya.dict_merge(EXTS, opts.exts)
+		files = ya.dict_merge(FILES, opts.with_files)
+		exts = ya.dict_merge(EXTS, opts.with_exts)
 	else
-		files = opts.files
-		exts = opts.exts
+		files = opts.with_files
+		exts = opts.with_exts
 	end
 
 	local updates, unknown, state = {}, {}, {}
