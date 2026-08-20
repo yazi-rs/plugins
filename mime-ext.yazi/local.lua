@@ -1068,8 +1068,9 @@ local EXTS = {
 local options = ya.sync(
 	function(st)
 		return {
-			files = st.files,
-			exts = st.exts,
+			files = st.files or {},
+			exts = st.exts or {},
+			useDefaults = st.useDefaults,
 			fallback_file1 = st.fallback_file1,
 		}
 	end
@@ -1087,13 +1088,20 @@ function M:setup(opts)
 
 	self.files = opts.files
 	self.exts = opts.exts
+	self.useDefaults = opts.useDefaults
 	self.fallback_file1 = opts.fallback_file1
 end
 
 function M:fetch(job)
 	local opts = options()
-	local files = opts.files or FILES
-	local exts = opts.exts or EXTS
+	local files, exts
+	if opts.useDefaults ~= false then -- If nil, also take this path
+		files = ya.dict_merge(FILES, opts.files)
+		exts = ya.dict_merge(EXTS, opts.exts)
+	else
+		files = opts.files
+		exts = opts.exts
+	end
 
 	local updates, unknown, state = {}, {}, {}
 	for i, file in ipairs(job.files) do

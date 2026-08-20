@@ -36,27 +36,20 @@ You can also customize it in your `~/.config/yazi/init.lua` with:
 local mimeExt = require("mime-ext.local")
 
 mimeExt:setup {
-    -- Override the existing filename database (lowercase):
+    -- Expand the existing filename database (lowercase), for example:
     files = {
         makefile = "text/makefile",
         -- ...
     },
-	-- ... OR expand it instead:
-	files = ya.dict_merge(mimeExt.defaults.FILES, {
-		makefile = "text/makefile",
-		-- ...
-	}),
 
-    -- Override the existing extension database (lowercase):
+    -- Expand the existing extension database (lowercase), for example:
     exts = {
         mk = "text/makefile",
         -- ...
     },
-	-- ... OR expand it instead:
-	exts = ya.dict_merge(mimeExt.defaults.EXTS, {
-		mk = "text/makefile",
-		-- ...
-	}),
+
+    -- Disable defaults to only include the above
+    useDefaults = false,
 
 	-- If the MIME type is not in both filename and extension databases,
 	-- then fallback to Yazi's preset `mime.local` plugin, which uses `file(1)`
