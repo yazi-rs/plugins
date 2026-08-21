@@ -19,6 +19,11 @@ Add this to your `~/.config/yazi/keymap.toml`:
 on   = "p"
 run  = "plugin smart-paste"
 desc = "Paste into the hovered directory or CWD"
+
+[[mgr.prepend_keymap]]
+on   = "P"
+run  = "plugin smart-paste force"
+desc = "Paste into the hovered directory or CWD (overwrite if the destination exists)"
 ```
 
 Note that, the keybindings above are just examples, please tune them up as needed to ensure they don't conflict with your other actions/plugins.
