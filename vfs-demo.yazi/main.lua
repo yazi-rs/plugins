@@ -18,7 +18,8 @@ local function file(url)
 	end
 	return File {
 		url = url,
-		cha = f.cha,
+		stat = f.stat,
+		lstat = f.lstat,
 		link_to = f.link_to,
 	}
 end
@@ -44,44 +45,39 @@ end
 
 function M:SetAttrs(job) return set_attrs(path(job.url.path), job.attrs) end
 
-function M:Capabilities() return { symlink = true, hard_link = true, trash = true, copy_progressive = true } end
+function M:Capabilities() return { symlink = 1, hard_link = 1, trash = 1, copy_progressive = 1 } end
 
 function M:ReadDir(job)
-	local files, err = fs.read_dir(Url(path(job.url.path)), { resolve = true })
-	if not files then
-		return nil, err
-	end
-
-	for i, file in ipairs(files) do
-		local cha, err = fs.cha(file.url, false)
-		if not cha then
+	return ya.co(function()
+		local files, err = fs.read_dir(Url(path(job.url.path)), { resolve = true })
+		if not files then
 			return nil, err
 		end
-		files[i] = {
-			cha = cha,
-			file = File {
+
+		for _, file in ipairs(files) do
+			coroutine.yield(File {
 				url = job.url:join(file.name),
-				cha = file.cha,
+				stat = file.stat,
+				lstat = file.lstat,
 				link_to = file.link_to,
-			},
-		}
-	end
-	return files
+			})
+		end
+	end)
 end
 
 function M:File(job) return file(job.url) end
 
 function M:Revalidate(job)
 	local latest, err = file(job.file.url)
-	if latest and latest.cha.mtime == job.file.cha.mtime then
+	if latest and latest.stat.mtime == job.file.stat.mtime then
 		return nil
 	end
 	return latest, err
 end
 
-function M:SymlinkMetadata(job) return fs.cha(Url(path(job.url.path)), false) end
+function M:SymlinkMetadata(job) return fs.stat(Url(path(job.url.path)), false) end
 
-function M:Metadata(job) return fs.cha(Url(path(job.url.path)), true) end
+function M:Metadata(job) return fs.stat(Url(path(job.url.path)), true) end
 
 function M:Canonicalize(job) return job.url end
 
@@ -116,8 +112,8 @@ function M:Open(job)
 		return 0
 	end
 
-	local cha, cha_err = fs.cha(Url(p), true)
-	return cha and cha.len, cha_err
+	local stat, stat_err = fs.stat(Url(p), true)
+	return stat and stat.len, stat_err
 end
 
 function M:CreateDir(job) return fs.create("dir", Url(path(job.url.path))) end

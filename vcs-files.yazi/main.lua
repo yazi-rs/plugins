@@ -39,7 +39,7 @@ end
 
 local function file(url)
 	local file, err = fs.file(url.physical)
-	return file and File { url = url, cha = file.cha, link_to = file.link_to }, err
+	return file and File { url = url, stat = file.stat, lstat = file.lstat, link_to = file.link_to }, err
 end
 
 local function read_dir(job)
@@ -57,10 +57,9 @@ local function read_dir(job)
 
 	for line in merge(tracked, untracked) do
 		local url = job.url:join(line)
-		local cha = fs.cha(url)
 		local file = fs.file(url)
-		if cha and file then
-			coroutine.yield { cha = cha, file = file }
+		if file then
+			coroutine.yield(file)
 		end
 	end
 end
@@ -88,7 +87,7 @@ end
 local function provide(_, job)
 	local op = job.op
 	if op == "Capabilities" then
-		return { file = true, read_dir = true, revalidate = true }
+		return { file = 1, read_dir = 1, revalidate = 1 }
 	elseif op == "File" then
 		return file(job.url)
 	elseif op == "Revalidate" then

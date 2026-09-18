@@ -107,10 +107,12 @@ local function entry(self, job)
 	local motion = tonumber(job.args[1]) or 0
 	local new = ya.clamp(-10, st.level + motion, 10)
 	if new ~= st.level then
+		Stat = Stat or Cha -- TODO: remove
+		local stat = Stat { mode = tonumber("100644", 8) }
 		peek(self, {
 			area = ui.area("preview"),
 			args = {},
-			file = File { url = st.url, cha = Cha { mode = tonumber("100644", 8) } },
+			file = File { url = st.url, cha = stat, stat = stat, lstat = stat }, -- TODO: remove `cha`
 			skip = 0,
 			new_level = new,
 			old_level = st.level,
