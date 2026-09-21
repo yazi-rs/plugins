@@ -1,5 +1,14 @@
 --- @since 25.12.29
 
+local state = { auto_enter = true, confirm_keys = {} }
+
+local function setup(_, opts)
+	if opts.auto_enter ~= nil then
+		state.auto_enter = opts.auto_enter
+	end
+	state.confirm_keys = opts.confirm_keys or {}
+end
+
 local hovered = ya.sync(function()
 	local h = cx.active.current.hovered
 	if not h then
@@ -32,19 +41,35 @@ local function entry()
 			break
 		end
 
+		local confirmed = event == 1
+		if not confirmed then
+			local last = value:sub(-1)
+			for _, key in ipairs(state.confirm_keys) do
+				if last == key then
+					confirmed = true
+					value = value:sub(1, -2)
+					break
+				end
+			end
+		end
+
 		ya.emit("filter_do", { value, smart = true })
 
 		local h = hovered()
-		if h.unique and h.is_dir then
+		if state.auto_enter and not confirmed and h.unique and h.is_dir then
 			ya.emit("escape", { filter = true })
 			ya.emit("enter", {})
 			input = prompt()
-		elseif event == 1 then
+		elseif confirmed then
 			ya.emit("escape", { filter = true })
 			ya.emit(h.is_dir and "enter" or "open", { h.url })
-			break
+			if h.is_dir then
+				input = prompt()
+			else
+				break
+			end
 		end
 	end
 end
 
-return { entry = entry }
+return { entry = entry, setup = setup }
