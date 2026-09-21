@@ -24,7 +24,11 @@ return {
 
 		local kw = escape(cands[idx].on)
 		if changed(kw) then
-			ya.emit("find_do", { "^" .. kw })
+			if job.args.smart == true then
+				ya.emit("find_do", { smart = true, "^" .. kw })
+			else
+				ya.emit("find_do", { "^" .. kw })
+			end
 		else
 			ya.emit("find_arrow", {})
 		end
