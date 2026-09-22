@@ -4,11 +4,19 @@ local toggle_ui = ya.sync(function(self)
 	if self.children then
 		Modal:children_remove(self.children)
 		self.children = nil
+		self.show_help = false
 	else
 		self.children = Modal:children_add(self, 10)
 	end
 	ui.render()
 end)
+
+local toggle_help = ya.sync(function(self)
+	self.show_help = not self.show_help
+	ui.render()
+end)
+
+local help_open = ya.sync(function(self) return self.show_help == true end)
 
 local subscribe = ya.sync(function()
 	ps.unsub("mount")
@@ -37,21 +45,24 @@ end)
 
 local M = {
 	keys = {
-		{ on = "q", run = "quit" },
-		{ on = "<Esc>", run = "quit" },
-		{ on = "<Enter>", run = { "enter", "quit" } },
+		{ on = "q", run = "quit", desc = "Quit" },
+		{ on = "h", run = "escape", desc = "Back / quit" },
+		{ on = "<Esc>", run = "escape", desc = "Back / quit" },
+		{ on = "<Left>", run = "escape", desc = "Back / quit" },
+		{ on = "<Enter>", run = { "enter", "quit" }, desc = "Enter mountpoint" },
+		{ on = "?", run = "help", desc = "Toggle help" },
 
-		{ on = "k", run = "up" },
-		{ on = "j", run = "down" },
-		{ on = "l", run = { "enter", "quit" } },
+		{ on = "k", run = "up", desc = "Move up" },
+		{ on = "j", run = "down", desc = "Move down" },
+		{ on = "l", run = { "enter", "quit" }, desc = "Enter mountpoint" },
 
-		{ on = "<Up>", run = "up" },
-		{ on = "<Down>", run = "down" },
-		{ on = "<Right>", run = { "enter", "quit" } },
+		{ on = "<Up>", run = "up", desc = "Move up" },
+		{ on = "<Down>", run = "down", desc = "Move down" },
+		{ on = "<Right>", run = { "enter", "quit" }, desc = "Enter mountpoint" },
 
-		{ on = "m", run = "mount" },
-		{ on = "u", run = "unmount" },
-		{ on = "e", run = "eject" },
+		{ on = "m", run = "mount", desc = "Mount" },
+		{ on = "u", run = "unmount", desc = "Unmount" },
+		{ on = "e", run = "eject", desc = "Eject" },
 	},
 	permit = table.pack(ya.chan("mpsc", 1)),
 }
@@ -102,10 +113,22 @@ function M:entry(job)
 
 			local cand = self.keys[idx] or { run = {} }
 			for _, r in ipairs(type(cand.run) == "table" and cand.run or { cand.run }) do
-				tx1:send(r)
-				if r == "quit" then
-					toggle_ui()
-					return
+				if r == "help" then
+					toggle_help()
+				elseif r == "escape" then
+					if help_open() then
+						toggle_help()
+					else
+						tx1:send("quit")
+						toggle_ui()
+						return
+					end
+				else
+					tx1:send(r)
+					if r == "quit" then
+						toggle_ui()
+						return
+					end
 				end
 			end
 		end
@@ -164,15 +187,29 @@ function M:redraw()
 		end
 	end
 
-	return {
+	local inner = self._area:pad(ui.Pad(1, 2, 1, 2))
+	local chunks = ui.Layout()
+		:direction(ui.Layout.VERTICAL)
+		:constraints({
+			ui.Constraint.Fill(1),
+			ui.Constraint.Length(1),
+		})
+		:split(inner)
+	local table_area, footer_area = chunks[1], chunks[2]
+
+	local title = self.show_help and "Mount  (? to close help)" or "Mount"
+	local footer_text = self.show_help and "j/k move   l enter   m mount   u unmount   e eject   q quit   ? close help"
+		or "j/k move   l enter   m mount   u unmount   e eject   q quit   ? help"
+
+	local widgets = {
 		ui.Clear(self._area),
 		ui.Border(ui.Edge.ALL)
 			:area(self._area)
 			:type(ui.Border.ROUNDED)
 			:style(ui.Style():fg("blue"))
-			:title(ui.Line("Mount"):align(ui.Align.CENTER)),
+			:title(ui.Line(title):align(ui.Align.CENTER)),
 		ui.Table(rows)
-			:area(self._area:pad(ui.Pad(1, 2, 1, 2)))
+			:area(table_area)
 			:header(ui.Row({ "Src", "Label", "Dist", "FSType" }):style(ui.Style():bold()))
 			:row(self.cursor)
 			:row_style(ui.Style():fg("blue"):underline())
@@ -182,7 +219,32 @@ function M:redraw()
 				ui.Constraint.Percentage(70),
 				ui.Constraint.Length(20),
 			},
+		ui.Line(ui.truncate(footer_text, { max = footer_area.w })):area(footer_area):fg("darkgray"),
 	}
+
+	if self.show_help then
+		local help = {
+			ui.Line(""),
+			ui.Line({ ui.Span("  Navigation"):bold():fg("blue") }),
+			ui.Line("  j  k      Move down / up"),
+			ui.Line("  ↑  ↓      Move down / up"),
+			ui.Line("  l  Enter  Open the selected mountpoint"),
+			ui.Line("  h  Esc    Close help, or quit"),
+			ui.Line(""),
+			ui.Line({ ui.Span("  Disks"):bold():fg("blue") }),
+			ui.Line("  m         Mount the selected partition"),
+			ui.Line("  u         Unmount the selected partition"),
+			ui.Line("  e         Eject / power off the disk"),
+			ui.Line(""),
+			ui.Line({ ui.Span("  Other"):bold():fg("blue") }),
+			ui.Line("  q         Quit"),
+			ui.Line("  ?         Toggle this help"),
+		}
+		widgets[#widgets + 1] = ui.Clear(table_area)
+		widgets[#widgets + 1] = ui.List(help):area(table_area)
+	end
+
+	return widgets
 end
 
 function M.obtain()
