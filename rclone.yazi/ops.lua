@@ -1,6 +1,6 @@
 local M = {}
 
-local rc = require("rclone.rc")
+local rc = require(".rc")
 
 local function quote(key, value)
 	if type(value) == "boolean" or type(value) == "number" then
