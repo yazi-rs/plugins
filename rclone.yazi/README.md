@@ -16,7 +16,7 @@ Include the following in your `vfs.toml`:
 
 ```toml
 [rclone.test]
-kind         = "mount"
+kind         = "scope"
 run          = "rclone"
 root         = "/"
 backend.type = "webdav"
