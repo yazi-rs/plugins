@@ -1,0 +1,52 @@
+[package]
+name = "brace"
+version = "0.1.0"
+description = "Bash-like brace expansion for creating directories in Yazi"
+keywords = ["brace", "expansion", "mkdir", "directory"]
+authors = ["Komandan Nasa"]
+homepage = "https://github.com/hastagaming/brace.yazi"
+repository = "https://github.com/hastagaming/brace.yazi"
+license = "MIT"
+
+[package.dependencies]
+
+[package.build]
+script = ""
+
+[package.hooks]
+pre_install = ""
+post_install = ""
+pre_remove = ""
+post_remove = ""
+
+[[package.files]]
+path = "init.lua"
+desc = "Entry point"
+
+[[package.files]]
+path = "main.lua"
+desc = "Main orchestration"
+
+[[package.files]]
+path = "parser.lua"
+desc = "Brace expansion parser"
+
+[[package.files]]
+path = "fs.lua"
+desc = "Filesystem operations"
+
+[[package.files]]
+path = "preview.lua"
+desc = "Preview and confirmation UI"
+
+[[package.files]]
+path = "util.lua"
+desc = "Utility functions"
+
+[[package.files]]
+path = "README.md"
+desc = "Documentation"
+
+[[package.files]]
+path = "LICENSE"
+desc = "MIT License"
