@@ -31,6 +31,10 @@ Here `backend.type = "webdav"` indicates that the WebDAV backend is being used, 
 
 Similarly, you can change `type` to any other backend supported by Rclone (Amazon S3, OneDrive, Backblaze B2, etc.) to access different cloud services.
 
+## Tips
+
+If you already have a working rclone remote configured, run `rclone config dump` to see its fields and copy the relevant ones under `backend.`.
+
 ## License
 
 This plugin is MIT-licensed. For more information check the [LICENSE](LICENSE) file.
