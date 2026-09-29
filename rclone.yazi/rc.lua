@@ -35,7 +35,7 @@ function M.encode_args(args)
 				return nil, err
 			end
 		end
-		query[#query + 1] = ya.percent_encode(key) .. "=" .. ya.percent_encode(tostring(value))
+		query[#query + 1] = ya.percent_encode(key, { "query" }) .. "=" .. ya.percent_encode(tostring(value), { "query" })
 	end
 	return table.concat(query, "&")
 end
