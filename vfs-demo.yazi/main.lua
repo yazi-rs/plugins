@@ -38,7 +38,7 @@ local function set_attrs(path, attrs)
 		ok1, err1 = command("chmod", { string.format("%o", attrs.mode % 4096), tostring(path) })
 	end
 	if attrs.mtime then
-		ok2, err2 = command("touch", { "-m", "-t", os.date("%Y%m%d%H%M.%S", math.floor(attrs.mtime)), tostring(path) })
+		ok2, err2 = command("touch", { "-m", "-t", attrs.mtime:format("%Y%m%d%H%M.%S"), tostring(path) })
 	end
 	return ok1 and ok2, err1 or err2
 end

@@ -75,7 +75,7 @@ local function stat(item)
 		kind = item.Name:sub(1, 1) == "." and 2 or 0,
 		mode = tonumber(item.IsDir and "40700" or "100644", 8),
 		len = item.IsDir and 0 or math.max(item.Size or 0, 0),
-		mtime = item.ModTime and ya.date(item.ModTime).unix,
+		mtime = item.ModTime and ya.time(item.ModTime),
 	}
 end
 
