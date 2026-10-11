@@ -443,7 +443,7 @@ function M.CopyTo(job)
 
 		local config = ya.dict_merge(ya.dict_merge({}, from_opts.config or {}), to_opts.config or {})
 		local opts = { config = next(config) and config or nil }
-		local group = "yazi/" .. ya.hash(string.format("%s\0%s\0%.9f", job.from, job.to, ya.time()))
+		local group = "yazi/" .. ya.hash(string.format("%s\0%s\0%.9f", job.from, job.to, ya.time().unix))
 		local req, err = rc.open("operations/copyfile", opts, {
 			srcFs = src_base,
 			srcRemote = src_remote,
