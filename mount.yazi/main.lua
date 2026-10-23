@@ -164,13 +164,24 @@ function M:redraw()
 		end
 	end
 
+	-- TODO: remove
+	local function rounded(b)
+		if th.input.border_set then
+			b:set("rounded")
+		else
+			b:type(ui.Border.ROUNDED)
+		end
+		return b
+	end
+
 	return {
 		ui.Clear(self._area),
-		ui.Border(ui.Edge.ALL)
-			:area(self._area)
-			:type(ui.Border.ROUNDED)
-			:style(ui.Style():fg("blue"))
-			:title(ui.Line("Mount"):align(ui.Align.CENTER)),
+		rounded(
+			ui.Border(ui.Edge.ALL)
+				:area(self._area)
+				:style(ui.Style():fg("blue"))
+				:title(ui.Line("Mount"):align(ui.Align.CENTER))
+		),
 		ui.Table(rows)
 			:area(self._area:pad(ui.Pad(1, 2, 1, 2)))
 			:header(ui.Row({ "Src", "Label", "Dist", "FSType" }):style(ui.Style():bold()))
