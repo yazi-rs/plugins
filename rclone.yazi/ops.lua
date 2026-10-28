@@ -207,9 +207,7 @@ function M.Open(job)
 		end
 	end
 
-	if d.read then
-		return { id = ya.id("ft") }
-	elseif d.create_new then
+	if d.create_new then
 		local ok, err = M.CreateFileNew(job)
 		if not ok then
 			return nil, err
@@ -220,7 +218,7 @@ function M.Open(job)
 			return nil, err
 		end
 	end
-	return { id = ya.id("ft"), seekless = true }
+	return { id = ya.id("ft"), random = "read" }
 end
 
 function M.CreateFile(job)
