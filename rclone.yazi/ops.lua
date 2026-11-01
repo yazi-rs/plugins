@@ -124,9 +124,9 @@ function M.Capabilities()
 	}
 end
 
-function M.Absolute(job) return job.url end
+function M.Absolute(job) return fs.clean_url(job.url:join("/"):join(job.url.path)) end
 
-function M.Canonicalize(job) return job.url end
+function M.Canonicalize(job) return M.Absolute(job) end
 
 function M.Casefold(job) return job.url end
 
@@ -179,10 +179,7 @@ function M.Revalidate(job)
 	end
 end
 
-function M.Reroute(job)
-	-- TODO: should we use `args.root`?
-	return M.File { opts = job.opts, url = job.url:join("/") }
-end
+function M.Reroute(job) return M.File { opts = job.opts, url = M.Absolute(job) } end
 
 function M.Open(job)
 	local d = job.demand

@@ -197,9 +197,15 @@ function M:redraw()
 end
 
 function M.obtain()
+	local partitions, err = fs.partitions()
+	if not partitions then
+		require(".cross").fail("%s", err)
+		return {}
+	end
+
 	local tbl = {}
 	local last
-	for _, p in ipairs(fs.partitions()) do
+	for _, p in ipairs(partitions) do
 		local main, sub = M.split(p.src)
 		if main and last ~= main then
 			if p.src == main then
