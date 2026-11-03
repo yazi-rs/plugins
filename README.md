@@ -10,6 +10,7 @@ The following plugins can be installed using the [`ya pkg` package manager](http
 For specific installation commands and configuration instructions, check the individual `README.md` of each plugin by clicking the link below:
 
 - [smart-enter.yazi](smart-enter.yazi) - `Open` files or `enter` directories all in one key!
+- [compress.yazi](compress.yazi) - Create archives from selected or hovered files.
 - [full-border.yazi](full-border.yazi) - Add a full border to Yazi to make it look fancier.
 - [toggle-pane.yazi](toggle-pane.yazi) - Toggle the show, hide, and maximize states for different panes: parent, current, and preview.
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
