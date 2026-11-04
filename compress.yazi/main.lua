@@ -24,15 +24,11 @@ local M = {
 		["7z"] = { "7z" },
 		["tar.bz2"] = { "tar", "bzip2" },
 		["tar.gz"] = { "tar", "gzip" },
-		["tar.gzip"] = { "tar", "gzip" },
 		["tar.xz"] = { "tar", "xz" },
 		bz2 = { "bzip2" },
 		gz = { "gzip" },
 		tar = { "tar" },
-		tbz = { "tar", "bzip2" },
-		tbz2 = { "tar", "bzip2" },
-		tgz = { "tar", "gzip" },
-		txz = { "tar", "xz" },
+		wim = { "wim" },
 		xz = { "xz" },
 		zip = { "zip" },
 	},
@@ -84,7 +80,7 @@ function M:init_steps()
 		local steps = self.suffixes[suffix]
 		if steps then
 			self.suffix, self.steps = suffix, steps
-			assert(self.secret == "" or suffix == "zip" or suffix == "7z", "Password encryption requires ZIP or 7z")
+			assert(self.secret == "" or steps[1] == "zip" or steps[1] == "7z", "Password encryption requires ZIP or 7z")
 			return
 		end
 	end
@@ -279,7 +275,7 @@ function M:args(input)
 	end
 
 	local args = { "a", "-t" .. step, "-spd", "-sccUTF-8", "-bso0", progress }
-	if step == "tar" or step == "zip" or step == "7z" then
+	if step == "tar" or step == "zip" or step == "7z" or step == "wim" then
 		args[#args + 1], args[#args + 2] = "-spf", "-snl"
 	end
 	if input then
