@@ -30,23 +30,19 @@ desc = "Compress selected files"
 
 Then select some files, click <kbd>C</kbd>, and enter a filename that includes a valid archive extension.
 
-## Available extensions
+## Available formats
 
-| Ext        | Backend     |
-| ---------- | ----------- |
-| `7z`       | [7-Zip][7z] |
-| `tar.bz2`  | [7-Zip][7z] |
-| `tar.gz`   | [7-Zip][7z] |
-| `tar.gzip` | [7-Zip][7z] |
-| `tar.xz`   | [7-Zip][7z] |
-| `bz2`      | [7-Zip][7z] |
-| `gz`       | [7-Zip][7z] |
-| `tar`      | [7-Zip][7z] |
-| `tbz`      | [7-Zip][7z] |
-| `tbz2`     | [7-Zip][7z] |
-| `tgz`      | [7-Zip][7z] |
-| `txz`      | [7-Zip][7z] |
-| `xz `      | [7-Zip][7z] |
-| `zip`      | [7-Zip][7z] |
+| Format      | Extension | Backend     |
+| ----------- | --------- | ----------- |
+| 7z          | `7z`      | [7-Zip][7z] |
+| TAR + BZIP2 | `tar.bz2` | [7-Zip][7z] |
+| TAR + GZIP  | `tar.gz`  | [7-Zip][7z] |
+| TAR + XZ    | `tar.xz`  | [7-Zip][7z] |
+| BZIP2       | `bz2`     | [7-Zip][7z] |
+| GZIP        | `gz`      | [7-Zip][7z] |
+| TAR         | `tar`     | [7-Zip][7z] |
+| WIM         | `wim`     | [7-Zip][7z] |
+| XZ          | `xz`      | [7-Zip][7z] |
+| ZIP         | `zip`     | [7-Zip][7z] |
 
 [7z]: https://www.7-zip.org/
