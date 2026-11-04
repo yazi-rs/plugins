@@ -1,6 +1,13 @@
 # compress.yazi
 
-Compress selected files via [7-Zip](https://www.7-zip.org/).
+Compress one or more selected files within Yazi:
+
+- Supports [14 archive formats](https://github.com/yazi-rs/plugins/tree/main/compress.yazi), with more to be added in the future
+- Real-time compression progress reporting
+- Password protection
+- Cross-directory compression
+
+This plugin is currently experimental and requires Yazi nightly. If you run into any issues, please [file a bug report](https://github.com/yazi-rs/plugins/issues/new?template=bug.yml).
 
 ## Installation
 
@@ -19,23 +26,25 @@ run  = "plugin compress"
 desc = "Compress selected files"
 ```
 
-Then select one or more files to compress, click <kbd>C</kbd>, and enter a filename that includes a valid archive extension.
+Then select some files, click <kbd>C</kbd>, and enter a filename that includes a valid archive extension.
 
 ## Available extensions
 
-|            |
-| ---------- |
-| `7z`       |
-| `tar.bz2`  |
-| `tar.gz`   |
-| `tar.gzip` |
-| `tar.xz`   |
-| `bz2`      |
-| `gz `      |
-| `tar`      |
-| `tbz`      |
-| `tbz2`     |
-| `tgz`      |
-| `txz`      |
-| `xz `      |
-| `zip`      |
+|            | Backend     |
+| ---------- | ----------- |
+| `7z`       | [7-Zip][7z] |
+| `tar.bz2`  | [7-Zip][7z] |
+| `tar.gz`   | [7-Zip][7z] |
+| `tar.gzip` | [7-Zip][7z] |
+| `tar.xz`   | [7-Zip][7z] |
+| `bz2`      | [7-Zip][7z] |
+| `gz`       | [7-Zip][7z] |
+| `tar`      | [7-Zip][7z] |
+| `tbz`      | [7-Zip][7z] |
+| `tbz2`     | [7-Zip][7z] |
+| `tgz`      | [7-Zip][7z] |
+| `txz`      | [7-Zip][7z] |
+| `xz `      | [7-Zip][7z] |
+| `zip`      | [7-Zip][7z] |
+
+[7z]: https://www.7-zip.org/
