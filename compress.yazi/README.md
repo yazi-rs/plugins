@@ -9,6 +9,8 @@ Compress one or more selected files within Yazi:
 
 This plugin is currently experimental and requires Yazi nightly. If you run into any issues, please [file a bug report](https://github.com/yazi-rs/plugins/issues/new?template=bug.yml).
 
+https://github.com/user-attachments/assets/aeede387-f0cb-42bd-9df1-33c51e433779
+
 ## Installation
 
 ```sh
@@ -30,7 +32,7 @@ Then select some files, click <kbd>C</kbd>, and enter a filename that includes a
 
 ## Available extensions
 
-|            | Backend     |
+| Ext        | Backend     |
 | ---------- | ----------- |
 | `7z`       | [7-Zip][7z] |
 | `tar.bz2`  | [7-Zip][7z] |
