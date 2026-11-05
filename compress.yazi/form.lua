@@ -79,6 +79,11 @@ function M:draw_input(field, area, focused, style)
 	}
 end
 
+function M:draw_separator(_, area, _, style)
+	local rect = ui.Rect { x = self._area.x, y = area.y, w = self._area.w, h = 1 }
+	return { ui.Border(ui.Edge.ALL):area(rect):style(style.border):merge() }
+end
+
 function M:draw_toggle(field, area, _, style)
 	local checked = self.values[field[1]]
 	local label = string.format("%s %s · %s", checked and "󰗠" or "󰄰", field[2], field.key)
@@ -90,7 +95,7 @@ function M:input(name)
 	self.secret = ui.Input { obscure = true, realtime = true, hint = "Optional" }
 	self.confirm = ui.Input { obscure = true, hint = "Repeat password" }
 	self.focused = 1
-	self.values = { name = name, secret = "", confirm = "", encrypt_header = false }
+	self.values = { name = name, secret = "", confirm = "", encrypt_header = false, absolute = false }
 
 	local tx, rx = ya.chan("oneshot")
 	local id = Modal:children_add(self, 10)
@@ -101,6 +106,7 @@ function M:input(name)
 		local _ <close> = km.input.rules:insert(1, { on = "<S-Tab>", run = "app:plugin compress.form reverse" })
 		local _ <close> =
 			km.input.rules:insert(1, { on = "<C-h>", run = "app:plugin compress.form -- toggle encrypt_header" })
+		local _ <close> = km.input.rules:insert(1, { on = "<C-a>", run = "app:plugin compress.form -- toggle absolute" })
 		local _ <close> = ps.sub("input", function(body)
 			if body.type == "type" then
 				self:update(body.value)
@@ -127,24 +133,37 @@ end
 function M:fields()
 	local v = self.values
 	local f = common.format(v.name)
-	local pwd = f == "7z" or f == "zip"
+	local pwd = common.can_encrypt(f)
 
 	local fields = {
-		{ "name", "󰈔 Filename:", kind = "input", h = 2 },
-		{ "secret", "󰌾 Password:", kind = "input", h = pwd and 2 or 0 },
-		{ "confirm", "󰌾 Confirm password:", kind = "input", h = pwd and v.secret ~= "" and 2 or 0 },
+		{ "name", "󰈔 Filename:", true, kind = "input", h = 2, gap = 0 },
+		{ "secret", "󰌾 Password:", pwd, kind = "input", h = 2, gap = 1 },
+		{ "confirm", "󰌾 Confirm password:", pwd and v.secret ~= "", kind = "input", h = 2, gap = 1 },
+		{ [3] = common.can_absolute(f), kind = "separator", h = 1, gap = 0 },
 		{
 			"encrypt_header",
 			"Encrypt filenames",
+			v.secret ~= "" and common.can_encrypt_header(f),
 			kind = "toggle",
 			key = "<C-h>",
-			h = f == "7z" and v.secret ~= "" and 1 or 0,
+			h = 1,
+			gap = 0,
+		},
+		{
+			"absolute",
+			"Store absolute paths",
+			common.can_absolute(f),
+			kind = "toggle",
+			key = "<C-a>",
+			h = 1,
+			gap = 0,
 		},
 		sum = 0,
 	}
 
-	for i, field in ipairs(fields) do
-		field.gap = i > 1 and field.h > 0 and 1 or 0
+	for _, field in ipairs(fields) do
+		field.h = field[3] and field.h or 0
+		field.gap = field[3] and field.gap or 0
 		fields.sum = fields.sum + field.gap + field.h
 	end
 	return fields
@@ -157,7 +176,7 @@ function M.style()
 		focused = th.input.hint:reverse():italic(true),
 		unfocused = ui.Style(),
 		checked = ui.Style():fg("green"),
-		unchecked = th.input.hint,
+		unchecked = ui.Style():fg(th.input.hint:fg() or "reset"),
 	}
 end
 
@@ -167,7 +186,7 @@ function M:validate()
 	local name = fs.safename(self.values.name)
 	local suffix, steps = common.steps(name or "")
 	local format = steps and steps[1]
-	local secret = (format == "7z" or format == "zip") and self.values.secret or ""
+	local secret = common.can_encrypt(format) and self.values.secret or ""
 
 	if self.values.name == "" then
 		return common.warn("Filename cannot be empty")
@@ -183,7 +202,8 @@ function M:validate()
 			suffix = suffix,
 			steps = steps,
 			secret = secret,
-			encrypt_header = format == "7z" and secret ~= "" and self.values.encrypt_header,
+			encrypt_header = secret ~= "" and self.values.encrypt_header and common.can_encrypt_header(format),
+			absolute = self.values.absolute and common.can_absolute(format),
 		}
 	end
 end

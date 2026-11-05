@@ -45,8 +45,8 @@ function M:init_name()
 		return false
 	end
 
-	self.name, self.suffix, self.steps, self.secret, self.encrypt_header =
-		result.name, result.suffix, result.steps, result.secret, result.encrypt_header
+	self.name, self.suffix, self.steps, self.secret, self.encrypt_header, self.absolute =
+		result.name, result.suffix, result.steps, result.secret, result.encrypt_header, result.absolute
 	return true
 end
 
@@ -248,7 +248,7 @@ function M:args(input)
 	end
 
 	local args = { "a", "-t" .. step, "-spd", "-sccUTF-8", "-bso0", progress }
-	if step == "tar" or step == "zip" or step == "7z" or step == "wim" then
+	if require(".common").can_absolute(step) then
 		args[#args + 1], args[#args + 2] = "-spf", "-snl"
 	end
 	if input then
@@ -268,7 +268,7 @@ function M:args(input)
 	args[#args + 1] = tostring(self.tmp:join(stream and tarname or name))
 	if not input then
 		for _, p in ipairs(self.paths) do
-			args[#args + 1] = tostring(p:strip_prefix(self.root))
+			args[#args + 1] = tostring(self.absolute and p or p:strip_prefix(self.root))
 		end
 	end
 

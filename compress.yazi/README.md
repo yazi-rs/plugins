@@ -7,6 +7,7 @@ Compress one or more selected files within Yazi:
 - Password protection
 - Cross-directory compression
 - Encryption of filenames (if supported by the archive format)
+- Store absolute paths
 
 This plugin is currently experimental and requires Yazi nightly. If you run into any issues, please [file a bug report](https://github.com/yazi-rs/plugins/issues/new?template=bug.yml).
 

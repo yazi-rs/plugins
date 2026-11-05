@@ -37,4 +37,10 @@ function M.format(name)
 	return steps and steps[1]
 end
 
+function M.can_encrypt(format) return format == "7z" or format == "zip" end
+
+function M.can_encrypt_header(format) return format == "7z" end
+
+function M.can_absolute(format) return format == "7z" or format == "zip" or format == "tar" or format == "wim" end
+
 return M
