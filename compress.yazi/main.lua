@@ -3,10 +3,14 @@
 
 local function fail(s, ...) error(string.format(s, ...)) end
 
-local state = ya.sync(function()
+local state = ya.sync(function(_, args)
 	local tab = cx.tab
 	if not tab then
 		return
+	end
+
+	if args.hovered and tab.current.hovered then
+		return tab.current.cwd.physical, { tab.current.hovered.path }
 	end
 
 	local paths = {}
@@ -23,10 +27,10 @@ local M = {}
 
 function M:new() return setmetatable({ children = {} }, { __index = self }) end
 
-function M:init()
+function M:init(args)
 	ya.emit("escape", { visual = true })
 
-	self.to, self.paths = state()
+	self.to, self.paths = state(args)
 	assert(self.to and self.to.spec.is_regular, "Archive creation requires a local directory")
 	assert(#self.paths > 0, "No files selected")
 
@@ -73,10 +77,10 @@ function M:init_task()
 	return self.task
 end
 
-function M:entry()
+function M:entry(job)
 	ya.async(function()
 		local me = self:new()
-		local ok, ready = pcall(me.init, me)
+		local ok, ready = pcall(me.init, me, job.args)
 		if not ok then
 			return ya.notify { title = "Compress", content = tostring(ready), level = "error", timeout = 5 }
 		elseif not ready then
