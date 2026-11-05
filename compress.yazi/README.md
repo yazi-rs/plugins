@@ -2,7 +2,7 @@
 
 Compress one or more selected files within Yazi:
 
-- Supports [10 archive formats](#available-extensions), with more to be added in the future
+- Supports [10 archive formats](#available-formats), with more to be added in the future
 - Real-time compression progress reporting
 - Password protection
 - Cross-directory compression

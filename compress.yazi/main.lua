@@ -19,20 +19,7 @@ local state = ya.sync(function()
 	return tab.current.cwd.physical, paths
 end)
 
-local M = {
-	suffixes = {
-		["7z"] = { "7z" },
-		["tar.bz2"] = { "tar", "bzip2" },
-		["tar.gz"] = { "tar", "gzip" },
-		["tar.xz"] = { "tar", "xz" },
-		bz2 = { "bzip2" },
-		gz = { "gzip" },
-		tar = { "tar" },
-		wim = { "wim" },
-		xz = { "xz" },
-		zip = { "zip" },
-	},
-}
+local M = {}
 
 function M:new() return setmetatable({ children = {} }, { __index = self }) end
 
@@ -48,7 +35,6 @@ function M:init()
 	end
 
 	self:init_root()
-	self:init_steps()
 	return true
 end
 
@@ -59,8 +45,8 @@ function M:init_name()
 		return false
 	end
 
-	self.name = assert(fs.safename(result.name ~= "" and result.name or name), "Invalid archive filename")
-	self.secret = result.secret
+	self.name, self.suffix, self.steps, self.secret, self.encrypt_header =
+		result.name, result.suffix, result.steps, result.secret, result.encrypt_header
 	return true
 end
 
@@ -72,19 +58,6 @@ function M:init_root()
 		end
 	end
 	assert(self.root, "Selected files have no shared parent directory")
-end
-
-function M:init_steps()
-	for i in self.name:gmatch("()%.") do
-		local suffix = self.name:sub(i + 1)
-		local steps = self.suffixes[suffix]
-		if steps then
-			self.suffix, self.steps = suffix, steps
-			assert(self.secret == "" or steps[1] == "zip" or steps[1] == "7z", "Password encryption requires ZIP or 7z")
-			return
-		end
-	end
-	fail("Unsupported archive filename: %s", self.name)
 end
 
 function M:init_task()
@@ -286,6 +259,9 @@ function M:args(input)
 	end
 	if self.secret ~= "" then
 		args[#args + 1] = "-p" .. self.secret
+	end
+	if self.encrypt_header then
+		args[#args + 1] = "-mhe=on"
 	end
 
 	args[#args + 1] = "--"
