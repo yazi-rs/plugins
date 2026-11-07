@@ -15,6 +15,7 @@ For specific installation commands and configuration instructions, check the ind
 - [jump-to-char.yazi](jump-to-char.yazi) - Vim-like `f<char>`, jump to the next file whose name starts with `<char>`.
 - [compress.yazi](compress.yazi) - Compress selected files.
 - [git.yazi](git.yazi) - Show the status of Git file changes as linemode in the file list.
+- [git-nav.yazi](git-nav.yazi) - Navigate in a Git repo by jumping to the next/previous changed file/ go to git-root.
 - [mount.yazi](mount.yazi) - A mount manager for Yazi, providing disk mount, unmount, and eject functionality.
 - [rclone.yazi](rclone.yazi) - Manage 100+ remote file services supported by Rclone within Yazi.
 - [vcs-files.yazi](vcs-files.yazi) - Show Git file changes in Yazi.
