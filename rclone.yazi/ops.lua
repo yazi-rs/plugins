@@ -111,7 +111,7 @@ function M.Capabilities()
 		create_file = 1,
 		create_file_new = 1,
 		file = 1,
-		metadata = 1,
+		lstat = 1,
 		open = 1,
 		read_dir = 1,
 		remove_dir = 1,
@@ -120,7 +120,7 @@ function M.Capabilities()
 		rename = 1,
 		reroute = 1,
 		revalidate = 1,
-		symlink_metadata = 1,
+		stat = 1,
 	}
 end
 
@@ -130,12 +130,12 @@ function M.Canonicalize(job) return M.Absolute(job) end
 
 function M.Casefold(job) return job.url end
 
-function M.Metadata(job)
+function M.Stat(job)
 	local item, err = item(job.opts, job.url)
 	return item and stat(item), err
 end
 
-function M.SymlinkMetadata(job) return M.Metadata(job) end
+function M.Lstat(job) return M.Stat(job) end
 
 function M.ReadDir(job)
 	return ya.co(function()
@@ -163,7 +163,7 @@ function M.ReadDir(job)
 end
 
 function M.File(job)
-	local stat, err = M.Metadata(job)
+	local stat, err = M.Stat(job)
 	return stat and File { url = job.url, stat = stat, lstat = stat }, err
 end
 
@@ -196,7 +196,7 @@ function M.Open(job)
 	end
 
 	if d.read or (d.truncate and not (d.create or d.create_new)) then
-		local stat, err = M.Metadata(job)
+		local stat, err = M.Stat(job)
 		if not stat then
 			return nil, err
 		elseif stat.is_dir then
@@ -205,15 +205,9 @@ function M.Open(job)
 	end
 
 	if d.create_new then
-		local ok, err = M.CreateFileNew(job)
-		if not ok then
-			return nil, err
-		end
+		return M.CreateFileNew(job)
 	elseif d.truncate then
-		local ok, err = M.CreateFile(job)
-		if not ok then
-			return nil, err
-		end
+		return M.CreateFile(job)
 	end
 	return { id = ya.id("ft"), random = "read" }
 end
@@ -224,31 +218,34 @@ function M.CreateFile(job)
 	job.stream = stream
 
 	local _, err = M.Write(job)()
-	return err == nil, err
+	if err then
+		return nil, err
+	end
+	return { id = ya.id("ft"), random = "read" }
 end
 
 function M.CreateFileNew(job)
-	local stat, err = M.Metadata(job)
+	local stat, err = M.Stat(job)
 	if stat and stat.is_dir then
-		return false, rc.error("IsADirectory", "rclone path is a directory: %s", job.url)
+		return nil, rc.error("IsADirectory", "rclone path is a directory: %s", job.url)
 	elseif stat then
-		return false, rc.error("AlreadyExists", "rclone file already exists: %s", job.url)
+		return nil, rc.error("AlreadyExists", "rclone file already exists: %s", job.url)
 	elseif err.kind ~= "NotFound" then
-		return false, err
+		return nil, err
 	end
 
 	local dest, err = target(job.opts, job.url)
 	if not dest then
-		return false, err
+		return nil, err
 	end
 
 	local result, err = rc.call("core/command", job.opts, { command = "touch", arg = { dest }, opt = {} })
 	if not result then
-		return false, err
+		return nil, err
 	elseif result.error then
-		return false, rc.error("Other", "%s", result.result or "rclone touch failed")
+		return nil, rc.error("Other", "%s", result.result or "rclone touch failed")
 	end
-	return true
+	return { id = ya.id("ft"), random = "read" }
 end
 
 function M.CreateDir(job)
@@ -350,15 +347,9 @@ function M.Read(job)
 		end
 
 		local tail = ""
-		while true do
-			local chunk, err = resp:chunk()
+		for chunk, err in resp do
 			if not chunk then
-				if err then
-					return nil, err
-				elseif tail ~= "{}\n" then
-					return nil, rc.error("InvalidData", "Incomplete rclone command output")
-				end
-				return
+				return nil, err
 			end
 
 			tail = tail .. chunk
@@ -369,6 +360,9 @@ function M.Read(job)
 				end
 				tail = tail:sub(-3)
 			end
+		end
+		if tail ~= "{}\n" then
+			return nil, rc.error("InvalidData", "Incomplete rclone command output")
 		end
 	end)
 end
@@ -393,7 +387,7 @@ function M.Write(job)
 		local tx, part = ya.http.part("file", { filename = name, content_type = "application/octet-stream" })
 		local session = req:part(part):start()
 		while true do
-			local chunk, ok = job.stream:recv()
+			local chunk, ok = job.stream()
 			if not chunk or not ok then
 				break
 			end

@@ -107,7 +107,7 @@ function M:run()
 	end
 
 	local err
-	self.tmp, err = fs.unique("dir", Url(self.root:join(self:tmp_name())))
+	self.tmp, err = fs.unique_dir(Url(self.root:join(self:tmp_name())))
 	if not self.tmp then
 		fail("Failed to create temporary directory: %s", err)
 	end
@@ -140,9 +140,13 @@ function M:pack()
 end
 
 function M:place(from)
-	local dest, err = fs.unique("file", self.to:join(self.name))
-	if not dest then
-		fail("Failed to choose archive filename: %s", err)
+	local dest
+	do
+		local file <close>, err = fs.unique_file(self.to:join(self.name))
+		if not file then
+			fail("Failed to choose archive filename: %s", err)
+		end
+		dest = file.url
 	end
 	self.dest = dest
 
@@ -226,10 +230,10 @@ function M:cleanup()
 		return false, failure
 	end
 	if self.dest then
-		fs.remove("file", self.dest)
+		fs.remove_file(self.dest)
 	end
 	if self.tmp then
-		fs.remove("dir_all", self.tmp)
+		fs.remove_dir_all(self.tmp)
 	end
 
 	return true

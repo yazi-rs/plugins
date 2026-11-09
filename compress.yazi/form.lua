@@ -122,7 +122,7 @@ function M:input(name)
 			end
 		end)
 		render()
-		result = rx:recv()
+		result = rx()
 	end
 
 	Modal:children_remove(id)

@@ -57,7 +57,11 @@ function M.udisksctl(type, src)
 		if not output then
 			output, err = M.udisksctl_interactive(type, src)
 		end
-		rx:recv()
+		if ya.iter then -- TODO: remove
+			rx()
+		else
+			rx:recv()
+		end
 		return output, err
 	else
 		return output
