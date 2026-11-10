@@ -3,18 +3,14 @@
 
 local function fail(s, ...) error(string.format(s, ...)) end
 
-local state = ya.sync(function(_, args)
+local state = ya.sync(function(_, hovered)
 	local tab = cx.tab
 	if not tab then
 		return
 	end
 
-	if args.hovered and tab.current.hovered then
-		return tab.current.cwd.physical, { tab.current.hovered.path }
-	end
-
 	local paths = {}
-	for _, file in pairs(tab.selected) do
+	for _, file in pairs(hovered and {} or tab.selected) do
 		paths[#paths + 1] = file.path
 	end
 	if #paths == 0 and tab.current.hovered then
@@ -30,7 +26,7 @@ function M:new() return setmetatable({ children = {} }, { __index = self }) end
 function M:init(args)
 	ya.emit("escape", { visual = true })
 
-	self.to, self.paths = state(args)
+	self.to, self.paths = state(args.hovered)
 	assert(self.to and self.to.spec.is_regular, "Archive creation requires a local directory")
 	assert(#self.paths > 0, "No files selected")
 
