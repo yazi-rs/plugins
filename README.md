@@ -30,3 +30,4 @@ For specific installation commands and configuration instructions, check the ind
 - [mactag.yazi](mactag.yazi) - Bring macOS's awesome tagging feature to Yazi! The plugin is only available for macOS just like the name says.
 - [visual-pivot.yazi](visual-pivot.yazi) - Move cursor to the other end of the selection while keeping the selected files unchanged.
 - [term-cwd.yazi](term-cwd.yazi) - Inform terminal about current directory change by sending OSC code.
+- [which-delay.yazi](which-delay.yazi) - Show the which component only when the next key of a chord does not come quickly, like which-key in Neovim.
